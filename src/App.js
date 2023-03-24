@@ -2,6 +2,7 @@ import logo from './logo.svg';
 import './App.css';
 import React, { useState, useEffect } from 'react';
 import io from 'socket.io-client';
+import Navigation from './navigation/Navigation.tsx';
 
 const socket = io("ws://localhost:8000");
 
@@ -34,10 +35,13 @@ function App() {
   }
 
   return (
-    <div>
-      <p>Connected: { '' + isConnected }</p>
-      <p>Last pong: { lastPong || '-' }</p>
-      <button onClick={ sendPing }>Send ping</button>
+    <div className="App">
+      <div className="App-content">
+        <p>Connected: { '' + isConnected }</p>
+        <p>Last pong: { lastPong || '-' }</p>
+        <button onClick={sendPing}>Send ping</button>
+      </div>
+        <Navigation></Navigation>
     </div>
   );
 }
