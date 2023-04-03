@@ -1,29 +1,12 @@
-import * as React from 'react';
 import { FC } from 'react';
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import Modal from 'react-modal';
-
+import Channel from './interfaces/Channel.interface';
+import Friend from './interfaces/Friend.interface';
 import './Navigation.css';
 
 type ListName = 'friends' | 'channels';
-type UserStatus = 'online' | 'in-game' | 'offline';
-
-interface Friend {
-  name: string;
-  status: UserStatus;
-}
-
-interface User {
-  id: string;
-  name: string;
-}
-
-interface Channel {
-  id: string;
-  name: string;
-  users: User[];
-  showUserList?: boolean;
-}
 
 const channelList: Channel[] = [
   {
@@ -45,24 +28,23 @@ const channelList: Channel[] = [
 ];
 
 const Navigation: FC = () => {
-  const [showList, setShowList] = useState<ListName>('friends');
-  const [expandedChannels, setExpandedChannels] = useState<Set<number>>(new Set());
-  const [channels, setChannels] = useState(channelList); // Add this line
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [channelToLeave, setChannelToLeave] = useState<Channel | null>(null);
+  const [showList, setShowList] = useState<ListName>('friends');                    // friends, channels toggle
+  const [expandedChannels, setExpandedChannels] = useState<Set<number>>(new Set()); // ??
+  const [channels, setChannels] = useState(channelList);                            // channel list
+  const [isModalOpen, setIsModalOpen] = useState(false);                            // open modal or not
+  const [channelToLeave, setChannelToLeave] = useState<Channel | null>(null);       // ??
 
   const openModal = (channel: Channel) => {
     setChannelToLeave(channel);
     setIsModalOpen(true);
   };
-  
+
   const confirmLeave = () => {
     if (channelToLeave) {
       setChannels(channels.filter((channel) => channel.id !== channelToLeave.id));
     }
     setIsModalOpen(false);
   };
-  
 
   const handleLeaveChannel = (channelId: any) => {
     const confirmLeave = window.confirm('Are you gonna leave?');
@@ -80,8 +62,7 @@ const Navigation: FC = () => {
       )
     );
   };
-  
-  
+
   const renderChannelList = () => {
     return (
       <ul className="channel-list">
@@ -96,7 +77,6 @@ const Navigation: FC = () => {
               >
                 Leave
               </button>
-
             </div>
             {channel.showUserList && (
               <ul className="user-list">
@@ -169,6 +149,9 @@ const Navigation: FC = () => {
 
       {/* Button group */}
       <div className="button-group">
+        <Link to="/a"><button>X</button></Link>
+        <Link to="/b"><button>Y</button></Link>
+        <Link to="/c"><button>Z</button></Link>
         <button onClick={() => handleListSwitch('friends')}>Friends</button>
         <button onClick={() => handleListSwitch('channels')}>Channels</button>
       </div>
@@ -191,12 +174,11 @@ const Navigation: FC = () => {
         isOpen={isModalOpen}
         onRequestClose={() => setIsModalOpen(false)}
         contentLabel="Leave Channel Modal"
-        >
+      >
         <h2>Are you sure you want to leave the channel?</h2>
         <button onClick={confirmLeave}>Yes</button>
         <button onClick={() => setIsModalOpen(false)}>No</button>
-        </Modal>
-
+      </Modal>
     </div>
   );
 };

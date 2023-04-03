@@ -3,6 +3,11 @@ import './App.css';
 import React, { useState, useEffect } from 'react';
 import io from 'socket.io-client';
 import Navigation from './navigation/Navigation.tsx';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import XPage from './pages/XPage';
+import YPage from './pages/YPage';
+import ZPage from './pages/ZPage';
+
 
 const socket = io("ws://localhost:8000");
 
@@ -35,14 +40,23 @@ function App() {
   }
 
   return (
-    <div className="App">
-      <div className="App-content">
-        <p>Connected: { '' + isConnected }</p>
-        <p>Last pong: { lastPong || '-' }</p>
-        <button onClick={sendPing}>Send ping</button>
-      </div>
-        <Navigation></Navigation>
+    <Router>
+      <Routes>
+        <Route path="/a" element={<XPage />} />
+        <Route path="/b" element={<YPage />} />
+        <Route path="/c" element={<ZPage />} />
+      </Routes>
+      <div className="App">
+        <div className="App-content">
+          {/* <p>Connected: { '' + isConnected }</p>
+          <p>Last pong: { lastPong || '-' }</p>
+          <button onClick={sendPing}>Send ping</button> */}
+        </div>
+        <div>
+          <Navigation></Navigation>
+        </div>
     </div>
+    </Router>
   );
 }
 
