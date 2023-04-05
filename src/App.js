@@ -42,9 +42,9 @@ function App() {
 
   return (
     <Router>
-      <Navigation />
       <div className="App">
         <div className="App-content">
+          <Navigation />
             <Routes>
               <Route path="/a" element={<XPage />} />
               <Route path="/b" element={<YPage />} />
