@@ -140,7 +140,7 @@ const Navigation: FC = () => {
   };
 
   return (
-    <div className="Navigation">
+    <div className="Navigation" id="navigation">
       {/* Profile row */}
       <div className="profile-row">
         <img className="profile-picture" src="profile_picture_url" alt="Profile" />

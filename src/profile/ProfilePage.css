@@ -1,0 +1,114 @@
+.profile-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 2rem;
+  }
+  
+  .profile-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 2rem;
+  }
+  
+  .profile-picture-wrapper {
+    position: relative;
+    width: 8rem;
+    height: 8rem;
+    margin-bottom: 1rem;
+  }
+  
+  .profile-picture {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+  
+  .profile-nickname {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+  }
+  
+  .friend-button-wrapper {
+    margin-top: 1rem;
+  }
+  
+  .friend-add-button,
+  .friend-delete-button {
+    border: none;
+    border-radius: 1rem;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    font-weight: bold;
+    color: white;
+    cursor: pointer;
+  }
+  
+  .friend-add-button {
+    background-color: green;
+  }
+  
+  .friend-delete-button {
+    background-color: red;
+  }
+  
+  .profile-recent-record {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 2rem;
+  }
+  
+  .recent-record-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 60%;
+    margin-bottom: 1rem;
+    background-color: white;
+    border-radius: 5px;
+    padding: 1rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .recent-opponent-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-right: 2rem;
+  }
+  
+  .recent-opponent-picture-wrapper {
+    position: relative;
+    width: 6rem;
+    height: 6rem;
+    margin-bottom: 1rem;
+  }
+  
+  .recent-opponent-picture {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+  
+  .recent-opponent-nickname {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .recent-result {
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: center;
+  }
+  
+  .recent-score {
+    font-size: 1.5rem;
+    margin-left: 0.5rem;
+    text-align: right;
+  }

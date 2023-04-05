@@ -7,6 +7,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import XPage from './pages/XPage';
 import YPage from './pages/YPage';
 import ZPage from './pages/ZPage';
+import ProfilePage from './profile/ProfilePage.tsx';
 
 
 const socket = io("ws://localhost:8000");
@@ -41,21 +42,17 @@ function App() {
 
   return (
     <Router>
-      <Routes>
-        <Route path="/a" element={<XPage />} />
-        <Route path="/b" element={<YPage />} />
-        <Route path="/c" element={<ZPage />} />
-      </Routes>
+      <Navigation />
       <div className="App">
         <div className="App-content">
-          {/* <p>Connected: { '' + isConnected }</p>
-          <p>Last pong: { lastPong || '-' }</p>
-          <button onClick={sendPing}>Send ping</button> */}
+            <Routes>
+              <Route path="/a" element={<XPage />} />
+              <Route path="/b" element={<YPage />} />
+              <Route path="/c" element={<ZPage />} />
+              <Route path="/profile" element={<ProfilePage />} />
+            </Routes>
         </div>
-        <div>
-          <Navigation></Navigation>
-        </div>
-    </div>
+      </div>
     </Router>
   );
 }
