@@ -45,12 +45,15 @@ function App() {
       <div className="App">
         <div className="App-content">
           <Navigation />
-            <Routes>
-              <Route path="/a" element={<XPage />} />
-              <Route path="/b" element={<YPage />} />
-              <Route path="/c" element={<ZPage />} />
-              <Route path="/profile" element={<ProfilePage />} />
-            </Routes>
+          <Routes>
+            <Route path="/a" element={<XPage />} />
+            <Route path="/b" element={<YPage />} />
+            <Route path="/c" element={<ZPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
+          </Routes>
+          {/* <p>Connected: { '' + isConnected }</p>
+          <p>Last pong: { lastPong || '-' }</p>
+          <button onClick={sendPing}>Send ping</button> */}
         </div>
       </div>
     </Router>
