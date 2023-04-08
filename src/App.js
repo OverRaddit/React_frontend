@@ -8,6 +8,7 @@ import XPage from './pages/XPage';
 import YPage from './pages/YPage';
 import ZPage from './pages/ZPage';
 import ProfilePage from './profile/ProfilePage.tsx';
+import Game from './pages/YPage';
 
 
 const socket = io("ws://localhost:8000");
@@ -20,10 +21,14 @@ const exampleChatHistory = [
 ];
 
 function App() {
+  const [isLeftPlayer, setIsLeftPlayer] = useState(true);
   const [isConnected, setIsConnected] = useState(socket.connected);
   const [lastPong, setLastPong] = useState(null);
   const [chatHistory, setChatHistory] = useState(exampleChatHistory);
   const [currentChat, setCurrentChat] = useState('');
+
+  const [pos1, setPos1] = useState(0);
+  const [pos2, setPos2] = useState(0);
 
   useEffect(() => {
     socket.on('connect', () => {
@@ -38,27 +43,49 @@ function App() {
       setLastPong(new Date().toISOString());
     });
 
-    socket.on('welcome', () => {
+    socket.on('isLeft', (num) => {
+      const number = parseInt(num);
+      if (number === 1)
+        setIsLeftPlayer(true);
+      else
+        setIsLeftPlayer(false);
+      // else
+      //   console.log('이미 방이 다찼습니다... ㅠ.ㅠ');
+    });
+
+    socket.on('welcome', (num) => {
       setChatHistory([...chatHistory, 'someone join the chatRoom!']);
-      console.log('someone join the chatRoom@');
-    })
+      console.log('someone join the chatRoom');
+      console.log(`현재 방에 들어와 있던 인원은 ${num}명입니다`);
+    });
+
+    socket.on('render', (pos1, pos2) => {
+      console.log('render');
+      setPos1(pos1);
+      setPos2(pos2);
+    });
 
     socket.on('chat', (chat) => {
       setChatHistory([...chatHistory, chat]);
     })
 
     return () => {
+      // 이거 왜함?
       socket.off('connect');
       socket.off('disconnect');
       socket.off('pong');
+      socket.off('welcome');
+      socket.off('render');
+      socket.off('isLeft');
     };
-  }, [chatHistory]);
+  }, [chatHistory, isLeftPlayer]);
 
   const sendPing = () => {
     socket.emit('ping');
   }
 
   const sendJoin = () => {
+    console.log('emit join event from client');
     socket.emit('join', 'gshim');
   }
 
@@ -89,13 +116,14 @@ function App() {
             <h1>HI</h1>
             <p>Connected: { '' + isConnected }</p>
             <p>Last pong: { lastPong || '-' }</p>
+            <p>IsLeftPlayer: { '' + isLeftPlayer }</p>
             <button onClick={sendPing}>Send ping</button>
             <button onClick={sendJoin}>Join</button>
             <button onClick={sendHi}>chat hi</button>
           </div>
           <Routes>
             <Route path="/a" element={<XPage chatHistory={chatHistory} onChatSubmit={handleChatSubmit} onChatChange={handleChatChange} currentChat={currentChat} />} />
-            <Route path="/b" element={<YPage />} />
+            <Route path="/game" element={<Game isLeftPlayer={isLeftPlayer} socket={socket} pos1={pos1} pos2={pos2} />} />
             <Route path="/c" element={<ZPage />} />
             <Route path="/profile" element={<ProfilePage />} />
           </Routes>

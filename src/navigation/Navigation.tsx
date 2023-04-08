@@ -150,7 +150,7 @@ const Navigation: FC = () => {
       {/* Button group */}
       <div className="button-group">
         <Link to="/a"><button>X</button></Link>
-        <Link to="/b"><button>Y</button></Link>
+        <Link to="/game"><button>Y</button></Link>
         <Link to="/c"><button>Z</button></Link>
         <button onClick={() => handleListSwitch('friends')}>Friends</button>
         <button onClick={() => handleListSwitch('channels')}>Channels</button>
