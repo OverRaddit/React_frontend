@@ -5,18 +5,26 @@ import React, { useState, useEffect, useRef } from 'react';
 
 function Game({ isLeftPlayer, socket, pos1, pos2 }) {
   // const [userLeft, setUserLeft] = useState();
+  console.log("hi");
   const canvasRef = useRef(null);
-  
+  const canvasMaxWidth = 800;
+  const canvasMaxHeight = 600;
+  const moveValue = 8
+
   useEffect(() => {
     const canvas = canvasRef.current;    
     const ctx = canvas.getContext("2d");
+    const PaddleState = {
+      STOP: 1, MOVEUP: 2, MOVEDOWN: 3
+    };
     const userLeft = {
       x: 0,
       y:canvas.height / 2 - 100 / 2,
       width : 10,
       height: 100,
       color:"WHITE",
-      score:0
+      score:0,
+      state:0
     };
 
     const userRight = {
@@ -25,7 +33,8 @@ function Game({ isLeftPlayer, socket, pos1, pos2 }) {
       width : 10,
       height: 100,
       color:"WHITE",
-      score:0
+      score:0,
+      state:0
     }
 
     const ball = {
@@ -63,19 +72,7 @@ function Game({ isLeftPlayer, socket, pos1, pos2 }) {
       ctx.closePath();
       ctx.fill();
     }
-    function collision(b, p){
-      p.top = p.y;
-      p.bottom = p.y + p.height;
-      p.left = p.x;
-      p.right = p.x + p.width;
     
-      b.top = b.y - b.radius;
-      b.bottom = b.y +b.radius;
-      b.left = b.x -b.radius;
-      b.right = b.x +b.radius;
-    
-      return b.right > p.left && b.btop < p.bottom && b.left < p.right && b.bottom > p.top;
-    }
     // map 그리기
     drawRect(0, 0, canvas.width, canvas.height, "BLACK");
 
@@ -112,6 +109,7 @@ function Game({ isLeftPlayer, socket, pos1, pos2 }) {
     
 
     function collision(b, p){
+      
       b.top = b.y - b.radius;
       b.bottom = b.y + b.radius;
       b.left = b.x - b.radius;
@@ -139,18 +137,14 @@ function Game({ isLeftPlayer, socket, pos1, pos2 }) {
       ball.y += ball.velocityY;
 
       if (ball.y + ball.radius > canvas.height || ball.y - ball.radius < 0){
-        ball.velocityY = -ball.velocityY;
-        
+        console.log(ball);
+        ball.velocityY = -ball.velocityY; 
       }
-      //console.log(ball.x, ball.y);
-      //console.log(userRight.x, userRight.y);
 
       let player = (ball.x < canvas.width / 2) ? userLeft : userRight;
 
-      // console.log(player);
       if (collision(ball, player))
       {
-        console.log("hi");
         let collidePoint = ball.y - (player.y + player.height / 2);
         collidePoint = collidePoint / (player.height / 2);
 
@@ -160,6 +154,20 @@ function Game({ isLeftPlayer, socket, pos1, pos2 }) {
         ball.velocityY = ball.speed * Math.sin(angleRad);
 
         ball.speed += 0.1;
+      }
+
+      // update paddle
+      if (userLeft.state == 1){
+        userLeft.y = Math.max(userLeft.y - moveValue, 0);
+      }
+      else if (userLeft.state == 2){
+        userLeft.y = Math.min(userLeft.y + moveValue, canvasMaxHeight - userLeft.height);
+      }
+      if (userRight.state == 1){
+        userRight.y = Math.max(userRight.y - moveValue, 0);
+      }
+      else if (userRight.state == 2){
+        userRight.y = Math.min(userRight.y + moveValue, canvasMaxHeight - userRight.height);
       }
 
       // update the score
@@ -181,41 +189,29 @@ function Game({ isLeftPlayer, socket, pos1, pos2 }) {
     }
 
     const handleKeyDown = (event) => {
-    //console.log('isLeftPlayer: ', isLeftPlayer);
     if (event.key === 'ArrowUp') {
-      console.log("up");
-      //socket.emit('handleKeyPressUp', isLeftPlayer);
-      userLeft.y = Math.max(0, userLeft.y - 4);
+      userLeft.state = 1;
     } else if (event.key === 'ArrowDown') {
-      userLeft.y = Math.min(50, userLeft.y + 4);
-      //downKeyPressRef.current = true;
-      //socket.emit('handleKeyPressDown', isLeftPlayer);
-      //if (position < 2) { // check if there is room to move down
-      //}
+      userLeft.state = 2;
     }
 
-    if (event.key === 'ArrowLeft') {
-      console.log("up");
-      //socket.emit('handleKeyPressUp', isLeftPlayer);
-      
-      userRight.y = Math.max(0, userRight.y - 4);
-    } else if (event.key === 'ArrowRight') {
-      console.log("down");
-      
-      userRight.y = Math.min(50, userRight.y + 4);
-      //downKeyPressRef.current = true;
-      //socket.emit('handleKeyPressDown', isLeftPlayer);
-      //if (position < 2) { // check if there is room to move down
-      //}
+    if (event.key === 'w') {
+      userRight.state = 1;
+    } else if (event.key === 's') {
+      userRight.state = 2;
     }
   };
 
   const handleKeyUp = (event) => {
     if (event.key === 'ArrowUp') {
-      //socket.emit('handleKeyRelUp', isLeftPlayer);
+      userLeft.state = 0;
     } else if (event.key === 'ArrowDown') {
-      //downKeyPressRef.current = false;
-      //socket.emit('handleKeyRelDown', isLeftPlayer);
+      userLeft.state = 0;
+    }
+    if (event.key === 'w') {
+      userRight.state = 0;
+    } else if (event.key === 's') {
+      userRight.state = 0;
     }
   };
 
@@ -225,94 +221,16 @@ function Game({ isLeftPlayer, socket, pos1, pos2 }) {
     // loop
     const framePerSecond = 50;
     setInterval(game, 1000 / framePerSecond);
+
+    // return () => {
+    //   window.removeEventListener('keydown', handleKeyDown);
+    //   window.removeEventListener('keyup', handleKeyUp);
+    //   clearInterval(game);
+    // };
   }, []);
+  console.log("why excute 2 times");
+  return <canvas width={canvasMaxWidth} height ={canvasMaxHeight} ref={canvasRef} />;
 
-  return <canvas ref={canvasRef} />;
-
-
-
-
-
-
-
-  // //const [position, setPosition] = useState(0);
-  // const [isMovingUp, setIsMovingUp] = useState(false);
-  // const [isMovingDown, setIsMovingDown] = useState(false);
-  // const downKeyPressRef = useRef(false);
-
-  // const handleKeyDown = (event) => {
-  //   console.log('isLeftPlayer: ', isLeftPlayer);
-  //   if (event.key === 'ArrowUp') {
-  //     socket.emit('handleKeyPressUp', isLeftPlayer);
-  //   } else if (event.key === 'ArrowDown') {
-  //     downKeyPressRef.current = true;
-  //     socket.emit('handleKeyPressDown', isLeftPlayer);
-  //     //if (position < 2) { // check if there is room to move down
-  //     //}
-  //   }
-  // };
-
-  // const handleKeyUp = (event) => {
-  //   if (event.key === 'ArrowUp') {
-  //     socket.emit('handleKeyRelUp', isLeftPlayer);
-  //   } else if (event.key === 'ArrowDown') {
-  //     downKeyPressRef.current = false;
-  //     socket.emit('handleKeyRelDown', isLeftPlayer);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   window.addEventListener('keydown', handleKeyDown);
-  //   window.addEventListener('keyup', handleKeyUp);
-
-  //   return () => {
-  //     window.removeEventListener('keydown', handleKeyDown);
-  //     window.removeEventListener('keyup', handleKeyUp);
-  //     //clearInterval(intervalId);
-  //   };
-  // }, [isMovingUp, isMovingDown, isLeftPlayer]);
-
-  // return (
-  //   <div
-  //     style={{
-  //       width: '500px',
-  //       height: '300px',
-  //       backgroundColor: 'lightblue',
-  //       position: 'relative',
-  //       margin: '50px auto',
-  //       // padding: '20px',
-  //     }}
-  //   >
-  //     <div
-  //       style={{
-  //         width: '50px',
-  //         height: '100px',
-  //         backgroundColor: 'brown',
-  //         position: 'absolute',
-  //         left: '10px',
-  //         top: `${Math.max(Math.min(pos1, 4), -4) * 25 + 100}px`, // adjust the movement and limits here
-  //       }}
-  //     />
-
-  //     <div
-  //       style={{
-  //         width: '50px',
-  //         height: '100px',
-  //         backgroundColor: 'brown',
-  //         position: 'absolute',
-  //         left: '100px',
-  //         top: `${Math.max(Math.min(pos2, 4), -4) * 25 + 100}px`, // adjust the movement and limits here
-  //       }}
-  //     />
-
-
-  //     <p>
-  //       Press the up or down arrow key to move the wooden bar (restricted to -4
-  //       to 4)
-  //     </p>
-  //     <p> {''+ isLeftPlayer} </p>
-  //   </div>
-  // );
 }
 
 export default Game;
