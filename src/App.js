@@ -27,11 +27,7 @@ function App() {
   const [chatHistory, setChatHistory] = useState(exampleChatHistory);
   const [currentChat, setCurrentChat] = useState('');
 
-  const [pos1, setPos1] = useState(0);
-  const [pos2, setPos2] = useState(0);
   
-  // add Part
-  const [ball, setBall] = useState({});
 
   useEffect(() => {
     socket.on('connect', () => {
@@ -44,14 +40,11 @@ function App() {
       setIsConnected(false);
     });
 
-    socket.on('pong', () => {
-      setLastPong(new Date().toISOString());
-    });
+    // socket.on('pong', () => {
+    //   setLastPong(new Date().toISOString());
+    // });
 
-    socket.on('isLeft', (num) => {
-      const number = parseInt(num);
-      setIsLeftPlayer(num);
-    });
+    
 
     socket.on('welcome', (num) => {
       console.log("welcome");
@@ -60,15 +53,7 @@ function App() {
       console.log(`현재 방에 들어와 있던 인원은 ${num}명입니다`);
     });
 
-    socket.on('render', (pos1, pos2, ball) => {
-      // console.log("recv render Part", ball);
-      //console.log("recv render Part", ball);
-      setPos1(pos1);
-      setPos2(pos2);
-      console.log('before ball: ', ball);
-      setBall(ball);
-      console.log('after ball: ', ball);
-    });
+    
 
     socket.on('chat', (chat) => {
       setChatHistory([...chatHistory, chat]);
@@ -126,7 +111,7 @@ function App() {
           </div>
           <Routes>
             <Route path="/a" element={<XPage chatHistory={chatHistory} onChatSubmit={handleChatSubmit} onChatChange={handleChatChange} currentChat={currentChat} />} />
-            <Route path="/game" element={<Game isLeftPlayer={isLeftPlayer} socket={socket} pos1={pos1} pos2={pos2} Value ={ball} />} />
+            <Route path="/game" element={<Game socket={socket}/>} />
             <Route path="/c" element={<ZPage />} />
             <Route path="/profile" element={<ProfilePage />} />
           </Routes>

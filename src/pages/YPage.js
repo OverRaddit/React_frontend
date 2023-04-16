@@ -1,22 +1,38 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-function Game({ isLeftPlayer, socket, pos1, pos2, Value }) {
+function Game({socket}) {
   // console.log("In Game", Value);
   const canvasRef = useRef(null);
   const canvasMaxWidth = 1000;
   const canvasMaxHeight = 1000;
-  const moveValue = 8
+  const moveValue = 8;
 
-  const [isMovingUp, setIsMovingUp] = useState(false);
-  const [isMovingDown, setIsMovingDown] = useState(false);
-  const downKeyPressRef = useRef(false);
+  const [playerId, setPlayerId] = useState(0);
+  const [pos1, setPos1] = useState(0);
+  const [pos2, setPos2] = useState(0);
+  
+  // add Part
+  const [ball, setBall] = useState({});
 
-  const [ball, setBall] = useState({Value});
-  const [count, setCount] = useState(0);
+  socket.on('isLeft', (num) => {
+    const number = parseInt(num);
+    setPlayerId(number);
+  });
+
+  socket.on('render', (pos1, pos2, ball) => {
+    // console.log(playerId);
+    // console.log("recv render Part", pos1, pos2, ball);
+    //console.log("recv render Part", ball);
+    setPos1(pos1);
+    setPos2(pos2);
+    // console.log('before ball: ', ball);
+    setBall(ball);
+    // console.log('after ball: ', ball);
+  });
 
 
   useEffect(() => {
-    console.log("Test");
+    // console.log("Test");
     const canvas = canvasRef.current;    
     const ctx = canvas.getContext("2d");
     function drawRect(x, y, w, h, color)
@@ -39,67 +55,68 @@ function Game({ isLeftPlayer, socket, pos1, pos2, Value }) {
       ctx.fillText(text, x, y);
     }
 
+    function drawNet(){
+      for (let i = 0 ; i <= canvas.height ; i += 15)
+        drawRect(net.x, net.y + i, net.width, net.height, net.color);
+    }
+
     function render(){
       //clear the canvas
-      console.log("test\n");
+      // console.log("test\n");
       drawRect(0, 0, canvasMaxWidth, canvasMaxHeight, "BLACK");
+      
+      drawRect(pos1.x, pos1.y, pos1.width, pos1.height, "WHITE");
+      drawRect(pos2.x, pos2.y, pos2.width, pos2.height, "WHITE");
 
       // draw the net
-      // drawNet();
+      drawNet();
 
       // draw score
-      // drawText(userLeft.score, canvas.width / 4, canvas.height / 5, "WHITE");
-      // drawText(userRight.score, 3 * canvas.width / 4, canvas.height / 5, "WHITE");
+      drawText(pos1.score, canvas.width / 4, canvas.height / 5, "WHITE");
+      drawText(pos2, 3 * canvas.width / 4, canvas.height / 5, "WHITE");
 
       // draw the user and com paddle
       // drawRect(userLeft.x, userLeft.y, userLeft.width, userLeft.height, userLeft.color);
       // drawRect(userRight.x, userRight.y, userRight.width, userRight.height, userRight.color);
       // console.log("너나?",ball);
-      console.log(ball.x, ball.y, ball.radius);
+      // console.log(ball.x, ball.y, ball.radius);
       
       
       drawCircle(ball.x, ball.y, ball.radius, "WHITE");
     }
     render();
-    
-    // const interval = setInterval(() => {
-    //   // console.log("tq");
-    //   // let newBall = {...ball}
-    //   // // newBall.
-    //   // // let newCondition = { ...current };
-    //   // console.log("new", newBall);
-    //   // // newCondition[]
-    //   // setBall(...ball, ball.x = Value.x, ball.y = Value.y);
-    //   // render();
-    //   // setCount(count => count + 1);
-    //   setCount(count=>count + 1);
-    //   }, 40);
+
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
     return () =>{
-      
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
     }
-    }, [ball])
+    }, [pos1, pos2, ball])
 
     
   const handleKeyDown = (event) => {
-    console.log('Player: ', isLeftPlayer, socket.id);
+    
     if (event.key === 'ArrowUp') {
-      socket.emit('handleKeyPressUp', isLeftPlayer);
+      console.log('Player: ', playerId, socket.id, "press up");
+      socket.emit('handleKeyPressUp', playerId);
     } else if (event.key === 'ArrowDown') {
-      socket.emit('handleKeyPressDown', isLeftPlayer);
+      console.log('Player: ', playerId, socket.id, "press down");
+      socket.emit('handleKeyPressDown', playerId);
     }
   };
 
   const handleKeyUp = (event) => {
     if (event.key === 'ArrowUp') {
-      socket.emit('handleKeyRelUp', isLeftPlayer);
+      console.log('Player: ', playerId, socket.id, "relese up");  
+      socket.emit('handleKeyRelUp', playerId);
     } else if (event.key === 'ArrowDown') {
-      socket.emit('handleKeyRelDown', isLeftPlayer);
+      console.log('Player: ', playerId, socket.id, "relese down");  
+      socket.emit('handleKeyRelDown', playerId);
     }
   };
-  window.removeEventListener('keydown', handleKeyDown);
-  window.removeEventListener('keyup', handleKeyUp);
-  window.addEventListener('keydown', handleKeyDown);
-  window.addEventListener('keyup', handleKeyUp);
+  
+  
 
   // useEffect(() => {
   //   const canvas = canvasRef.current;    
