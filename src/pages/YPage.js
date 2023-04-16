@@ -5,13 +5,10 @@ function Game({socket}) {
   const canvasRef = useRef(null);
   const canvasMaxWidth = 1000;
   const canvasMaxHeight = 1000;
-  const moveValue = 8;
 
   const [playerId, setPlayerId] = useState(0);
   const [pos1, setPos1] = useState(0);
   const [pos2, setPos2] = useState(0);
-  
-  // add Part
   const [ball, setBall] = useState({});
 
   socket.on('isLeft', (num) => {
@@ -20,14 +17,9 @@ function Game({socket}) {
   });
 
   socket.on('render', (pos1, pos2, ball) => {
-    // console.log(playerId);
-    // console.log("recv render Part", pos1, pos2, ball);
-    //console.log("recv render Part", ball);
     setPos1(pos1);
     setPos2(pos2);
-    // console.log('before ball: ', ball);
     setBall(ball);
-    // console.log('after ball: ', ball);
   });
 
 
