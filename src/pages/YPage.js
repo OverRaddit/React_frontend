@@ -17,6 +17,7 @@ function Game({socket}) {
   const [pos1, setPos1] = useState(0);
   const [pos2, setPos2] = useState(0);
   const [ball, setBall] = useState({});
+  const [keyDown, setKeyDown] = useState(false);
 
   socket.on('isLeft', (num) => {
     const number = parseInt(num);
@@ -29,9 +30,7 @@ function Game({socket}) {
     setBall(ball);
   });
 
-
   useEffect(() => {
-    // console.log("Test");
     const canvas = canvasRef.current;    
     const ctx = canvas.getContext("2d");
     function drawRect(x, y, w, h, color)
@@ -85,35 +84,59 @@ function Game({socket}) {
     }
     render();
 
-    window.addEventListener('keydown', handleKeyDown);
-    window.addEventListener('keyup', handleKeyUp);
-    return () =>{
-      window.removeEventListener('keydown', handleKeyDown);
-      window.removeEventListener('keyup', handleKeyUp);
-    }
+		window.addEventListener('keydown', handleKeyDown);
+		window.addEventListener('keyup', handleKeyUp);
+		return () =>{
+		window.removeEventListener('keydown', handleKeyDown);
+		window.removeEventListener('keyup', handleKeyUp);
+		}
     }, [pos1, pos2, ball])
 
-    
-  const handleKeyDown = (event) => {
-    
-    if (event.key === 'ArrowUp') {
-      console.log('Player: ', playerId, socket.id, "press up");
-      socket.emit('handleKeyPressUp', playerId);
-    } else if (event.key === 'ArrowDown') {
-      console.log('Player: ', playerId, socket.id, "press down");
-      socket.emit('handleKeyPressDown', playerId);
-    }
-  };
+	const handleKeyDown = (event) => {
+	  if (!keyDown) {
+		if (event.key === 'ArrowUp') {
+		  console.log('Player: ', playerId, socket.id, "press up");
+		  socket.emit('handleKeyPressUp', playerId);
+		} else if (event.key === 'ArrowDown') {
+		  console.log('Player: ', playerId, socket.id, "press down");
+		  socket.emit('handleKeyPressDown', playerId);
+		}
+		setKeyDown(true);
+	  }
+	};
+	
+	const handleKeyUp = (event) => {
+	  if (event.key === 'ArrowUp') {
+		console.log('Player: ', playerId, socket.id, "release up");  
+		socket.emit('handleKeyRelUp', playerId);
+	  } else if (event.key === 'ArrowDown') {
+		console.log('Player: ', playerId, socket.id, "release down");  
+		socket.emit('handleKeyRelDown', playerId);
+	  }
+	  setKeyDown(false);
+	};
+	
 
-  const handleKeyUp = (event) => {
-    if (event.key === 'ArrowUp') {
-      console.log('Player: ', playerId, socket.id, "relese up");  
-      socket.emit('handleKeyRelUp', playerId);
-    } else if (event.key === 'ArrowDown') {
-      console.log('Player: ', playerId, socket.id, "relese down");  
-      socket.emit('handleKeyRelDown', playerId);
-    }
-  };
+//   const handleKeyDown = (event) => {
+    
+//     if (event.key === 'ArrowUp') {
+//       console.log('Player: ', playerId, socket.id, "press up");
+//       socket.emit('handleKeyPressUp', playerId);
+//     } else if (event.key === 'ArrowDown') {
+//       console.log('Player: ', playerId, socket.id, "press down");
+//       socket.emit('handleKeyPressDown', playerId);
+//     }
+//   };
+
+//   const handleKeyUp = (event) => {
+//     if (event.key === 'ArrowUp') {
+//       console.log('Player: ', playerId, socket.id, "relese up");  
+//       socket.emit('handleKeyRelUp', playerId);
+//     } else if (event.key === 'ArrowDown') {
+//       console.log('Player: ', playerId, socket.id, "relese down");  
+//       socket.emit('handleKeyRelDown', playerId);
+//     }
+//   };
   
   
 
