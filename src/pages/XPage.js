@@ -6,7 +6,7 @@ const XPage = ({ chatHistory, onChatSubmit, onChatChange, currentChat }) => {
   // const [currentChat, setCurrentChat] = useState('');
 
   const chatHistoryRef = useRef(null); // new2
-
+  console.log("hia");
   // const handleChatChange = (e) => {
   //   setCurrentChat(e.target.value);
   // };

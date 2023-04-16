@@ -21,7 +21,7 @@ const exampleChatHistory = [
 ];
 
 function App() {
-  const [isLeftPlayer, setIsLeftPlayer] = useState(true);
+  const [isLeftPlayer, setIsLeftPlayer] = useState(0); // TODO
   const [isConnected, setIsConnected] = useState(socket.connected);
   const [lastPong, setLastPong] = useState(null);
   const [chatHistory, setChatHistory] = useState(exampleChatHistory);
@@ -29,13 +29,18 @@ function App() {
 
   const [pos1, setPos1] = useState(0);
   const [pos2, setPos2] = useState(0);
+  
+  // add Part
+  const [ball, setBall] = useState({});
 
   useEffect(() => {
     socket.on('connect', () => {
+      console.log("connect");
       setIsConnected(true);
     });
 
     socket.on('disconnect', () => {
+      console.log("disconnect");
       setIsConnected(false);
     });
 
@@ -45,38 +50,37 @@ function App() {
 
     socket.on('isLeft', (num) => {
       const number = parseInt(num);
-      if (number === 1)
-        setIsLeftPlayer(true);
-      else
-        setIsLeftPlayer(false);
-      // else
-      //   console.log('이미 방이 다찼습니다... ㅠ.ㅠ');
+      setIsLeftPlayer(num);
     });
 
     socket.on('welcome', (num) => {
+      console.log("welcome");
       setChatHistory([...chatHistory, 'someone join the chatRoom!']);
       console.log('someone join the chatRoom');
       console.log(`현재 방에 들어와 있던 인원은 ${num}명입니다`);
     });
 
-    socket.on('render', (pos1, pos2) => {
-      console.log('render');
+    socket.on('render', (pos1, pos2, ball) => {
+      // console.log("recv render Part", ball);
+      //console.log("recv render Part", ball);
       setPos1(pos1);
       setPos2(pos2);
+      console.log('before ball: ', ball);
+      setBall(ball);
+      console.log('after ball: ', ball);
     });
 
     socket.on('chat', (chat) => {
       setChatHistory([...chatHistory, chat]);
     })
-
     return () => {
       // 이거 왜함?
-      socket.off('connect');
-      socket.off('disconnect');
-      socket.off('pong');
-      socket.off('welcome');
-      socket.off('render');
-      socket.off('isLeft');
+      // socket.off('connect');
+      // socket.off('disconnect');
+      // socket.off('pong');
+      // socket.off('welcome');
+      // socket.off('render');
+      // socket.off('isLeft');
     };
   }, [chatHistory, isLeftPlayer]);
 
@@ -85,12 +89,11 @@ function App() {
   }
 
   const sendJoin = () => {
-    console.log('emit join event from client');
+    console.log("언제 Join");
     socket.emit('join', 'gshim');
   }
 
   const sendHi = () => {
-    console.log('sendHi');
     socket.emit('chat', "hi");
   }
 
@@ -123,7 +126,7 @@ function App() {
           </div>
           <Routes>
             <Route path="/a" element={<XPage chatHistory={chatHistory} onChatSubmit={handleChatSubmit} onChatChange={handleChatChange} currentChat={currentChat} />} />
-            <Route path="/game" element={<Game isLeftPlayer={isLeftPlayer} socket={socket} pos1={pos1} pos2={pos2} />} />
+            <Route path="/game" element={<Game isLeftPlayer={isLeftPlayer} socket={socket} pos1={pos1} pos2={pos2} Value ={ball} />} />
             <Route path="/c" element={<ZPage />} />
             <Route path="/profile" element={<ProfilePage />} />
           </Routes>
