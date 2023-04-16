@@ -6,6 +6,13 @@ function Game({socket}) {
   const canvasMaxWidth = 1000;
   const canvasMaxHeight = 1000;
 
+  const net = {
+    x : canvasMaxWidth / 2 - 1,
+    y : 0,
+    width : 2,
+    height : 10,
+    color : "WHITE"
+  }
   const [playerId, setPlayerId] = useState(0);
   const [pos1, setPos1] = useState(0);
   const [pos2, setPos2] = useState(0);
