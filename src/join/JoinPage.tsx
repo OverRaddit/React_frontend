@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import './JoinPage.css';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import { useCookies } from 'react-cookie';
 
 interface Props {
   onHideNavigation: () => void;
@@ -7,12 +10,15 @@ interface Props {
 
 const JoinPage: React.FC<Props> = ({ onHideNavigation }) => {
   useEffect(() => {
-    onHideNavigation(); // 페이지 로드시 네비게이션 숨기기
+    onHideNavigation();
   }, [onHideNavigation]);
 
-  const [nickname, setNickname] = useState('테스트');
+  const [cookies, setCookie, removeCookie] = useCookies(['nickname']);
+  const [nickname, setNickname] = useState(cookies.nickname);
   const [isDuplicate, setIsDuplicate] = useState(false);
   const [isAnonymous, setIsAnonymous] = useState(false);
+  const [isEmpty, setIsEmpty] = useState(false);
+  const navigate = useNavigate();
 
   const isAnonymousNickname = (nickname: string) => {
     return nickname.startsWith('anon_');
@@ -20,51 +26,60 @@ const JoinPage: React.FC<Props> = ({ onHideNavigation }) => {
 
   const handleNicknameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newNickname = e.target.value;
-    setNickname(newNickname);
+    setIsEmpty(newNickname === '');
 
     if (isAnonymousNickname(newNickname)) {
       setIsAnonymous(true);
     } else {
       setIsAnonymous(false);
     }
-
-    // 이미 존재하는 닉네임인지 확인하는 로직은 기존대로 유지
   };
 
-  const handleJoinButtonClick = () => {
-    // 닉네임 중복 검사 및 익명 닉네임 검사 로직을 여기에 추가하세요.
-    // 예를 들어:
-    // setIsDuplicate(checkDuplicate(nickname));
-    // setIsAnonymous(checkAnonymous(nickname));
-
-    // 닉네임 검사가 성공적으로 완료되면 회원 가입 처리를 진행하세요.
-    if (!isDuplicate && !isAnonymous) {
-      // 회원 가입 처리
+  const handleJoinButtonClick = async () => {
+    if (!isAnonymous && !isEmpty) {
+      try {
+        const response = await axios.post('http://localhost:3000/user/join', { nickname });
+        if (response.status === 200) {
+          navigate('/a');
+        }
+      } catch (error : any) {
+        if (error.response && typeof error.response.status === 'number') {
+          if (error.response.status === 500) {
+            setIsDuplicate(true);
+          }
+        } else {
+          console.error('An unexpected error occurred:', error);
+        }
     }
-  };
+  }
+};
 
   return (
     <div className="join-page">
-    <input
-      type="text"
-      placeholder="Enter your nickname"
-      value={nickname}
-      onChange={handleNicknameChange}
-      className={`join-input ${isDuplicate || isAnonymous ? 'error' : ''}`}
-    />
-    {isDuplicate && (
-      <p className="warning-message visible">중복된 닉네임 입니다.</p>
-    )}
-    {isAnonymous && (
-      <p className="warning-message visible">익명 닉네임은 사용할 수 없습니다.</p>
-    )}
-    {!isAnonymous && !isDuplicate && (
+      <h3>닉네임을 입력해주세요.</h3>
+      <input
+        type="text"
+        placeholder="Please enter a nickname"
+        value={nickname}
+        onChange={handleNicknameChange}
+        className={`join-input ${isDuplicate || isAnonymous || isEmpty ? 'error' : ''}`}
+      />
+      {isDuplicate && (
+        <p className="warning-message visible">중복된 닉네임 입니다.</p>
+      )}
+      {isAnonymous && (
+        <p className="warning-message visible">익명 닉네임은 사용할 수 없습니다.</p>
+      )}
+      {isEmpty && (
+        <p className="warning-message visible">빈 닉네임은 허용되지 않습니다.</p>
+      )}
+      {!isAnonymous && !isDuplicate && !isEmpty && (
         <p className="warning-message"></p>
       )}
-    <button className="join-button" onClick={handleJoinButtonClick}>
-      Join
-    </button>
-  </div>
+      <button className="join-button" onClick={handleJoinButtonClick}>
+        Join
+      </button>
+    </div>
   );
 };
 
