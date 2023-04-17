@@ -39,10 +39,10 @@ const JoinPage: React.FC<Props> = ({ onHideNavigation }) => {
   const handleJoinButtonClick = async () => {
     if (!isAnonymous && !isEmpty) {
       try {
-        const response = await axios.post('http://localhost:3000/user/join', { nickname: nickname });
-        if (response.status === 200) {
+        const response = await axios.post('http://localhost:3000/user/join', { nickname: nickname }, { withCredentials: true });
+        if (response.status >= 200 && response.status < 300) {
           navigate('/a');
-        }
+        }        
       } catch (error : any) {
         if (error.response && typeof error.response.status === 'number') {
           if (error.response.status === 500) {
