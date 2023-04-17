@@ -26,6 +26,7 @@ const JoinPage: React.FC<Props> = ({ onHideNavigation }) => {
 
   const handleNicknameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newNickname = e.target.value;
+    setNickname(newNickname);
     setIsEmpty(newNickname === '');
 
     if (isAnonymousNickname(newNickname)) {
@@ -38,7 +39,7 @@ const JoinPage: React.FC<Props> = ({ onHideNavigation }) => {
   const handleJoinButtonClick = async () => {
     if (!isAnonymous && !isEmpty) {
       try {
-        const response = await axios.post('http://localhost:3000/user/join', { nickname });
+        const response = await axios.post('http://localhost:3000/user/join', { nickname: nickname });
         if (response.status === 200) {
           navigate('/a');
         }
