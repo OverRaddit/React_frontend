@@ -25,11 +25,10 @@ const OtpPage: React.FC<Props> = ({ onHideNavigation }) => {
 
   const handleVerifyButtonClick = async () => {
     try {
-      const response = await axios.post('http://localhost:3000/user/verify', { otp: otp });
-      if (response.status === 200) {
+      const response = await axios.post('http://localhost:3000/otp', { otp_key: otp }, { withCredentials: true});
+      if (response.status >= 200 && response.status < 300) {
         navigate('/a');
-        // Handle successful verification
-      }
+      }      
     } catch (error: any) {
       if (error.response && typeof error.response.status === 'number') {
         if (error.response.status === 500) {
