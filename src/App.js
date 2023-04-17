@@ -114,15 +114,15 @@ function App() {
       <div className="App">
         <div className={`App-content ${!isNavigationVisible ? 'no-navigation' : ''}`}>
           {isNavigationVisible && <Navigation />}
-          {/* <div>
+          {<div>
             <h1>HI</h1>
             <p>Connected: { '' + isConnected }</p>
             <p>Last pong: { lastPong || '-' }</p>
             <p>IsLeftPlayer: { '' + isLeftPlayer }</p>
-            <button onClick={sendPing}>Send ping</button>
+            {/* <button onClick={sendPing}>Send ping</button> */}
             <button onClick={sendJoin}>Join</button>
-            <button onClick={sendHi}>chat hi</button>
-          </div> */}
+            {/* <button onClick={sendHi}>chat hi</button> */}
+          </div> }
           <Routes>
             <Route path="/a" element={<XPage chatHistory={chatHistory} onChatSubmit={handleChatSubmit} onChatChange={handleChatChange} currentChat={currentChat} />} />
             <Route path="/game" element={<Game socket={socket}/>} />

@@ -1,10 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
+import './YPage.css';
 
 function Game({socket}) {
   // console.log("In Game", Value);
   const canvasRef = useRef(null);
-  const canvasMaxWidth = 1000;
+  const canvasMaxWidth = 1010;
   const canvasMaxHeight = 1000;
+  const [gameOver, setGameOver] = useState(false);
+
+  function handleGameOver() {
+    setGameOver(true);
+  }
 
   const net = {
     x : canvasMaxWidth / 2 - 1,
@@ -19,6 +25,7 @@ function Game({socket}) {
   const [ball, setBall] = useState({});
   const [keyDown, setKeyDown] = useState(false);
 
+
   socket.on('isLeft', (num) => {
     const number = parseInt(num);
     setPlayerId(number);
@@ -29,7 +36,7 @@ function Game({socket}) {
     setPos2(pos2);
     setBall(ball);
   });
-
+   
   useEffect(() => {
     const canvas = canvasRef.current;    
     const ctx = canvas.getContext("2d");
@@ -71,7 +78,7 @@ function Game({socket}) {
 
       // draw score
       drawText(pos1.score, canvas.width / 4, canvas.height / 5, "WHITE");
-      drawText(pos2, 3 * canvas.width / 4, canvas.height / 5, "WHITE");
+      drawText(pos2.score, 3 * canvas.width / 4, canvas.height / 5, "WHITE");
 
       // draw the user and com paddle
       // drawRect(userLeft.x, userLeft.y, userLeft.width, userLeft.height, userLeft.color);
@@ -81,6 +88,8 @@ function Game({socket}) {
       
       
       drawCircle(ball.x, ball.y, ball.radius, "WHITE");
+
+
     }
     render();
 
@@ -91,6 +100,14 @@ function Game({socket}) {
 		window.removeEventListener('keyup', handleKeyUp);
 		}
     }, [pos1, pos2, ball])
+
+	useEffect(()=> {
+		socket.on('gameover', (player)=> {
+			console.log('game over! ', player, 'p wins.');
+			// handleGameOver();
+			setGameOver(true);
+		});
+	}, []);
 
 	const handleKeyDown = (event) => {
 	  if (!keyDown) {
@@ -338,7 +355,18 @@ function Game({socket}) {
   //   setInterval(game, 1000 / framePerSecond);
   // }, []);
   // console.log("why excute 2 times");
-  return <canvas width={canvasMaxWidth} height ={canvasMaxHeight} ref={canvasRef} />;
+  return (
+	  <div>
+	  <canvas width={canvasMaxWidth} height ={canvasMaxHeight} ref={canvasRef} />
+      {gameOver && (
+        <div className="popup">
+		<button className="close-button" onClick={() => setGameOver(false)}>X</button>
+          <h2>Game Over!</h2>
+          <p>{pos1.score} : {pos2.score}</p>
+        </div>
+      )}
+    </div>
+  );
 }
 
 export default Game;
