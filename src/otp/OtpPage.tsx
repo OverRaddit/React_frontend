@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import './OtpPage.css';
+import axios from 'axios';
+import { useCookies } from 'react-cookie';
+import { useNavigate } from 'react-router-dom';
 
 interface Props {
   onHideNavigation: () => void;
@@ -10,24 +13,31 @@ const OtpPage: React.FC<Props> = ({ onHideNavigation }) => {
     onHideNavigation();
   }, [onHideNavigation]);
 
-  const [email, setEmail] = useState('');
+  const [cookies] = useCookies(['email']);
+  const [email] = useState(cookies.email);
   const [otp, setOtp] = useState('');
   const [isOtpIncorrect, setIsOtpIncorrect] = useState(false);
-
-  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setEmail(e.target.value);
-  };
+  const navigate = useNavigate();
 
   const handleOtpChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setOtp(e.target.value);
   };
 
-  const handleVerifyButtonClick = () => {
-    // 인증번호 확인 로직을 여기에 추가하세요.
-    if (otp === '1234') {
-      // 인증 성공 처리
-    } else {
-      setIsOtpIncorrect(true);
+  const handleVerifyButtonClick = async () => {
+    try {
+      const response = await axios.post('http://localhost:3000/user/verify', { otp: otp });
+      if (response.status === 200) {
+        navigate('/a');
+        // Handle successful verification
+      }
+    } catch (error: any) {
+      if (error.response && typeof error.response.status === 'number') {
+        if (error.response.status === 500) {
+          setIsOtpIncorrect(true);
+        }
+      } else {
+        console.error('An unexpected error occurred:', error);
+      }
     }
   };
 
@@ -44,9 +54,9 @@ const OtpPage: React.FC<Props> = ({ onHideNavigation }) => {
         onChange={handleOtpChange}
         className={`otp-input ${isOtpIncorrect ? 'error' : ''}`}
       />
-      {isOtpIncorrect && (
-        <p className="warning-message active">인증번호가 틀렸습니다.</p>
-      )}
+      <p className={`warning-message ${isOtpIncorrect ? 'active' : ''}`}>
+        인증번호가 틀렸습니다.
+      </p>
       <button className="verify-button" onClick={handleVerifyButtonClick}>
         Verify
       </button>
@@ -55,4 +65,3 @@ const OtpPage: React.FC<Props> = ({ onHideNavigation }) => {
 };
 
 export default OtpPage;
-
