@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './YPage.css';
 
-function Game({socket}) {
+function Game({socket, room}) {
   // console.log("In Game", Value);
   const canvasRef = useRef(null);
   const canvasMaxWidth = 600;
@@ -24,7 +24,7 @@ function Game({socket}) {
   const [pos1, setPos1] = useState(0);
   const [pos2, setPos2] = useState(0);
   const [ball, setBall] = useState({});
-  const [room, setRoom] = useState("");
+  // const [room, setRoom] = useState("");
   const [keyDown, setKeyDown] = useState(false);
 
   socket.on('isLeft', (num) => {
@@ -92,24 +92,24 @@ function Game({socket}) {
       
       drawCircle(ball.x, ball.y, ball.radius, "WHITE");
 
-
+      console.log("qwer");
     }
     render();
 
-    socket.on('enqueuecomplete', (state) => {
-      if (state === 200)
-        console.log("queue에 삽입되었습니다.")
-    })
+    // socket.on('enqueuecomplete', (state) => {
+    //   if (state === 200)
+    //     console.log("queue에 삽입되었습니다.")
+    // })
     
-    socket.on('matchingcomplete', (state, roomName) => {
-      console.log(state, roomName);
-      if (state === 200)
-      {
-        console.log("matching 완료")
-        setRoom(roomName);
-        console.log(roomName);
-      }
-    });
+    // socket.on('matchingcomplete', (state, roomName) => {
+    //   console.log(state, roomName);
+    //   if (state === 200)
+    //   {
+    //     console.log("matching 완료")
+    //     setRoom(roomName);
+    //     console.log(roomName);
+    //   }
+    // });
 
     window.addEventListener('keydown', handleKeyDown);
     window.addEventListener('keyup', handleKeyUp);
@@ -142,7 +142,6 @@ function Game({socket}) {
         console.log('Player: ', room, playerId, "press down");
         socket.emit('handleKeyPressDown', room, playerId);
       }
-
       setKeyDown(true);
     }
   };

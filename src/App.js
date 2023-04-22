@@ -7,11 +7,13 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import XPage from './pages/XPage';
 import YPage from './pages/YPage';
 import ZPage from './pages/ZPage';
+import DefaultPage from './pages/DefaultPage';
 import ProfilePage from './profile/ProfilePage.tsx';
 import LoginPage from './login/LoginPage.tsx';
 import JoinPage from './join/JoinPage';
 import OtpPage from './otp/OtpPage';
 import Game from './pages/YPage';
+import { useNavigate } from 'react-router-dom';
 
 
 const socket = io("ws://localhost:8000");
@@ -29,7 +31,7 @@ function App() {
   const [lastPong, setLastPong] = useState(null);
   const [chatHistory, setChatHistory] = useState(exampleChatHistory);
   const [currentChat, setCurrentChat] = useState('');
-
+  const [room, setRoom] = useState("");
   
 
 
@@ -43,22 +45,47 @@ function App() {
     setIsNavigationVisible(false);
   };
 
+  
+
   useEffect(() => {
+    console.log("useEffect");
     socket.on('connect', () => {
       console.log("connect");
       setIsConnected(true);
+    });
+
+    socket.on('enqueuecomplete', (state) => {
+      if (state === 200)
+      {
+        // modal
+        console.log("queue에 삽입되었습니다.")
+
+
+
+        // if click button cancel, emit 'cancel queue' event param[socketId]
+        //
+
+        
+
+      }
+    })
+
+    socket.on('matchingcomplete', (state, roomName) => {
+      console.log('matchingcomplete1')
+      console.log(state, roomName);
+      if (state === 200)
+      {
+        //window.location.href='http://localhost:3001/game'
+        console.log("matching 완료")
+        setRoom(roomName);
+        console.log(roomName);
+      }
     });
 
     socket.on('disconnect', () => {
       console.log("disconnect");
       setIsConnected(false);
     });
-
-    // socket.on('pong', () => {
-    //   setLastPong(new Date().toISOString());
-    // });
-
-    
 
     socket.on('welcome', (num) => {
       console.log("welcome");
@@ -93,6 +120,18 @@ function App() {
     // socket.emit('join', 'gshim');
   }
 
+  
+  
+  // socket.on('matchingcomplete', (state, roomName) => {
+  //   console.log(state, roomName);
+  //   if (state === 200)
+  //   {
+  //     console.log("matching 완료")
+  //     setRoom(roomName);
+  //     console.log(roomName);
+  //   }
+  // });
+
   const sendHi = () => {
     socket.emit('chat', "hi");
   }
@@ -125,8 +164,9 @@ function App() {
             {/* <button onClick={sendHi}>chat hi</button> */}
           </div> }
           <Routes>
+            <Route path="/" element={<DefaultPage socket={socket}  />} />
             <Route path="/a" element={<XPage chatHistory={chatHistory} onChatSubmit={handleChatSubmit} onChatChange={handleChatChange} currentChat={currentChat} />} />
-            <Route path="/game" element={<Game socket={socket}/>} />
+            <Route path="/game" element={<Game socket={socket} room={room}/>} />
             <Route path="/c" element={<ZPage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/login" element={<LoginPage onHideNavigation={hideNavigation}/>} />
