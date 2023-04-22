@@ -75,7 +75,8 @@ function App() {
 
   const sendJoin = () => {
     console.log("언제 Join");
-    socket.emit('join', 'gshim');
+    socket.emit('match', false);
+    // socket.emit('join', 'gshim');
   }
 
   const sendHi = () => {
