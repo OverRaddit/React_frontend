@@ -1,10 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
+import './YPage.css';
 
 function Game({socket}) {
   // console.log("In Game", Value);
   const canvasRef = useRef(null);
   const canvasMaxWidth = 600;
   const canvasMaxHeight = 400;
+
+  const [gameOver, setGameOver] = useState(false);
+
+  function handleGameOver() {
+    setGameOver(true);
+  }
 
   const net = {
     x : canvasMaxWidth / 2 - 1,
@@ -18,6 +25,7 @@ function Game({socket}) {
   const [pos2, setPos2] = useState(0);
   const [ball, setBall] = useState({});
   const [room, setRoom] = useState("");
+  const [keyDown, setKeyDown] = useState(false);
 
   socket.on('isLeft', (num) => {
     const number = parseInt(num);
@@ -30,9 +38,6 @@ function Game({socket}) {
     setPos2(pos2);
     setBall(ball);
   });
-
-
-  
 
   useEffect(() => {
     const canvas = canvasRef.current;    
@@ -86,6 +91,8 @@ function Game({socket}) {
       
       
       drawCircle(ball.x, ball.y, ball.radius, "WHITE");
+
+
     }
     render();
 
@@ -113,14 +120,30 @@ function Game({socket}) {
     }
     }, [pos1, pos2, ball])
 
+	useEffect(()=> {
+		socket.on('gameover', (player)=> {
+			console.log('game over! ', player, 'p wins.');
+			// handleGameOver();
+			setGameOver(true);
+		});
+	}, []);
+
+	
+	
+
+//   const handleKeyDown = (event) => {
     
   const handleKeyDown = (event) => {
-    if (event.key === 'ArrowUp') {
-      console.log('Player: ', room, playerId, "press up");
-      socket.emit('handleKeyPressUp', room, playerId);
-    } else if (event.key === 'ArrowDown') {
-      console.log('Player: ', room, playerId, "press down");
-      socket.emit('handleKeyPressDown', room, playerId);
+    if (!keyDown) {
+      if (event.key === 'ArrowUp') {
+        console.log('Player: ', room, playerId, "press up");
+        socket.emit('handleKeyPressUp', room, playerId);
+      } else if (event.key === 'ArrowDown') {
+        console.log('Player: ', room, playerId, "press down");
+        socket.emit('handleKeyPressDown', room, playerId);
+      }
+
+      setKeyDown(true);
     }
   };
 
@@ -132,9 +155,22 @@ function Game({socket}) {
       console.log('Player: ', room, playerId, "relese down");
       socket.emit('handleKeyRelDown', room, playerId);
     }
+    setKeyDown(false);
   };
 
-  return <canvas width={canvasMaxWidth} height ={canvasMaxHeight} ref={canvasRef} />;
+
+  return (
+	  <div>
+	  <canvas width={canvasMaxWidth} height ={canvasMaxHeight} ref={canvasRef} />
+      {gameOver && (
+        <div className="popup">
+		<button className="close-button" onClick={() => setGameOver(false)}>X</button>
+          <h2>Game Over!</h2>
+          <p>{pos1.score} : {pos2.score}</p>
+        </div>
+      )}
+    </div>
+  );
 }
 
 export default Game;

@@ -8,6 +8,9 @@ import XPage from './pages/XPage';
 import YPage from './pages/YPage';
 import ZPage from './pages/ZPage';
 import ProfilePage from './profile/ProfilePage.tsx';
+import LoginPage from './login/LoginPage.tsx';
+import JoinPage from './join/JoinPage';
+import OtpPage from './otp/OtpPage';
 import Game from './pages/YPage';
 
 
@@ -28,6 +31,17 @@ function App() {
   const [currentChat, setCurrentChat] = useState('');
 
   
+
+
+  const [isNavigationVisible, setIsNavigationVisible] = useState(true);
+
+  const showNavigation = () => {
+    setIsNavigationVisible(true);
+  };
+
+  const hideNavigation = () => {
+    setIsNavigationVisible(false);
+  };
 
   useEffect(() => {
     socket.on('connect', () => {
@@ -99,22 +113,25 @@ function App() {
   return (
     <Router>
       <div className="App">
-        <div className="App-content">
-          <Navigation />
-          <div>
+        <div className={`App-content ${!isNavigationVisible ? 'no-navigation' : ''}`}>
+          {isNavigationVisible && <Navigation />}
+          {<div>
             <h1>HI</h1>
             <p>Connected: { '' + isConnected }</p>
             <p>Last pong: { lastPong || '-' }</p>
             <p>IsLeftPlayer: { '' + isLeftPlayer }</p>
-            <button onClick={sendPing}>Send ping</button>
+            {/* <button onClick={sendPing}>Send ping</button> */}
             <button onClick={sendJoin}>Join</button>
-            <button onClick={sendHi}>chat hi</button>
-          </div>
+            {/* <button onClick={sendHi}>chat hi</button> */}
+          </div> }
           <Routes>
             <Route path="/a" element={<XPage chatHistory={chatHistory} onChatSubmit={handleChatSubmit} onChatChange={handleChatChange} currentChat={currentChat} />} />
             <Route path="/game" element={<Game socket={socket}/>} />
             <Route path="/c" element={<ZPage />} />
             <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/login" element={<LoginPage onHideNavigation={hideNavigation}/>} />
+            <Route path="/join" element={<JoinPage onHideNavigation={hideNavigation} />} />
+            <Route path="/otp" element={<OtpPage onHideNavigation={hideNavigation} />} />
           </Routes>
         </div>
       </div>

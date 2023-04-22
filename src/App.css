@@ -11,3 +11,7 @@
   padding: 20px;
   margin-right: 16rem;
 }
+
+.no-navigation {
+  margin-right: 0;
+}
