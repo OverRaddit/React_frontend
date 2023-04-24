@@ -21,3 +21,11 @@
 	cursor: pointer;
 	outline: none;
   }
+
+  .scoreboard{
+	font-size: 30px;
+  }
+
+  .go-main{
+	font-size: 20px;
+  }
