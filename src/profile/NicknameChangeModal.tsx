@@ -60,6 +60,7 @@ const NicknameChangeModal: React.FC<NicknameChangeModalProps> = ({
         }
       }
     }
+    // TODO: 변경 이후에 profile 에서 닉네임이 변경되어야함.
   };
 
   return (
