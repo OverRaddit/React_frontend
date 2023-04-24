@@ -32,7 +32,7 @@ function App() {
   const [lastPong, setLastPong] = useState(null);
   const [chatHistory, setChatHistory] = useState(exampleChatHistory);
   const [currentChat, setCurrentChat] = useState('');
-  const [chatRoomName, setChatRoomName] = useState('none');
+  const [room, setRoom] = useState('none');
 
 
 
