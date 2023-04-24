@@ -1,103 +1,160 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import Modal from 'react-modal';
 import './ProfilePage.css';
 import defaultProfilePicture from './defaultProfilePicture.jpg';
+import NicknameChangeModal from './NicknameChangeModal';
+import FriendButton from './FriendButton';
+import ProfilePictureModal from './ProfilePictureModal';
 
 interface ProfilePageProps {
-  // 유저 정보를 받을 props
-  profilePicture?: string;
-  nickname?: string;
-  friend?: boolean;
-  // 최근 전적 정보를 받을 props
-  recentRecords?: {
-    opponentPicture?: string;
-    opponentNickname: string;
-    isWin: boolean;
-    myScore: number;
-    opponentScore: number;
-  }[];
-  // 전체 전적 정보를 받을 props
-  winCount?: number;
-  loseCount?: number;
-  // 친구 추가/삭제를 위한 props
+  userId?: string;
+  isMyProfile?: boolean;
+  friendList?: { id: number }[];
   onAddFriend?: () => void;
   onRemoveFriend?: () => void;
 }
 
 const ProfilePage: React.FC<ProfilePageProps> = ({
-  profilePicture,
-  nickname = 'Unknown',
-  friend = false,
-  recentRecords = [
-    {
-      opponentPicture: "",
-      opponentNickname: 'Player1',
-      isWin: true,
-      myScore: 5,
-      opponentScore: 2,
-    },
-    {
-      opponentPicture: "",
-      opponentNickname: 'Player2',
-      isWin: false,
-      myScore: 1,
-      opponentScore: 5,
-    },
-    {
-      opponentPicture: "",
-      opponentNickname: 'Player3',
-      isWin: true,
-      myScore: 5,
-      opponentScore: 2,
-    },
-  ],
-  winCount = 3,
-  loseCount = 2,
+  userId,
+  isMyProfile = false,
+  friendList = [],
   onAddFriend,
   onRemoveFriend,
 }) => {
-  const displayProfilePicture = profilePicture || defaultProfilePicture;
+  const [userData, setUserData] = useState({
+    id: null,
+    intraid: '',
+    avatar: '',
+    rating: null,
+    wincount: null,
+    losecount: null,
+    email: '',
+    isotp: false,
+  });
 
-  const friendButton = friend ? (
-    <button className="friend-delete-button" onClick={onRemoveFriend}>
-      친구 삭제
-    </button>
-  ) : (
-    <button className="friend-add-button" onClick={onAddFriend}>
-      친구 추가
-    </button>
-  );
+  const [isOtpModalOpen, setIsOtpModalOpen] = useState(false);
+  const [isNicknameModalOpen, setIsNicknameModalOpen] = useState(false);
+  const [isProfilePictureModalOpen, setIsProfilePictureModalOpen] = useState(false);
 
-  const winLoseRatio = `${winCount}승 ${loseCount}패`;
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:3000/user${userId ? `/${userId}` : ''}`
+        );
+        setUserData(response.data);
+      } catch (error) {
+        console.error('Failed to fetch user data:', error);
+      }
+    };
+
+    fetchUserData();
+  }, [userId]);
+
+  const openOtpModal = () => {
+    setIsOtpModalOpen(true);
+  };
+
+  const closeOtpModal = () => {
+    setIsOtpModalOpen(false);
+  };
+
+  const openNicknameModal = () => {
+    setIsNicknameModalOpen(true);
+  };
+
+  const closeNicknameModal = () => {
+    setIsNicknameModalOpen(false);
+  };
+
+  const openProfilePictureModal = () => {
+    setIsProfilePictureModalOpen(true);
+  };
+
+  const closeProfilePictureModal = () => {
+    setIsProfilePictureModalOpen(false);
+  };
+
+  const toggleOtp = async () => {
+    try {
+      await axios.post('http://localhost:3000/user/otp', {
+        otp: !userData.isotp,
+      });
+      setUserData({ ...userData, isotp: !userData.isotp });
+      closeOtpModal();
+    } catch (error) {
+      console.error('Failed to update OTP setting:', error);
+    }
+  };
+
+  if (!userData) {
+    return <div>Loading...</div>;
+  }
+
+  const isFriend = friendList.some((friend) => friend.id === userData.id);
+
+  const displayProfilePicture = userData.avatar || defaultProfilePicture;
 
   return (
     <div className="profile-page">
       <div className="profile-info">
         <div className="profile-picture-wrapper">
-          <img className="profile-picture" src={displayProfilePicture} alt="프로필 사진" />
-        </div>
-        <div className="profile-nickname">{nickname}</div>
-        <div className="friend-button-wrapper">{friendButton}</div>
-      </div>
-      <div className="profile-recent-record">
-        {recentRecords.map((record, index) => {
-          const displayOpponentPicture = record.opponentPicture || defaultProfilePicture;
-          return(
-          <div key={index} className="recent-record-item">
-            <div className="recent-opponent-info">
-              <div className="recent-opponent-picture-wrapper">
-                <img className="recent-opponent-picture" src={displayOpponentPicture} alt="최근 상대방 사진" />
-              </div>
-              <div className="recent-opponent-nickname">{record.opponentNickname}</div>
-            </div>
-            <div className={`recent-result ${record.isWin ? 'win' : 'lose'}`}>{record.isWin ? '승리' : '패배'}</div>
-            <div className="recent-score">{`${record.myScore} : ${record.opponentScore}`}</div>
+          <img
+            className="profile-picture"
+            src={displayProfilePicture}
+            alt="프로필 사진"
+            onClick={isMyProfile ? openProfilePictureModal : undefined}
+            />
           </div>
-          )
-          })}
+          <div
+            className="profile-nickname"
+            onClick={isMyProfile ? openNicknameModal : undefined}
+          >
+            {userData.intraid}
+          </div>
+          <div className="friend-button-wrapper">
+            <FriendButton
+              isMyProfile={isMyProfile}
+              isFriend={isFriend}
+              onAddFriend={onAddFriend}
+              onRemoveFriend={onRemoveFriend}
+              onOpenOtpModal={openOtpModal}
+            />
+          </div>
+        </div>
+        <div className="profile-recent-record">
+          {/* 이 부분에 최근 전적을 출력하는 코드를 작성하세요. */}
+        </div>
+      
+        <NicknameChangeModal
+          isOpen={isNicknameModalOpen}
+          onRequestClose={closeNicknameModal}
+          userId={userId}
+        />
+      
+        <ProfilePictureModal
+          isOpen={isProfilePictureModalOpen}
+          onRequestClose={closeProfilePictureModal}
+          onUpload={(url: string) => {
+            setUserData({ ...userData, avatar: url });
+            closeProfilePictureModal();
+          }}
+        />
+      
+        <Modal
+          isOpen={isOtpModalOpen}
+          onRequestClose={closeOtpModal}
+          contentLabel="OTP 설정 모달"
+        >
+          <div>OTP 설정</div>
+          <button onClick={toggleOtp}>
+            {userData.isotp ? '비활성화' : '활성화'}
+          </button>
+          <button onClick={closeOtpModal}>취소</button>
+        </Modal>
       </div>
-    </div>
-  );
-};
-
-export default ProfilePage;
-
+      );
+    };
+    
+    export default ProfilePage;
