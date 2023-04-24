@@ -18,6 +18,7 @@ import { useNavigate } from 'react-router-dom';
 
 const socket = io("ws://localhost:8000");
 
+
 const exampleChatHistory = [
   // 'Hello, how are you?',
   // 'I am doing well, thanks for asking.',
@@ -31,8 +32,8 @@ function App() {
   const [lastPong, setLastPong] = useState(null);
   const [chatHistory, setChatHistory] = useState(exampleChatHistory);
   const [currentChat, setCurrentChat] = useState('');
-  const [room, setRoom] = useState("");
-  
+  const [chatRoomName, setChatRoomName] = useState('none');
+
 
 
   const [isNavigationVisible, setIsNavigationVisible] = useState(true);
@@ -45,7 +46,7 @@ function App() {
     setIsNavigationVisible(false);
   };
 
-  
+
 
   useEffect(() => {
     console.log("useEffect");
@@ -65,7 +66,7 @@ function App() {
         // if click button cancel, emit 'cancel queue' event param[socketId]
         //
 
-        
+
 
       }
     })
@@ -87,6 +88,12 @@ function App() {
       setIsConnected(false);
     });
 
+    // socket.on('pong', () => {
+    //   setLastPong(new Date().toISOString());
+    // });
+
+
+
     socket.on('welcome', (num) => {
       console.log("welcome");
       setChatHistory([...chatHistory, 'someone join the chatRoom!']);
@@ -94,11 +101,11 @@ function App() {
       console.log(`현재 방에 들어와 있던 인원은 ${num}명입니다`);
     });
 
-    
-
     socket.on('chat', (chat) => {
+      console.log('detect chat event: ', chat);
       setChatHistory([...chatHistory, chat]);
     })
+
     return () => {
       // 이거 왜함?
       // socket.off('connect');
@@ -120,8 +127,8 @@ function App() {
     // socket.emit('join', 'gshim');
   }
 
-  
-  
+
+
   // socket.on('matchingcomplete', (state, roomName) => {
   //   console.log(state, roomName);
   //   if (state === 200)
@@ -148,6 +155,30 @@ function App() {
       setCurrentChat('');
     }
   };
+
+  // data = {
+  //   "kind": 0,
+  //   "roomName": "sample room name",
+  //   "roomPassword": "sample room name", <- optional property
+  // }
+  const handleChatRoomSubmit = (e) => {
+    e.preventDefault();
+
+    // 룸 생성 옵션
+    const kind = 0;
+    const roomName = 'default_name';
+    const roomPassword = undefined;
+
+    if (roomName.trim() !== '') {
+      //socket.emit('createChannel', { kind, roomName, roomPassword });
+      setCurrentChat('');
+    }
+  };
+
+  // socket.on('createChannel', (roomName) => {
+  //   console.log(`채팅방[${roomName}]을 생성합니다..`);
+  //   socket.emit('')
+  // });
 
   return (
     <Router>
