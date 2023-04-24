@@ -26,6 +26,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({
     id: null,
     intraid: '',
     avatar: '',
+    nickname: null,
     rating: null,
     wincount: null,
     losecount: null,
@@ -80,7 +81,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({
     try {
       await axios.post('http://localhost:3000/user/otp', {
         otp: !userData.isotp,
-      });
+      }, { withCredentials: true });
       setUserData({ ...userData, isotp: !userData.isotp });
       closeOtpModal();
     } catch (error) {
@@ -111,7 +112,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({
             className="profile-nickname"
             onClick={isMyProfile ? openNicknameModal : undefined}
           >
-            {userData.intraid}
+            {userData.nickname}
           </div>
           <div className="friend-button-wrapper">
             <FriendButton
