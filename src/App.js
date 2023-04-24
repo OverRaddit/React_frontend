@@ -33,6 +33,7 @@ function App() {
   const [chatHistory, setChatHistory] = useState(exampleChatHistory);
   const [currentChat, setCurrentChat] = useState('');
   const [room, setRoom] = useState('none');
+  const [isInQueue, setIsInQueue] = useState(false);
 
 
 
@@ -52,6 +53,8 @@ function App() {
     console.log("useEffect");
     socket.on('connect', () => {
       console.log("connect");
+	  socket.status = "online";
+	  socket.emit('status', socket.status);
       setIsConnected(true);
     });
 
@@ -61,13 +64,13 @@ function App() {
         // modal
         console.log("queue에 삽입되었습니다.")
 
-
+		// change status
+		socket.status = "inQueue";
+		socket.emit('status', socket.status);
 
         // if click button cancel, emit 'cancel queue' event param[socketId]
-        //
-
-
-
+        setIsInQueue(true);
+		document.body.classList.add('modal-open');
       }
     })
 
@@ -78,6 +81,10 @@ function App() {
       {
         //window.location.href='http://localhost:3001/game'
         console.log("matching 완료")
+		setIsInQueue(false);
+		document.body.classList.remove('modal-open');
+		socket.status = "inGame";
+		socket.emit('status', socket.status);
         setRoom(roomName);
         console.log(roomName);
       }
@@ -127,6 +134,12 @@ function App() {
     // socket.emit('join', 'gshim');
   }
 
+  const cancelQueue = () => {
+	console.log("cancelQueue called")
+	socket.emit('cancel queue', false);
+	setIsInQueue(false);
+	document.body.classList.remove('modal-open');
+  }
 
 
   // socket.on('matchingcomplete', (state, roomName) => {
@@ -194,6 +207,15 @@ function App() {
             <button onClick={sendJoin}>Join</button>
             {/* <button onClick={sendHi}>chat hi</button> */}
           </div> }
+		  {isInQueue && (
+			<>
+			<div className="overlay"></div>
+        	<div className="queue-popup">
+        	  <h1>Finding new opponent..</h1>
+			  <button onClick={cancelQueue}>매칭 취소하기</button>
+        	</div> 
+			</>
+		  )}
           <Routes>
             <Route path="/" element={<DefaultPage socket={socket}  />} />
             <Route path="/a" element={<XPage chatHistory={chatHistory} onChatSubmit={handleChatSubmit} onChatChange={handleChatChange} currentChat={currentChat} />} />

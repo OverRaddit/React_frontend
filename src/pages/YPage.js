@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import './YPage.css';
+import { useNavigate } from 'react-router-dom';
 
 function Game({socket, room}) {
   // console.log("In Game", Value);
@@ -8,11 +10,13 @@ function Game({socket, room}) {
   const canvasMaxHeight = 400;
 
   const [gameOver, setGameOver] = useState(false);
+  const [isInGame, setIsInGame] = useState(true);
 
   function handleGameOver() {
     setGameOver(true);
   }
 
+  const navigate = useNavigate();
   const net = {
     x : canvasMaxWidth / 2 - 1,
     y : 0,
@@ -91,8 +95,6 @@ function Game({socket, room}) {
       
       
       drawCircle(ball.x, ball.y, ball.radius, "WHITE");
-
-      console.log("qwer");
     }
     render();
 
@@ -123,13 +125,27 @@ function Game({socket, room}) {
 	useEffect(()=> {
 		socket.on('gameover', (player)=> {
 			console.log('game over! ', player, 'p wins.');
-			// handleGameOver();
 			setGameOver(true);
 		});
+
+		socket.on('afk', (player) => {
+			console.log(player, 'p disconnected.', player == 1 ? 2 : 1, 'p wins.');
+			//백 측에서 게임을 멈춰야 함.
+			setGameOver(true);
+		});
+		if (socket.status != "inGame")
+		{
+			window.alert('잘못된 접근입니다.');
+			setIsInGame(false);
+			navigate('/');
+		}
+		else
+		{
+			setIsInGame(true);
+		}
 	}, []);
 
-	
-	
+
 
 //   const handleKeyDown = (event) => {
     
@@ -157,18 +173,56 @@ function Game({socket, room}) {
     setKeyDown(false);
   };
 
+  const backToMain = () => {
+	socket.status = "online";
+	socket.emit('status', socket.status);
+	setIsInGame(false);
+  }
 
-  return (
-	  <div>
-	  <canvas width={canvasMaxWidth} height ={canvasMaxHeight} ref={canvasRef} />
-      {gameOver && (
-        <div className="popup">
-		<button className="close-button" onClick={() => setGameOver(false)}>X</button>
-          <h2>Game Over!</h2>
-          <p>{pos1.score} : {pos2.score}</p>
-        </div>
-      )}
-    </div>
+
+//   return (
+// 	{isInGame && (
+// 	  <div>
+// 	    <canvas width={canvasMaxWidth} height ={canvasMaxHeight} ref={canvasRef} />
+// 	    <button className="pop-button" onClick={() => setGameOver(true)}>over</button>
+//         {gameOver && (
+//           <div className="popup">
+// 	  		<button className="close-button" onClick={() => setGameOver(false)}>X</button>
+//             <h1>Game End!</h1>
+//             <p className="scoreboard">{pos1.score} : {pos2.score}</p>
+// 	  	    <Link to="/"><button className="go-main" onClick={backToMain}>메인 화면으로 돌아가기</button></Link>
+//           </div>
+//         )}
+//       </div>
+// 	  )
+// 	}
+//   );
+return (
+	<>
+	  {isInGame && (
+		<div>
+		  <canvas width={canvasMaxWidth} height={canvasMaxHeight} ref={canvasRef} />
+		  <button className="pop-button" onClick={() => setGameOver(true)}>Launch popup</button>
+		  {gameOver && (
+			<div className="popup">
+			  <button className="close-button" onClick={() => setGameOver(false)}>X</button>
+			  <h1>Game End!</h1>
+			  <p className="scoreboard">{pos1.score} : {pos2.score}</p>
+			  <Link to="/">
+				<button className="go-main" onClick={backToMain}>메인 화면으로 돌아가기</button>
+			  </Link>
+			</div>
+		  )}
+		</div>
+	  )}
+
+	  {!isInGame && (
+		<div>
+		  <h1>잘못된 접근입니다. 메인 화면에서 Join 버튼을 통해 게임을 시작해주세요.</h1>
+		  <Link to="/"><button className="go-main">메인 화면으로 돌아가기</button></Link>
+		</div>
+	  )}
+	</>
   );
 }
 
