@@ -199,7 +199,7 @@ function App() {
             <Route path="/a" element={<XPage chatHistory={chatHistory} onChatSubmit={handleChatSubmit} onChatChange={handleChatChange} currentChat={currentChat} />} />
             <Route path="/game" element={<Game socket={socket} room={room}/>} />
             <Route path="/c" element={<ZPage />} />
-            <Route path="/profile" element={<ProfilePage userId="myUserId" isMyProfile={true} />} /> 
+            <Route path="/profile" element={<ProfilePage userId="alee" isMyProfile={true} />} /> 
             {/* TODO: 동적으로 props 넣어주는 부분 추가해야함 */}
             <Route path="/login" element={<LoginPage onHideNavigation={hideNavigation}/>} />
             <Route path="/join" element={<JoinPage onHideNavigation={hideNavigation} />} />
