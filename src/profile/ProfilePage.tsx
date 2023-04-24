@@ -41,7 +41,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({
     const fetchUserData = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:3000/user${userId ? `/${userId}` : ''}`
+          `http://localhost:3000/user${userId ? `/${userId}` : ''}`, { withCredentials: true }
         );
         setUserData(response.data);
       } catch (error) {

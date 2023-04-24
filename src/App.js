@@ -200,7 +200,7 @@ function App() {
             <Route path="/game" element={<Game socket={socket} room={room}/>} />
             <Route path="/c" element={<ZPage />} />
             <Route path="/profile" element={<ProfilePage userId="alee" isMyProfile={true} />} /> 
-            {/* TODO: 동적으로 props 넣어주는 부분 추가해야함 */}
+            {/* TODO: 동적으로 props 넣어주는 부분 추가해야함 생각해보니 */}
             <Route path="/login" element={<LoginPage onHideNavigation={hideNavigation}/>} />
             <Route path="/join" element={<JoinPage onHideNavigation={hideNavigation} />} />
             <Route path="/otp" element={<OtpPage onHideNavigation={hideNavigation} />} />
