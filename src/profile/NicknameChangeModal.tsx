@@ -46,10 +46,7 @@ const NicknameChangeModal: React.FC<NicknameChangeModalProps> = ({
   const handleSubmit = async () => {
     if (!isAnonymous && !isEmpty) {
       try {
-        const response = await axios.post(
-          `http://localhost:3000/user/nickname${userId ? `/${userId}` : ''}`,
-          { nickname: nickname }
-        );
+        const response = await axios.post('http://localhost:3000/user/join', { nickname: nickname }, { withCredentials: true });
         if (response.status >= 200 && response.status < 300) {
           onRequestClose();
         }
