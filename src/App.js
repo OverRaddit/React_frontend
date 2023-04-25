@@ -21,6 +21,7 @@ function App() {
   const [isConnected, setIsConnected] = useState(socket.connected);
   const [lastPong, setLastPong] = useState(null);
   const [room, setRoom] = useState('none');
+  const [isInQueue, setIsInQueue] = useState(false);
   const [isNavigationVisible, setIsNavigationVisible] = useState(true);
 
   const showNavigation = () => {
@@ -35,6 +36,8 @@ function App() {
     console.log("useEffect");
     socket.on('connect', () => {
       console.log("connect");
+	  socket.status = "online";
+	  socket.emit('status', socket.status);
       setIsConnected(true);
     });
 
@@ -44,6 +47,14 @@ function App() {
         // modal
         console.log("queue에 삽입되었습니다.")
         // if click button cancel, emit 'cancel queue' event param[socketId]
+
+        // change status
+        socket.status = "inQueue";
+        socket.emit('status', socket.status);
+
+        // if click button cancel, emit 'cancel queue' event param[socketId]
+        setIsInQueue(true);
+        document.body.classList.add('modal-open');
       }
     })
 
@@ -54,6 +65,10 @@ function App() {
       {
         //window.location.href='http://localhost:3001/game'
         console.log("matching 완료")
+		setIsInQueue(false);
+		document.body.classList.remove('modal-open');
+		socket.status = "inGame";
+		socket.emit('status', socket.status);
         setRoom(roomName);
         console.log(roomName);
       }
@@ -85,6 +100,13 @@ function App() {
     // socket.emit('join', 'gshim');
   }
 
+  const cancelQueue = () => {
+	console.log("cancelQueue called")
+	socket.emit('cancel queue', false);
+	setIsInQueue(false);
+	document.body.classList.remove('modal-open');
+  }
+
   // socket.on('matchingcomplete', (state, roomName) => {
   //   console.log(state, roomName);
   //   if (state === 200)
@@ -113,12 +135,22 @@ function App() {
             <button onClick={sendJoin}>Join</button>
             {/* <button onClick={sendHi}>chat hi</button> */}
           </div> }
+		  {isInQueue && (
+			<>
+			<div className="overlay"></div>
+        	<div className="queue-popup">
+        	  <h1>Finding new opponent..</h1>
+			  <button onClick={cancelQueue}>매칭 취소하기</button>
+        	</div>
+			</>
+		  )}
           <Routes>
             <Route path="/" element={<DefaultPage socket={socket}  />} />
             <Route path="/a" element={<XPage />} />
             <Route path="/game" element={<Game socket={socket} room={room}/>} />
             <Route path="/c" element={<ZPage />} />
-            <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/profile" element={<ProfilePage userId="alee" isMyProfile={true} />} />
+            {/* TODO: 동적으로 props 넣어주는 부분 추가해야함 생각해보니 여기서 다 처리하면 안될것같은데 (youjeon) */}
             <Route path="/login" element={<LoginPage onHideNavigation={hideNavigation}/>} />
             <Route path="/join" element={<JoinPage onHideNavigation={hideNavigation} />} />
             <Route path="/otp" element={<OtpPage onHideNavigation={hideNavigation} />} />
