@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-export function CreateChannelForm({ onCreateChannel }) {
+export function CreateChannelForm({ setChatHistory, setCurrentChatRoom, onCreateChannel }) {
   const [channelName, setChannelName] = useState('');
   const [channelKind, setChannelKind] = useState(0);
   const [channelPassword, setChannelPassword] = useState('');
@@ -25,7 +25,11 @@ export function CreateChannelForm({ onCreateChannel }) {
       roomName: channelName,
       roomPassword: channelPassword,
     };
+    // 채널 생성이벤트를 발생시킨다.
     onCreateChannel(data);
+    // 현재 채팅창을 바꾼다.
+    setCurrentChatRoom(channelName);
+    setChatHistory([]);
   };
 
   return (
