@@ -180,48 +180,59 @@ function Game({socket, room}) {
   }
 
 
-//   return (
-// 	{isInGame && (
-// 	  <div>
-// 	    <canvas width={canvasMaxWidth} height ={canvasMaxHeight} ref={canvasRef} />
-// 	    <button className="pop-button" onClick={() => setGameOver(true)}>over</button>
-//         {gameOver && (
-//           <div className="popup">
-// 	  		<button className="close-button" onClick={() => setGameOver(false)}>X</button>
-//             <h1>Game End!</h1>
-//             <p className="scoreboard">{pos1.score} : {pos2.score}</p>
-// 	  	    <Link to="/"><button className="go-main" onClick={backToMain}>메인 화면으로 돌아가기</button></Link>
-//           </div>
-//         )}
-//       </div>
-// 	  )
-// 	}
-//   );
+const profilePicUrl = "https://cdn-icons-png.flaticon.com/512/3479/3479853.png";
+const nickname = "yson";
+const rating = "1500";
+const history = "1승 2패";
+
 return (
 	<>
-	  {isInGame && (
-		<div>
-		  <canvas width={canvasMaxWidth} height={canvasMaxHeight} ref={canvasRef} />
-		  <button className="pop-button" onClick={() => setGameOver(true)}>Launch popup</button>
-		  {gameOver && (
+	{isInGame && (
+	<div className="game-container">
+		<div className="canvas-container">
+		<canvas width={canvasMaxWidth} height={canvasMaxHeight} ref={canvasRef} />
+		<button className="pop-button" onClick={() => setGameOver(true)}>Launch popup</button>
+		{gameOver && (
 			<div className="popup">
-			  <button className="close-button" onClick={() => setGameOver(false)}>X</button>
-			  <h1>Game End!</h1>
-			  <p className="scoreboard">{pos1.score} : {pos2.score}</p>
-			  <Link to="/">
+			<button className="close-button" onClick={() => setGameOver(false)}>X</button>
+			<h1>Game End!</h1>
+			<p className="scoreboard">{pos1.score} : {pos2.score}</p>
+			<Link to="/">
 				<button className="go-main" onClick={backToMain}>메인 화면으로 돌아가기</button>
-			  </Link>
+			</Link>
 			</div>
-		  )}
+		)}
 		</div>
-	  )}
-
-	  {!isInGame && (
-		<div>
-		  <h1>잘못된 접근입니다. 메인 화면에서 Join 버튼을 통해 게임을 시작해주세요.</h1>
-		  <Link to="/"><button className="go-main">메인 화면으로 돌아가기</button></Link>
+		<div className="container-wrapper">
+		<div className="container">
+			<div className="profile-container">
+			<img className="profile-pic" src={profilePicUrl} alt="Profile picture" />
+			<div className="nickname">{nickname}</div>
+			<div className="profile-details">
+				<div className="rating">{'MMR : ' + rating}</div>
+				<div className="history">{'전적 : ' + history}</div>
+			</div>
+			</div>
 		</div>
-	  )}
+		<div className="container">
+		<div className="profile-container">
+			<img className="profile-pic" src={profilePicUrl} alt="Profile picture" />
+			<div className="nickname">{nickname}</div>
+			<div className="profile-details">
+				<div className="rating">{'MMR : ' + rating}</div>
+				<div className="history">{'전적 : ' + history}</div>
+			</div>
+			</div>
+		</div>
+		</div>
+	</div>
+	)}
+	{!isInGame && (
+	  <div>
+		<h1>잘못된 접근입니다. 메인 화면에서 Join 버튼을 통해 게임을 시작해주세요.</h1>
+		<Link to="/"><button className="go-main">메인 화면으로 돌아가기</button></Link>
+	  </div>
+	)}
 	</>
   );
 }
