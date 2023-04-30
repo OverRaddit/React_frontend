@@ -11,6 +11,8 @@ import LoginPage from './login/LoginPage.tsx';
 import JoinPage from './join/JoinPage';
 import OtpPage from './otp/OtpPage';
 import Game from './pages/YPage';
+import { MyContextProvider } from './MyContext';
+import LoginOK from 'login/LoginOK';
 
 const socket = io("ws://localhost:8000");
 
@@ -195,45 +197,48 @@ function App() {
 
   return (
     <Router>
-      <div className="App">
-        <div className={`App-content ${!isNavigationVisible ? 'no-navigation' : ''}`}>
-          {isNavigationVisible && <Navigation />}
-          {<div>
-            <h1>HI</h1>
-            <p>Connected: { '' + isConnected }</p>
-            <p>Last pong: { lastPong || '-' }</p>
-            <p>IsLeftPlayer: { '' + isLeftPlayer }</p>
-            {/* <button onClick={sendPing}>Send ping</button> */}
-            <button onClick={sendJoin}>Join</button>
-            <div>
-              <input type="text" value={inputValue} onChange={handleChange} />
-              <button onClick={handleClick}>Send</button>
+      <MyContextProvider>
+        <div className="App">
+          <div className={`App-content ${!isNavigationVisible ? 'no-navigation' : ''}`}>
+            {isNavigationVisible && <Navigation />}
+            {<div>
+              <h1>HI</h1>
+              <p>Connected: { '' + isConnected }</p>
+              <p>Last pong: { lastPong || '-' }</p>
+              <p>IsLeftPlayer: { '' + isLeftPlayer }</p>
+              {/* <button onClick={sendPing}>Send ping</button> */}
+              <button onClick={sendJoin}>Join</button>
+              <div>
+                <input type="text" value={inputValue} onChange={handleChange} />
+                <button onClick={handleClick}>Send</button>
+              </div>
+              <button onClick={acceptClick}>Accept</button>
+              {/* <button onClick={sendHi}>chat hi</button> */}
+            </div> }
+        {isInQueue && (
+        <>
+        <div className="overlay"></div>
+            <div className="queue-popup">
+              <h1>Finding new opponent..</h1>
+          <button onClick={cancelQueue}>매칭 취소하기</button>
             </div>
-            <button onClick={acceptClick}>Accept</button>
-            {/* <button onClick={sendHi}>chat hi</button> */}
-          </div> }
-		  {isInQueue && (
-			<>
-			<div className="overlay"></div>
-        	<div className="queue-popup">
-        	  <h1>Finding new opponent..</h1>
-			  <button onClick={cancelQueue}>매칭 취소하기</button>
-        	</div>
-			</>
-		  )}
-          <Routes>
-            <Route path="/" element={<DefaultPage socket={socket}  />} />
-            <Route path="/a" element={<XPage />} />
-            <Route path="/game" element={<Game socket={socket} room={room}/>} />
-            <Route path="/c" element={<ZPage />} />
-            <Route path="/profile" element={<ProfilePage userId="alee" isMyProfile={true} />} />
-            {/* TODO: 동적으로 props 넣어주는 부분 추가해야함 생각해보니 여기서 다 처리하면 안될것같은데 (youjeon) */}
-            <Route path="/login" element={<LoginPage onHideNavigation={hideNavigation}/>} />
-            <Route path="/join" element={<JoinPage onHideNavigation={hideNavigation} />} />
-            <Route path="/otp" element={<OtpPage onHideNavigation={hideNavigation} />} />
-          </Routes>
+        </>
+        )}
+            <Routes>
+              <Route path="/" element={<DefaultPage socket={socket}  />} />
+              <Route path="/a" element={<XPage/>} />
+              <Route path="/game" element={<Game socket={socket} room={room}/>} />
+              <Route path="/c" element={<ZPage />} />
+              <Route path="/profile" element={<ProfilePage userId="alee" isMyProfile={true} />} />
+              {/* TODO: 동적으로 props 넣어주는 부분 추가해야함 생각해보니 여기서 다 처리하면 안될것같은데 (youjeon) */}
+              <Route path="/login" element={<LoginPage onHideNavigation={hideNavigation}/>} />
+              <Route path="/loginok" element={<LoginOK onShowNavigation={showNavigation} />} />
+              <Route path="/join" element={<JoinPage onHideNavigation={hideNavigation} />} />
+              <Route path="/otp" element={<OtpPage onHideNavigation={hideNavigation} />} />
+            </Routes>
+          </div>
         </div>
-      </div>
+      </MyContextProvider>
     </Router>
   );
 }
