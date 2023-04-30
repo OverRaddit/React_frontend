@@ -1,8 +1,8 @@
 export interface MyData {
-    intraId: string;
-    socketId: string;
+    intraid: string;
+    socketid: string;
     id: number;
-    profile: string;
-	  nickname: string;
+    avatar: string;
+	nickname: string;
   }
   

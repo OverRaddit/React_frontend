@@ -28,10 +28,10 @@ const LoginOK: React.FC<Props> = ({ onShowNavigation }) => {
 
   return (
     <div>
-      <h1>intraId : {myData?.intraId}!</h1>
-      <h1>socketId : {myData?.socketId}!</h1>
+      <h1>intraId : {myData?.intraid}!</h1>
+      <h1>socketId : {myData?.socketid}!</h1>
       <h1>id : {myData?.id}!</h1>
-      <h1>profile : {myData?.profile}!</h1>
+      <h1>profile : {myData?.avatar}!</h1>
       <h1>nickname : {myData?.nickname}!</h1>
     </div>
   );
