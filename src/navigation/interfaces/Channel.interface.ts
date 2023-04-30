@@ -7,3 +7,11 @@ export default interface Channel
 	users: User[];
 	showUserList?: boolean;
 }
+
+export interface MyChannel
+{
+	id: number;
+	name: string;
+	users: User[];
+	showUserList?: boolean;
+}
