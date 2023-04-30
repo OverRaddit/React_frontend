@@ -8,7 +8,7 @@ export default interface Friend {
 export interface MyFriend {
 	id: number;
 	nickname: string;
-	intraId: string;
-	sockerId: string;
+	intraid: string;
+	sockerid: string;
 	status: UserStatus;
 }
