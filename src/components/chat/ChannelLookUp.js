@@ -20,7 +20,7 @@ export function ChannelLookup({ setChatHistory, setCurrentChatRoom, chatRooms, s
 
   const handleJoinClick = (channelName) => {
     console.log(`Joining channel: ${channelName}`);
-    socket.emit('joinChannel', { roomName: channelName });
+    socket.emit('joinChannel', { userId: socket.userId, roomName: channelName });
 
     // joinChannel이 성공했다면 아래가 실행되어야 한다!!!!! 고쳐야함.
     setChatHistory([]);

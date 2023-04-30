@@ -3,6 +3,7 @@ import './XPage.css'
 import { CreateChannelForm } from 'components/chat/createChannelForm';
 import initSocket from 'socket';
 import { ChannelLookup } from 'components/chat/ChannelLookUp';
+import { Link } from 'react-router-dom';
 
 /*
 ㅇㅣ제 모든 소켓은, 이 컴포넌트에서 관리합니다!
@@ -40,6 +41,36 @@ const sampleChannelData = [
   },
 ];
 
+const sampleChannelData2 = new Map([
+  [
+    'Public Room 1',
+    {
+      kind: 0,
+      roomname: 'Public Room 1',
+      owner: 'Alice',
+      roompassword: '',
+    }
+  ],
+  [
+    'Password Protected Room',
+    {
+      kind: 1,
+      roomname: 'Password Protected Room',
+      owner: 'Bob',
+      roompassword: 'password',
+    },
+  ],
+  [
+    'Public Room 2',
+    {
+      kind: 0,
+      roomname: 'Public Room 2',
+      owner: 'Charlie',
+      roompassword: '',
+    }
+  ],
+ ]);
+
 const exampleChatHistory = [
   'Hello, how are you?',
   'I am doing well, thanks for asking.',
@@ -47,18 +78,47 @@ const exampleChatHistory = [
   'Not much, just working on some coding projects.',
 ];
 
+const parseCookie = (cookie) => {
+  const cookies = cookie.split(';');
+  const cookieData = {};
+
+  cookies.forEach((cookie) => {
+    const [key, value] = cookie.split('=');
+    if (key.trim() === 'userData')
+    {
+      const decodedString = decodeURIComponent(value);
+      const javascriptObject = JSON.parse(decodedString);
+      console.log('key1: ', key);
+      cookieData[key.trim()] = javascriptObject;
+    }
+    else
+    {
+      console.log('key2: ', key);
+      cookieData[key.trim()] = value;
+    }
+  });
+
+  return cookieData;
+}
+
 const XPage = () => {
   const [chatHistory, setChatHistory] = useState(exampleChatHistory);
   const [currentChat, setCurrentChat] = useState('');
-  const [currentChatRoom, setCurrentChatRoom] = useState('gshimRoom');
-
   const [socket, setSocket] = useState(null);
   const [chatRooms, setChatRooms] = useState(sampleChannelData);
+  const [userChatRooms, setUserChatRooms] = useState(sampleChannelData2);
+  const [currentChatRoom, setCurrentChatRoom] = useState('gshimRoom');  // 현재 선택된 채널의 이름을 저장한다.
+
+  const [isModalOpen, setIsModalOpen] = useState(true);
+  const [modalMessage, setModalMessage] = useState('');
+
   const chatHistoryRef = useRef(null); // new2
 
   useEffect(() => {
-    const sessionToken = 'add_session_here';
-    const newSocket = initSocket(sessionToken);
+    const cookies = parseCookie(document.cookie);
+    //console.log('Xpage cookies: ', cookies);
+
+    const newSocket = initSocket('http://localhost:4242/chat', cookies);
     setSocket(newSocket);
 
     return () => {
@@ -71,6 +131,11 @@ const XPage = () => {
     if (!socket) return;
     socket.on('getChannel', (channels) => {
       console.log('getChannel: ', channels);
+
+      // 이 부분을 바꿔야 한다...
+      // 이건 사용자가 참여한 채널목록이 아니다.
+      // 채널 조회를 통해 받아온 채널목록일 뿐이다.
+      // channel를 순회하며
       setChatRooms(channels);
     });
 
@@ -150,6 +215,34 @@ const XPage = () => {
     }
   };
 
+  const leftChannel = () => {
+    console.log('방나가기 이벤트');
+    const data = {
+      "roomname": currentChatRoom,
+      "userId": socket.userId,
+    };
+    //console.log('data: ', data);
+    socket.emit('leftChannel', data, (message)=> {
+      console.log('leftChannel: ', message);
+      setModalMessage(message);
+      setIsModalOpen(true);
+
+      const isError = true;
+
+      // ㅇㅔ러가 발생한 경우
+      if (isError) {
+        return;
+      }
+
+      // 성공한 경우
+
+      //1. chatRooms에서 나간 채널을 삭제합니다.
+
+      //2. currentChatRoom을 chatRooms의 첫번째 방으로 재설정합니다.
+
+    });
+  }
+
   // data = {
   //   "kind": 0,
   //   "roomName": "sample room name",
@@ -169,27 +262,38 @@ const XPage = () => {
     }
   };
 
-  // socket.on('createChannel', (roomName) => {
-  //   console.log(`채팅방[${roomName}]을 생성합니다..`);
-  //   socket.emit('')
-  // });
-
-  // onChatSubmit={handleChatSubmit} onChatChange={handleChatChange}
-
-
   return (
     <div className="x-page">
-      <h1>XPage Component</h1>
+      <h1>{chatRooms.length === 0 ? "You are not join any room!" : currentChatRoom}</h1>
       <div className="x-page-top">
         <button>Normal Button</button>
         <button>Expand Button</button>
       </div>
+      <hr></hr>
       <div className="x-page-bottom">
         <div
           className="chat-history-box"
           ref={chatHistoryRef}
-          // onScroll={handleScroll}
         >
+          {isModalOpen && (
+            <div className="popup">
+            <button className="close-button" onClick={() => setIsModalOpen(false)}>X</button>
+            <h1>🚀 Modal 🚀</h1>
+            <p className="scoreboard">{modalMessage}</p>
+            {/* <Link to="/a">
+              <button className="go-main" onClick={()=>{console.log('click!')}}>메인 화면으로 돌아가기</button>
+            </Link> */}
+            </div>
+          )}
+          <label>
+            Channel Kind:
+            <select value ={0} >
+              {chatRooms.map((chatRoom, idx) => (
+                <option key={idx} value={chatRoom.roomname}>{chatRoom.roomname}</option>
+              ))}
+            </select>
+            <button onClick={leftChannel}>방나가기</button>
+          </label>
           <ul>
             {chatHistory.map((chat, index) => (
               <li key={index}>{chat}</li>
