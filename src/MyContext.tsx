@@ -2,13 +2,13 @@ import React, { createContext, useContext, useState } from 'react';
 import { MyUser, MyChannel, MyFriend, MyData } from './navigation/interfaces/interfaces';
 
 type MyContextProps = {
-  users: MyUser[] | null;
-  channels: MyChannel[] | null;
-  friends: MyFriend[] | null;
+  users: MyUser[];
+  channels: MyChannel[];
+  friends: MyFriend[];
   myData: MyData | null;
-  setUsers: (users: MyUser[] | null) => void;
-  setChannels: (channels: MyChannel[] | null) => void;
-  setFriends: (friends: MyFriend[] | null) => void;
+  setUsers: (users: MyUser[]) => void;
+  setChannels: (channels: MyChannel[]) => void;
+  setFriends: (friends: MyFriend[]) => void;
   setMyData: (myData: MyData | null) => void;
 };
 
