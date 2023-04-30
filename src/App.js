@@ -184,6 +184,12 @@ function App() {
     socket.emit('Accept invitation', nickName, false, false);
   }
 
+  const observeClick = (e) => {
+    console.log(nickName);
+    console.log('observeClick 클릭 되었음');
+    socket.emit('want observer', nickName);
+  }
+
   const handleClick = (e) => {
 	  setInputText(e.target.value);
     socket.emit('Invite Game', inputValue);
@@ -191,6 +197,7 @@ function App() {
 
   const handleChange = (e) => {
     setInputValue(e.target.value);
+    setNickName(e.target.value);
   }
 
   return (
@@ -208,8 +215,11 @@ function App() {
             <div>
               <input type="text" value={inputValue} onChange={handleChange} />
               <button onClick={handleClick}>Send</button>
+              <button onClick={acceptClick}>Accept</button>
+              <button onClick={observeClick}>observe</button>
             </div>
-            <button onClick={acceptClick}>Accept</button>
+            
+            
             {/* <button onClick={sendHi}>chat hi</button> */}
           </div> }
 		  {isInQueue && (
