@@ -1,9 +1,13 @@
 import io from 'socket.io-client';
 
-const initSocket = (sessionToken) => {
-  const socket = io('http://localhost:4242/chat', {
+const initSocket = (url, cookies) => {
+  //console.log(cookies)
+
+  const socket = io(url , {
     extraHeaders: {
-      Authorization: `Bearer ${sessionToken}`,
+      Authorization: `Bearer ${cookies.session_key}`,
+      intraId: cookies?.userData?.intraid,
+      userId: cookies?.userData?.id,
     },
   });
 
@@ -15,8 +19,12 @@ const initSocket = (sessionToken) => {
     console.log('Disconnected');
   });
 
-  socket.intraID = 'gshim';
-  socket.userId = 1;
+  socket.intraID = cookies?.userData?.intraid;
+  socket.userId = cookies?.userData?.id;
+
+  console.log('intarID: ', socket.intraID);
+  console.log('userId: ', socket.userId);
+
 
   // socket에 사용자의 metaData를 넣어줘야 할 것 같습니다.
   // ex) User의 db id, nickname
