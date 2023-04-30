@@ -5,6 +5,7 @@ import Modal from 'react-modal';
 import Channel from './interfaces/Channel.interface';
 import Friend from './interfaces/Friend.interface';
 import './Navigation.css';
+import { useMyContext } from '../MyContext';
 
 type ListName = 'friends' | 'channels';
 
@@ -33,6 +34,8 @@ const Navigation: FC = () => {
   const [channels, setChannels] = useState(channelList);                            // channel list
   const [isModalOpen, setIsModalOpen] = useState(false);                            // open modal or not
   const [channelToLeave, setChannelToLeave] = useState<Channel | null>(null);       // ??
+  const { myData, setMyData } = useMyContext();
+
 
   const openModal = (channel: Channel) => {
     setChannelToLeave(channel);
@@ -106,31 +109,46 @@ const Navigation: FC = () => {
   };
 
   const renderFriendsList = () => {
-    const friends: Friend[] = Array.from({ length: 10 }, (_, i) => ({
-      name: `Friend ${i + 1}`,
-      status: i % 3 === 0 ? 'online' : i % 3 === 1 ? 'in-game' : 'offline',
-    }));
-
+    const { friends } = useMyContext();
+    if (friends.length === 0) {
+      return <div>No friends found</div>;
+    }
+  
     const sortedFriends = friends.sort((a, b) => {
-      if (a.status === b.status) return a.name.localeCompare(b.name);
-      if (a.status === 'online') return -1;
-      if (b.status === 'online') return 1;
-      if (a.status === 'in-game') return -1;
-      if (b.status === 'in-game') return 1;
-      return 0;
+      if (a.status === b.status) {
+        if (a.status === 'online') {
+          return a.nickname.localeCompare(b.nickname);
+        } else if (a.status === 'in-queue') {
+          if (b.status === 'online') return 1;
+          return -1;
+        } else if (a.status === 'in-game') {
+          if (b.status === 'online' || b.status === 'in-queue') return 1;
+          return -1;
+        } else {
+          return a.nickname.localeCompare(b.nickname);
+        }
+      } else {
+        if (a.status === 'online') return -1;
+        if (b.status === 'online') return 1;
+        if (a.status === 'in-queue') return -1;
+        if (b.status === 'in-queue') return 1;
+        if (a.status === 'in-game') return -1;
+        if (b.status === 'in-game') return 1;
+        return a.nickname.localeCompare(b.nickname);
+      }
     });
-
+    
     return (
       <ul className="friends-list">
-        {sortedFriends.map((friend, index) => (
-          <li key={index} className="friend">
-            <span>{friend.name} ({friend.status})</span>
+        {sortedFriends.map((friend) => (
+          <li key={friend.id} className="friend">
+            <span>{friend.nickname} ({friend.status})</span>
           </li>
         ))}
       </ul>
     );
   };
-
+  
   const handleFriendClick = (friendId: any) => {
     // Show related menu
   };
@@ -143,8 +161,8 @@ const Navigation: FC = () => {
     <div className="Navigation" id="navigation">
       {/* Profile row */}
       <div className="profile-row">
-        <img className="profile-picture" src="profile_picture_url" alt="Profile" />
-        <span>Nickname</span>
+        <img className="profile-picture" src={myData?.avatar} alt="Profile" />
+        <span>{myData?.nickname}</span>
       </div>
 
       {/* Button group */}
