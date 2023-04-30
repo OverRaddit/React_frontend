@@ -31,6 +31,10 @@ const LoginOK: React.FC<Props> = ({ onShowNavigation }) => {
     fetchUserData();
   }, [setMyData, onShowNavigation]);
 
+  if (!myData || !friends) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <div>
       <h1>intraId : {myData?.intraid}!</h1>
