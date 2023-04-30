@@ -34,7 +34,7 @@ const Navigation: FC = () => {
   const [channels, setChannels] = useState(channelList);                            // channel list
   const [isModalOpen, setIsModalOpen] = useState(false);                            // open modal or not
   const [channelToLeave, setChannelToLeave] = useState<Channel | null>(null);       // ??
-  const { myData, setMyData } = useMyContext();
+  const { myData, setMyData, friends } = useMyContext();
 
 
   const openModal = (channel: Channel) => {
@@ -109,7 +109,6 @@ const Navigation: FC = () => {
   };
 
   const renderFriendsList = () => {
-    const { friends } = useMyContext();
     if (friends.length === 0) {
       return <div>No friends found</div>;
     }
