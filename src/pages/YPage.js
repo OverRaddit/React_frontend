@@ -30,6 +30,7 @@ function Game({socket, room}) {
   const [ball, setBall] = useState({});
   // const [room, setRoom] = useState("");
   const [keyDown, setKeyDown] = useState(false);
+  const [colorTemp, setColorTemp] = useState(0);
 
   socket.on('isLeft', (num) => {
     const number = parseInt(num);
@@ -142,6 +143,18 @@ function Game({socket, room}) {
 		else
 		{
 			setIsInGame(true);
+		}
+
+		const handleBackForward = (event) => {
+			socket.emit('playerBackspace', room, playerId);
+			console.log("사용자의 뒤로가기 혹은 앞으로가기가 감지되었습니다.");
+			window.history.back();
+		};
+
+		window.addEventListener('popstate', handleBackForward);
+
+		return () => {
+			window.removeEventListener('popstate', handleBackForward);
 		}
 	}, []);
 
