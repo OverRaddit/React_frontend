@@ -32,10 +32,16 @@ function App() {
     setIsNavigationVisible(false);
   };
 
+  const [inputText, setInputText] = useState('');
+  const [nickName, setNickName] = useState('');
+
+  const [inputValue, setInputValue] = useState('');
+
+
   useEffect(() => {
     console.log("useEffect");
     socket.on('connect', () => {
-      console.log("connect");
+      console.log("connect", socket.id);
 	  socket.status = "online";
 	  socket.emit('status', socket.status);
       setIsConnected(true);
@@ -79,6 +85,24 @@ function App() {
       setIsConnected(false);
     });
 
+    socket.on('invite message complete', (nick) => {
+      console.log("recv data", nick);
+      setNickName(nick);
+      console.log(nickName);
+      console.log('invite message complete')
+    });
+
+    socket.on('invite message', (nick) => {
+      console.log("recv data", nick);
+      setNickName(nick);
+      console.log(nickName);
+      console.log('invite message')
+
+    });
+
+
+
+
     return () => {
       // 이거 왜함?
       // socket.off('connect');
@@ -88,7 +112,7 @@ function App() {
       // socket.off('render');
       // socket.off('isLeft');
     };
-  }, [isLeftPlayer]);
+  }, [isLeftPlayer, nickName]);
 
   const sendPing = () => {
     socket.emit('ping');
@@ -117,9 +141,29 @@ function App() {
   //   }
   // });
 
+  
+
   const sendHi = () => {
     socket.emit('chat', "hi");
   }
+
+  const acceptClick = (e) => {
+    console.log('Accept 클릭 되었음');
+    socket.emit('Accept invitation', nickName, false, false);
+  }
+
+
+
+  const handleClick = (e) => {
+	  setInputText(e.target.value);
+    socket.emit('Invite Game', inputValue);
+  }
+
+  const handleChange = (e) => {
+    setInputValue(e.target.value);
+  }
+  
+
 
   return (
     <Router>
@@ -133,6 +177,11 @@ function App() {
             <p>IsLeftPlayer: { '' + isLeftPlayer }</p>
             {/* <button onClick={sendPing}>Send ping</button> */}
             <button onClick={sendJoin}>Join</button>
+            <div>
+              <input type="text" value={inputValue} onChange={handleChange} />
+              <button onClick={handleClick}>Send</button>
+            </div>
+            <button onClick={acceptClick}>Accept</button>
             {/* <button onClick={sendHi}>chat hi</button> */}
           </div> }
 		  {isInQueue && (
