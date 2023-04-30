@@ -1,11 +1,9 @@
-import logo from './logo.svg';
 import './App.css';
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import io from 'socket.io-client';
 import Navigation from './navigation/Navigation.tsx';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import XPage from './pages/XPage';
-import YPage from './pages/YPage';
 import ZPage from './pages/ZPage';
 import DefaultPage from './pages/DefaultPage';
 import ProfilePage from './profile/ProfilePage.tsx';
@@ -18,7 +16,7 @@ const socket = io("ws://localhost:8000");
 
 function App() {
   const [isLeftPlayer, setIsLeftPlayer] = useState(0); // TODO
-  const [isConnected, setIsConnected] = useState(socket.connected);
+  const [isConnected, setIsConnected] = useState(socket?.connected);
   const [lastPong, setLastPong] = useState(null);
   const [room, setRoom] = useState('none');
   const [isInQueue, setIsInQueue] = useState(false);
@@ -37,6 +35,45 @@ function App() {
 
   const [inputValue, setInputValue] = useState('');
 
+  useEffect(() => {
+    // Function to parse the cookie string
+    const parseCookie = (cookie) => {
+      const cookies = cookie.split(';');
+      const cookieData = {};
+
+      cookies.forEach((cookie) => {
+        const [key, value] = cookie.split('=');
+        if (key.trim() === 'userData')
+        {
+          const decodedString = decodeURIComponent(value);
+          const javascriptObject = JSON.parse(decodedString);
+          console.log('key1: ', key);
+          cookieData[key.trim()] = javascriptObject;
+        }
+        else
+        {
+          console.log('key2: ', key);
+          cookieData[key.trim()] = value;
+        }
+      });
+
+      return cookieData;
+    };
+
+    // Get the cookie data
+    const cookieString = document.cookie;
+    console.log(cookieString);
+    const cookies = parseCookie(cookieString);
+
+    console.log(cookies);
+    socket.cookies = cookies;
+    console.log('socket: ', socket);
+
+    // Extract the session_key value
+    const sessionKey = cookies.session_key || null;
+
+    //setSocket(initSocket(socketUrl ,sessionKey));
+  }, []);
 
   useEffect(() => {
     console.log("useEffect");
@@ -100,9 +137,6 @@ function App() {
 
     });
 
-
-
-
     return () => {
       // 이거 왜함?
       // socket.off('connect');
@@ -141,8 +175,6 @@ function App() {
   //   }
   // });
 
-  
-
   const sendHi = () => {
     socket.emit('chat', "hi");
   }
@@ -152,8 +184,6 @@ function App() {
     socket.emit('Accept invitation', nickName, false, false);
   }
 
-
-
   const handleClick = (e) => {
 	  setInputText(e.target.value);
     socket.emit('Invite Game', inputValue);
@@ -162,8 +192,6 @@ function App() {
   const handleChange = (e) => {
     setInputValue(e.target.value);
   }
-  
-
 
   return (
     <Router>
