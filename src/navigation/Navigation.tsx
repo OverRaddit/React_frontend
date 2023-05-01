@@ -37,11 +37,22 @@ const channelList: MyChannel[] = [
         isAdmin: false,
       },
     ],
+    showUserList: false,
   },
   {
     id: 2,
     name: 'Channel 2',
     users: [
+      {
+        id: 2,
+        nickname: 'User 2',
+        intraId: 'user2',
+        socketId: 's2',
+        avatar: 'https://example.com/avatar2.png',
+        status: 'offline',
+        isOwner: false,
+        isAdmin: false,
+      },
       {
         id: 3,
         nickname: 'User 3',
@@ -62,17 +73,8 @@ const channelList: MyChannel[] = [
         isOwner: false,
         isAdmin: true,
       },
-      {
-        id: 2,
-        nickname: 'User 2',
-        intraId: 'user2',
-        socketId: 's2',
-        avatar: 'https://example.com/avatar2.png',
-        status: 'offline',
-        isOwner: false,
-        isAdmin: false,
-      },
     ],
+    showUserList: false,
   },
 ];
 
@@ -127,10 +129,10 @@ const Navigation: FC = () => {
       prevChannelList.map((channel) =>
         channel.id === channelId
           ? { ...channel, showUserList: !channel.showUserList }
-          : channel
+          : { ...channel }
       )
     );
-  };
+  };  
 
   const renderChannelList = () => {
     return (
@@ -149,9 +151,20 @@ const Navigation: FC = () => {
             </div>
             {channel.showUserList && (
               <ul className="user-list">
-                {channel.users.map((user : any) => (
-                  <li key={user.id}>{user.name}</li>
-                ))}
+                {channel.users
+                  .sort((a, b) => {
+                    if (a.isOwner && !b.isOwner) return -1;
+                    if (!a.isOwner && b.isOwner) return 1;
+                    if (a.isAdmin && !b.isAdmin) return -1;
+                    if (!a.isAdmin && b.isAdmin) return 1;
+                    return a.nickname.localeCompare(b.nickname);
+                  })
+                  .map((user: any) => (
+                    <li key={user.id}>
+                      {user.nickname}
+                      {user.isOwner ? ' (O)' : user.isAdmin ? ' (A)' : ''}
+                    </li>
+                  ))}
               </ul>
             )}
           </li>
@@ -159,6 +172,7 @@ const Navigation: FC = () => {
       </ul>
     );
   };
+  
 
   const handleListSwitch = (listName: ListName) => {
     setShowList(listName);
