@@ -1,17 +1,9 @@
-import User from "./User.interface";
+import MyUser from "./User.interface";
 
-export default interface Channel
-{
-	id: string;
-	name: string;
-	users: User[];
-	showUserList?: boolean;
-}
-
-export interface MyChannel
+export default interface MyChannel
 {
 	id: number;
 	name: string;
-	users: User[];
+	users: MyUser[];
 	showUserList?: boolean;
 }
