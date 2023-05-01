@@ -1,6 +1,6 @@
 type UserStatus = 'online' | 'in-game' | 'in-queue' | 'offline';
 
-export default interface MyFriend {
+export interface MyFriend {
 	id: number;
 	nickname: string;
 	intraid: string;

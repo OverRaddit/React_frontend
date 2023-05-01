@@ -1,6 +1,6 @@
-import MyUser from "./User.interface";
+import { MyUser } from "./User.interface";
 
-export default interface MyChannel
+export interface MyChannel
 {
 	id: number;
 	name: string;

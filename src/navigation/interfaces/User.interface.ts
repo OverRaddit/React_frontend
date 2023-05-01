@@ -1,10 +1,10 @@
 type UserStatus = 'online' | 'in-game' | 'in-queue' | 'offline';
 
-export default interface MyUser {
+export interface MyUser {
 	id: number;
 	nickname: string;
 	intraId: string;
-	sockerId: string;
+	socketId: string;
     avatar: string;
 	status: UserStatus;
 	isOwner: boolean;

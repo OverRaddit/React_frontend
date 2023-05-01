@@ -2,7 +2,7 @@ import { FC, useEffect } from 'react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Modal from 'react-modal';
-import { MyChannel, MyFriend} from './interfaces/interfaces';
+import { MyChannel, MyFriend } from './interfaces/interfaces';
 import './Navigation.css';
 import { useMyContext } from '../MyContext';
 import axios from 'axios';
@@ -16,19 +16,66 @@ const channelList: MyChannel[] = [
     id: 1,
     name: 'Channel 1',
     users: [
-      { id: 'u1', name: 'User 1' },
-      { id: 'u2', name: 'User 2' },
+      {
+        id: 1,
+        nickname: 'User 1',
+        intraId: 'user1',
+        socketId: 's1',
+        avatar: 'https://example.com/avatar1.png',
+        status: 'online',
+        isOwner: true,
+        isAdmin: true,
+      },
+      {
+        id: 2,
+        nickname: 'User 2',
+        intraId: 'user2',
+        socketId: 's2',
+        avatar: 'https://example.com/avatar2.png',
+        status: 'offline',
+        isOwner: false,
+        isAdmin: false,
+      },
     ],
   },
   {
     id: 2,
     name: 'Channel 2',
     users: [
-      { id: 'u3', name: 'User 3' },
-      { id: 'u4', name: 'User 4' },
+      {
+        id: 3,
+        nickname: 'User 3',
+        intraId: 'user3',
+        socketId: 's3',
+        avatar: 'https://example.com/avatar3.png',
+        status: 'in-game',
+        isOwner: true,
+        isAdmin: true,
+      },
+      {
+        id: 4,
+        nickname: 'User 4',
+        intraId: 'user4',
+        socketId: 's4',
+        avatar: 'https://example.com/avatar4.png',
+        status: 'in-queue',
+        isOwner: false,
+        isAdmin: true,
+      },
+      {
+        id: 2,
+        nickname: 'User 2',
+        intraId: 'user2',
+        socketId: 's2',
+        avatar: 'https://example.com/avatar2.png',
+        status: 'offline',
+        isOwner: false,
+        isAdmin: false,
+      },
     ],
   },
 ];
+
 
 const Navigation: FC = () => {
   const [showList, setShowList] = useState<ListName>('friends');                    // friends, channels toggle
