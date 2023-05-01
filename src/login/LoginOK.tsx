@@ -43,6 +43,7 @@ const LoginOK: React.FC<Props> = ({ onShowNavigation }) => {
       <h1>friend : {friends[0]?.nickname}!</h1>
       <h1>friend : {friends[0]?.sockerid}!</h1>
       <h1>friend : {friends[0]?.status}!</h1>
+      <h1>friend : {friends[0]?.avatar}!</h1>
     </div>
   );
 };
