@@ -7,6 +7,8 @@ import Friend from './interfaces/Friend.interface';
 import './Navigation.css';
 import { useMyContext } from '../MyContext';
 import axios from 'axios';
+import ChannelSearch from './ChannelSearch';
+
 
 type ListName = 'friends' | 'channels';
 
@@ -176,7 +178,6 @@ const Navigation: FC = () => {
 
   return (
     <div className="Navigation" id="navigation">
-      {/* Profile row */}
       <div className="profile-row">
         <img className="profile-picture" src={myData?.avatar} alt="Profile" />
         <span>{myData?.nickname}</span>
@@ -204,6 +205,7 @@ const Navigation: FC = () => {
           placeholder="Search channels"
           onChange={(e) => handleChannelSearch(e.target.value)}
         />
+        <ChannelSearch />
       </div>
       <Modal
         isOpen={isModalOpen}
