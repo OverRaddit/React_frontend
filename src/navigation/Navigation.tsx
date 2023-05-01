@@ -185,7 +185,7 @@ const Navigation: FC = () => {
     <div className="Navigation" id="navigation">
       <div className="container">
       <div className="profile-row">
-        <img className="profile-picture" src={myData?.avatar} alt="Profile" />
+        <img className="nav_profile-picture" src={myData?.avatar} alt="Profile" />
         <span>{myData?.nickname}</span>
       </div>
 
