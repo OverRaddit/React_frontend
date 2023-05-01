@@ -8,6 +8,7 @@ import { useMyContext } from '../MyContext';
 import axios from 'axios';
 import ChannelSearch from './ChannelSearch';
 import FriendModal from './FriendModal';
+import ChatUserModal from './ChatUserModal';
 
 type ListName = 'friends' | 'channels';
 
@@ -19,7 +20,7 @@ const channelList: MyChannel[] = [
       {
         id: 1,
         nickname: 'User 1',
-        intraId: 'user1',
+        intraId: 'youjeon',
         socketId: 's1',
         avatar: 'https://example.com/avatar1.png',
         status: 'online',
@@ -86,6 +87,8 @@ const Navigation: FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);                            // open modal or not
   const [channelToLeave, setChannelToLeave] = useState<MyChannel | null>(null);       // ??
   const { myData, setMyData, friends, setFriends } = useMyContext();
+  const [selectedUser, setSelectedUser] = useState<any | null>(null);
+  const [selectedUserChannel, setSelectedUserChannel] = useState<any | null>(null); // 새로 추가된 줄
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -134,6 +137,8 @@ const Navigation: FC = () => {
     );
   };  
 
+  
+
   const renderChannelList = () => {
     return (
       <ul className="channel-list">
@@ -160,7 +165,10 @@ const Navigation: FC = () => {
                     return a.nickname.localeCompare(b.nickname);
                   })
                   .map((user: any) => (
-                    <li key={user.id}>
+                    <li
+                    key={user.id}
+                    onClick={() => handleUserClick(user, channel)}
+                  >
                       {user.nickname}
                       {user.isOwner ? ' (O)' : user.isAdmin ? ' (A)' : ''}
                     </li>
@@ -173,7 +181,17 @@ const Navigation: FC = () => {
     );
   };
   
+  const findMyChannelData = (channel: any) => {
+    return channel.users.find(
+      (user: any) => user.intraId === myData?.intraid
+    );
+  };
 
+  const handleUserClick = (user: any, channel: any) => {
+    setSelectedUser(user);
+    setSelectedUserChannel(channel);
+  };  
+  
   const handleListSwitch = (listName: ListName) => {
     setShowList(listName);
   };
@@ -287,6 +305,17 @@ const Navigation: FC = () => {
         onClose={() => setSelectedFriend(null)}
       />
       )}
+
+      {selectedUser && selectedUserChannel && (
+        <ChatUserModal
+          user={selectedUser}
+          myChannelData={findMyChannelData(selectedUserChannel)}
+          onClose={() => setSelectedUser(null)}
+          isOpen={selectedUser !== null}
+        />
+      )}
+
+
   </div>
   );
 };

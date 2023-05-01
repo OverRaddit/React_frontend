@@ -1,0 +1,59 @@
+.ChatUserModal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.75);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .ChatUserModal {
+    background-color: white;
+    padding: 20px;
+    border-radius: 4px;
+    outline: none;
+    width: 400px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .ChatUserModal h2 {
+    margin-bottom: 20px;
+  }
+  
+  .ChatUserModal button {
+    background-color: #007bff;
+    color: white;
+    font-size: 1rem;
+    font-weight: 600;
+    padding: 8px 16px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    margin-bottom: 8px;
+    transition: background-color 0.2s ease-in-out;
+    width: 100%;
+  }
+  
+  .ChatUserModal button:hover {
+    background-color: #0069d9;
+  }
+  
+  .ChatUserModal button:not(:last-child) {
+    margin-right: 10px;
+    margin-bottom: 10px;
+  }
+  
+  .ChatUserModal button.disabled {
+    background-color: #6c757d;
+    cursor: not-allowed;
+  }
+  
+  .ChatUserModal button.disabled:hover {
+    background-color: #6c757d;
+  }
+  
