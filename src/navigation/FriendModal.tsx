@@ -16,6 +16,7 @@ export interface MyFriend {
 
 interface FriendModalProps {
   friend: MyFriend;
+  onClose: () => void; 
 }
 
 const FriendModal: React.FC<FriendModalProps> = ({ friend }) => {

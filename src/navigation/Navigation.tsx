@@ -2,7 +2,7 @@ import { FC, useEffect } from 'react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Modal from 'react-modal';
-import Channel from './interfaces/Channel.interface';
+import { MyChannel, MyFriend} from './interfaces/interfaces';
 import './Navigation.css';
 import { useMyContext } from '../MyContext';
 import axios from 'axios';
@@ -11,9 +11,9 @@ import FriendModal from './FriendModal';
 
 type ListName = 'friends' | 'channels';
 
-const channelList: Channel[] = [
+const channelList: MyChannel[] = [
   {
-    id: '1',
+    id: 1,
     name: 'Channel 1',
     users: [
       { id: 'u1', name: 'User 1' },
@@ -21,7 +21,7 @@ const channelList: Channel[] = [
     ],
   },
   {
-    id: '2',
+    id: 2,
     name: 'Channel 2',
     users: [
       { id: 'u3', name: 'User 3' },
@@ -35,7 +35,7 @@ const Navigation: FC = () => {
   const [expandedChannels, setExpandedChannels] = useState<Set<number>>(new Set()); // ??
   const [channels, setChannels] = useState(channelList);                            // channel list
   const [isModalOpen, setIsModalOpen] = useState(false);                            // open modal or not
-  const [channelToLeave, setChannelToLeave] = useState<Channel | null>(null);       // ??
+  const [channelToLeave, setChannelToLeave] = useState<MyChannel | null>(null);       // ??
   const { myData, setMyData, friends, setFriends } = useMyContext();
 
   useEffect(() => {
@@ -56,7 +56,7 @@ const Navigation: FC = () => {
     fetchUserData();
   }, [setMyData, setFriends]);
   
-  const openModal = (channel: Channel) => {
+  const openModal = (channel: MyChannel) => {
     setChannelToLeave(channel);
     setIsModalOpen(true);
   };
@@ -75,7 +75,7 @@ const Navigation: FC = () => {
     }
   };
 
-  const toggleUserList = (channelId: string) => {
+  const toggleUserList = (channelId: number) => {
     setChannels((prevChannelList) =>
       prevChannelList.map((channel) =>
         channel.id === channelId
@@ -127,6 +127,16 @@ const Navigation: FC = () => {
     setExpandedChannels(newExpandedChannels);
   };
 
+  const [selectedFriend, setSelectedFriend] = useState<MyFriend | null>(null);
+
+  const openFriendModal = (friend: MyFriend) => {
+    setSelectedFriend(friend);
+  };
+
+  const closeFriendModal = () => {
+    setSelectedFriend(null);
+  };
+
   const renderFriendsList = () => {
     if (friends.length === 0) {
       return <div>No friends found</div>;
@@ -158,13 +168,15 @@ const Navigation: FC = () => {
     
     return (
       <ul className="friends-list">
-        {sortedFriends.map((friend) => (
-          <li key={friend.id} className="friend">
-            <FriendModal friend={friend} />
-          </li>
-        ))}
-      </ul>
-    );
+      {sortedFriends.map((friend) => (
+        <li key={friend.id} className="friend">
+          <button onClick={() => openFriendModal(friend)}>
+            {friend.nickname} ({friend.status})
+          </button>
+        </li>
+      ))}
+    </ul>
+  );
   };
   
   const handleFriendClick = (friendId: any) => {
@@ -213,7 +225,10 @@ const Navigation: FC = () => {
         <button onClick={confirmLeave}>Yes</button>
         <button onClick={() => setIsModalOpen(false)}>No</button>
       </Modal>
-    </div>
+      {selectedFriend && (
+      <FriendModal friend={selectedFriend} onClose={closeFriendModal} />
+    )}
+  </div>
   );
 };
 
