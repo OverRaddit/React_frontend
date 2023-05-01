@@ -129,12 +129,8 @@ const Navigation: FC = () => {
 
   const [selectedFriend, setSelectedFriend] = useState<MyFriend | null>(null);
 
-  const openFriendModal = (friend: MyFriend) => {
+  const handleFriendClick = (friend: MyFriend) => {
     setSelectedFriend(friend);
-  };
-
-  const closeFriendModal = () => {
-    setSelectedFriend(null);
   };
 
   const renderFriendsList = () => {
@@ -179,10 +175,6 @@ const Navigation: FC = () => {
       ))}
     </ul>
   );
-  };
-  
-  const handleFriendClick = (friend: MyFriend) => {
-    setSelectedFriend(friend);
   };
   
   const handleChannelSearch = (searchQuery: any) => {

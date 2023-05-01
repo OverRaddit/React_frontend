@@ -19,23 +19,18 @@ interface FriendModalProps {
   onClose: () => void; 
 }
 
-const FriendModal: React.FC<FriendModalProps> = ({ friend }) => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const openModal = () => {
-    setIsModalOpen(true);
-  };
+const FriendModal: React.FC<FriendModalProps> = ({ friend, onClose }) => {
+  const [isModalOpen, setIsModalOpen] = useState(true);
 
   const closeModal = () => {
     setIsModalOpen(false);
+    onClose();
   };
 
   const isDMEnabled = friend.status === 'online' || friend.status === 'in-queue';
   const isInviteEnabled = friend.status === 'online';
 
   return (
-    <>
-      <button onClick={openModal}>{friend.nickname}</button>
       <Modal
         isOpen={isModalOpen}
         onRequestClose={closeModal}
@@ -53,7 +48,6 @@ const FriendModal: React.FC<FriendModalProps> = ({ friend }) => {
           <button disabled={!isInviteEnabled}>게임 초대</button>
         </div>
       </Modal>
-    </>
   );
 };
 
