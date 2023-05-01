@@ -1,0 +1,70 @@
+.ChannelSearch button {
+    font-size: 1.2rem;
+    padding: 10px 20px;
+    border-radius: 5px;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+  }
+  
+  .ChannelSearch button:hover {
+    background-color: #0056b3;
+  }
+  
+  .channel-search-modal {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 400px;
+    background-color: #fff;
+    padding: 2rem;
+    border-radius: 4px;
+    outline: none;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .channel-search-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.75);
+  }
+  
+  .ChannelSearch ul {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 1rem;
+  }
+  
+  .ChannelSearch li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 5px;
+  }
+  
+  .ChannelSearch input,
+  .ChannelSearch select {
+    font-size: 1rem;
+    padding: 5px;
+    margin-bottom: 5px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    display: block;
+    width: 100%;
+  }
+  
+  .ChannelSearch h3 {
+    margin-bottom: 10px;
+  }
+  
+  .ChannelSearch p {
+    font-size: 1rem;
+    color: #333;
+    margin-bottom: 1rem;
+  }
+  
