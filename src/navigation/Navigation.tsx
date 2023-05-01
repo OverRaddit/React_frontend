@@ -169,20 +169,22 @@ const Navigation: FC = () => {
     return (
       <ul className="friends-list">
       {sortedFriends.map((friend) => (
-        <li key={friend.id} className="friend">
-          <button onClick={() => openFriendModal(friend)}>
-            {friend.nickname} ({friend.status})
-          </button>
+        <li
+          key={friend.id}
+          className="friend"
+          onClick={() => handleFriendClick(friend)} 
+        >
+          <span>{friend.nickname} ({friend.status})</span>
         </li>
       ))}
     </ul>
   );
   };
   
-  const handleFriendClick = (friendId: any) => {
-    // Show related menu
+  const handleFriendClick = (friend: MyFriend) => {
+    setSelectedFriend(friend);
   };
-
+  
   const handleChannelSearch = (searchQuery: any) => {
     // Implement channel search
   };
@@ -226,7 +228,10 @@ const Navigation: FC = () => {
         <button onClick={() => setIsModalOpen(false)}>No</button>
       </Modal>
       {selectedFriend && (
-      <FriendModal friend={selectedFriend} onClose={closeFriendModal} />
+        <FriendModal
+        friend={selectedFriend}
+        onClose={() => setSelectedFriend(null)}
+      />
     )}
   </div>
   );
