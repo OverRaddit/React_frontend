@@ -207,14 +207,6 @@ const Navigation: FC = () => {
       {/* Channel search */}
       <div className="search-container">
         <ChannelSearch />
-
-
-      {selectedFriend && (
-        <FriendModal
-        friend={selectedFriend}
-        onClose={() => setSelectedFriend(null)}
-      />
-      )}
       </div>
 
       </div>
@@ -227,6 +219,13 @@ const Navigation: FC = () => {
         <button onClick={confirmLeave}>Yes</button>
         <button onClick={() => setIsModalOpen(false)}>No</button>
       </Modal>
+
+      {selectedFriend && (
+        <FriendModal
+        friend={selectedFriend}
+        onClose={() => setSelectedFriend(null)}
+      />
+      )}
   </div>
   );
 };

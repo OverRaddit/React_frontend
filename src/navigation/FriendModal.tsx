@@ -39,13 +39,19 @@ const FriendModal: React.FC<FriendModalProps> = ({ friend, onClose }) => {
         overlayClassName="friend-modal-overlay"
       >
         <div className="friend-modal-content">
+        <div className="profile-info">
           <img src={friend.avatar} alt={`${friend.nickname}'s avatar`} />
           <h2>{friend.nickname}</h2>
+        </div>
           <Link to={`/profile/${friend.intraid}`}>
-            <button>프로필 보기</button>
+            <button onClick={closeModal}>프로필 보기</button>
           </Link>
-          <button disabled={!isDMEnabled}>DM 보내기</button>
-          <button disabled={!isInviteEnabled}>게임 초대</button>
+          <button className={isDMEnabled ? '' : 'disabled'} disabled={!isDMEnabled}>
+            DM 보내기
+          </button>
+          <button className={isInviteEnabled ? '' : 'disabled'} disabled={!isInviteEnabled}>
+            게임 초대
+          </button>
         </div>
       </Modal>
   );

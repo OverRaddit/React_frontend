@@ -1,19 +1,51 @@
-.FriendModal {
+.friend-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.friend-modal {
+  background-color: white;
+  padding: 20px;
+  border-radius: 4px;
+  outline: none;
+  width: 400px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  background-color: white;
-  border-radius: 5px;
-  padding: 20px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.FriendModal h2 {
+.friend-modal h2 {
   margin-bottom: 20px;
 }
 
-.FriendModal button {
+.friend-modal .profile-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.friend-modal img {
+  border-radius: 50%;
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  margin-bottom: 10px;
+}
+
+.friend-modal .nickname {
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.friend-modal button {
   background-color: #007bff;
   color: white;
   font-size: 1rem;
@@ -22,13 +54,24 @@
   border-radius: 5px;
   border: none;
   cursor: pointer;
+  margin-bottom: 8px;
   transition: background-color 0.2s ease-in-out;
+  width: 100%;
 }
 
-.FriendModal button:hover {
+.friend-modal button:hover {
   background-color: #0069d9;
 }
 
-.FriendModal button:not(:last-child) {
+.friend-modal button:not(:last-child) {
   margin-right: 10px;
+  margin-bottom: 10px;
+}
+
+.friend-modal button.disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+}
+.friend-modal button.disabled:hover {
+  background-color: #6c757d;
 }
