@@ -94,7 +94,7 @@ function App() {
         // if click button cancel, emit 'cancel queue' event param[socketId]
 
         // change status
-        socket.status = "inQueue";
+        socket.status = "in-queue";
         socket.emit('status', socket.status);
 
         // if click button cancel, emit 'cancel queue' event param[socketId]
@@ -112,7 +112,7 @@ function App() {
         console.log("matching 완료")
 		setIsInQueue(false);
 		document.body.classList.remove('modal-open');
-		socket.status = "inGame";
+		socket.status = "in-game";
 		socket.emit('status', socket.status);
         setRoom(roomName);
         console.log(roomName);

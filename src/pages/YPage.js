@@ -31,6 +31,7 @@ function Game({socket, room}) {
   // const [room, setRoom] = useState("");
   const [keyDown, setKeyDown] = useState(false);
   const [colorTemp, setColorTemp] = useState(0);
+  const [gameMode, setGameMode] = useState(1);
 
   socket.on('isLeft', (num) => {
     const number = parseInt(num);
@@ -94,25 +95,27 @@ function Game({socket, room}) {
       // console.log("너나?",ball);
       // console.log(ball.x, ball.y, ball.radius);
       
-      
       drawCircle(ball.x, ball.y, ball.radius, "WHITE");
-    }
+	}
+	//   if (gameMode == 1)
+	//   {
+	// 	if (colorTemp == 0)
+	// 	{
+	// 		drawCircle(ball.x, ball.y, ball.radius, "WHITE");
+	// 		setColorTemp(1);
+	// 	}
+	// 	else
+	// 	{
+	// 		drawCircle(ball.x, ball.y, ball.radius, "BLACK");
+	// 		setColorTemp(0);
+	// 	}
+	//   }
+	//   else
+	//   {
+	// 	drawCircle(ball.x, ball.y, ball.radius, "WHITE");
+	//   }
+    // }
     render();
-
-    // socket.on('enqueuecomplete', (state) => {
-    //   if (state === 200)
-    //     console.log("queue에 삽입되었습니다.")
-    // })
-    
-    // socket.on('matchingcomplete', (state, roomName) => {
-    //   console.log(state, roomName);
-    //   if (state === 200)
-    //   {
-    //     console.log("matching 완료")
-    //     setRoom(roomName);
-    //     console.log(roomName);
-    //   }
-    // });
 
     window.addEventListener('keydown', handleKeyDown);
     window.addEventListener('keyup', handleKeyUp);
@@ -124,6 +127,12 @@ function Game({socket, room}) {
     }, [pos1, pos2, ball])
 
 	useEffect(()=> {
+		//테스트용 변수
+		const gshimData = {"intraid":"gshim","avatar":"https://cdn.intra.42.fr/users/5b318ee00454b41113089517347a42ed/gshim.jpg","nickname":"anon_1","isotp":false,"email":"gshim@student.42seoul.kr","wincount":0,"losecount":0,"rating":1200,"id":1};
+		// socket.emit('getProfile', dbId, applyProfile(data, 1));
+		// socket.emit('getProfile', dbId, applyProfile(data, 2));
+		applyProfile(gshimData, 1);
+		applyProfile(gshimData, 2);
 		socket.on('gameover', (player)=> {
 			console.log('game over! ', player, 'p wins.');
 			setGameOver(true);
@@ -134,7 +143,7 @@ function Game({socket, room}) {
 			//백 측에서 게임을 멈춰야 함.
 			setGameOver(true);
 		});
-		if (socket.status != "inGame")
+		if (socket.status != "in-game")
 		{
 			window.alert('잘못된 접근입니다.');
 			setIsInGame(false);
@@ -192,11 +201,22 @@ function Game({socket, room}) {
 	setIsInGame(false);
   }
 
-
-const profilePicUrl = "https://cdn-icons-png.flaticon.com/512/3479/3479853.png";
-const nickname = "yson";
-const rating = "1500";
-const history = "1승 2패";
+  const applyProfile = (data, playerNumber) => {
+	if (playerNumber == 1)
+	{
+		document.querySelector(".profile-pic-first").src = data.avatar;
+		document.querySelector(".nickname-first").textContent = data.nickname;
+		document.querySelector(".ratingText-first").textContent = 'MMR : ' + data.rating;
+		document.querySelector(".historyText-first").textContent = '전적 : ' + data.wincount + '승 ' + data.losecount + '패';
+	}
+	else if (playerNumber == 2)
+	{
+		document.querySelector(".profile-pic-second").src = data.avatar;
+		document.querySelector(".nickname-second").textContent = data.nickname;
+		document.querySelector(".ratingText-second").textContent = 'MMR : ' + data.rating;
+		document.querySelector(".historyText-second").textContent = '전적 : ' + data.wincount + '승 ' + data.losecount + '패';
+	}
+  }
 
 return (
 	<>
@@ -218,24 +238,24 @@ return (
 		</div>
 		<div className="container-wrapper">
 		<div className="container">
-			<div className="profile-container">
-			<img className="profile-pic" src={profilePicUrl} alt="Profile picture" />
-			<div className="nickname">{nickname}</div>
+		  <div className="profile-container">
+			<img className="profile-pic-first" src={''} alt="Profile picture" />
+			<div className="nickname"><text className='nickname-first'>{'nickname'}</text></div>
 			<div className="profile-details">
-				<div className="rating">{'MMR : ' + rating}</div>
-				<div className="history">{'전적 : ' + history}</div>
+				<div className="rating"><text className='ratingText-first'>{'MMR : 0000'}</text></div>
+				<div className="history"><text className='historyText-first'>{'전적 : none'}</text></div>
 			</div>
-			</div>
+		  </div>
 		</div>
 		<div className="container">
-		<div className="profile-container">
-			<img className="profile-pic" src={profilePicUrl} alt="Profile picture" />
-			<div className="nickname">{nickname}</div>
+		  <div className="profile-container">
+			<img className="profile-pic-second" src={''} alt="Profile picture" />
+			<div className="nickname"><text className='nickname-second'>{'nickname'}</text></div>
 			<div className="profile-details">
-				<div className="rating">{'MMR : ' + rating}</div>
-				<div className="history">{'전적 : ' + history}</div>
+				<div className="rating"><text className='ratingText-second'>{'MMR : 0000'}</text></div>
+				<div className="history"><text className='historyText-second'>{'전적 : none'}</text></div>
 			</div>
-			</div>
+		  </div>
 		</div>
 		</div>
 	</div>
