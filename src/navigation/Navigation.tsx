@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, useEffect } from 'react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Modal from 'react-modal';
@@ -6,6 +6,7 @@ import Channel from './interfaces/Channel.interface';
 import Friend from './interfaces/Friend.interface';
 import './Navigation.css';
 import { useMyContext } from '../MyContext';
+import axios from 'axios';
 
 type ListName = 'friends' | 'channels';
 
@@ -34,9 +35,27 @@ const Navigation: FC = () => {
   const [channels, setChannels] = useState(channelList);                            // channel list
   const [isModalOpen, setIsModalOpen] = useState(false);                            // open modal or not
   const [channelToLeave, setChannelToLeave] = useState<Channel | null>(null);       // ??
-  const { myData, setMyData, friends } = useMyContext();
+  const { myData, setMyData, friends, setFriends } = useMyContext();
 
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:3000/user`, { withCredentials: true }
+        );
+        setMyData(response.data);
+        const response2 = await axios.get(
+          `http://localhost:3000/friendlist`, { withCredentials: true }
+        );
+        setFriends(response2.data);
 
+      } catch (error) {
+        console.error('Failed to fetch user data:', error);
+      }
+    };
+      fetchUserData();
+  }, [myData, setMyData, friends, setFriends]);
+  
   const openModal = (channel: Channel) => {
     setChannelToLeave(channel);
     setIsModalOpen(true);
