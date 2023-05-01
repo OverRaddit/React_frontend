@@ -48,13 +48,12 @@ const Navigation: FC = () => {
           `http://localhost:3000/friendlist`, { withCredentials: true }
         );
         setFriends(response2.data);
-
       } catch (error) {
         console.error('Failed to fetch user data:', error);
       }
     };
-      fetchUserData();
-  }, [myData, setMyData, friends, setFriends]);
+    fetchUserData();
+  }, [setMyData, setFriends]);
   
   const openModal = (channel: Channel) => {
     setChannelToLeave(channel);
