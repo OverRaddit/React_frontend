@@ -39,7 +39,14 @@
 	/* background-color: lightgray; */
   }
   
-  .profile-pic {
+  .profile-pic-first {
+	grid-area: profile-pic;
+	width: 70px;
+	height: 70px;
+	border-radius: 50%;
+	object-fit: cover;
+  }
+  .profile-pic-second {
 	grid-area: profile-pic;
 	width: 70px;
 	height: 70px;
