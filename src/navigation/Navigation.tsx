@@ -178,6 +178,7 @@ const Navigation: FC = () => {
 
   return (
     <div className="Navigation" id="navigation">
+      <div className="container">
       <div className="profile-row">
         <img className="profile-picture" src={myData?.avatar} alt="Profile" />
         <span>{myData?.nickname}</span>
@@ -200,12 +201,9 @@ const Navigation: FC = () => {
 
       {/* Channel search */}
       <div className="search-container">
-        <input
-          type="text"
-          placeholder="Search channels"
-          onChange={(e) => handleChannelSearch(e.target.value)}
-        />
         <ChannelSearch />
+      </div>
+
       </div>
       <Modal
         isOpen={isModalOpen}
