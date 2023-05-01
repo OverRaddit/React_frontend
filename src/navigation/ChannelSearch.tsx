@@ -53,16 +53,22 @@ const ChannelSearch = () => {
         isOpen={isModalOpen}
         onRequestClose={closeModal}
         contentLabel="Channel Search Modal"
+        className="channel-search-modal"
+        overlayClassName="channel-search-overlay"
       >
         <h2>Search Channels</h2>
         <ul>
-          {channels.map((channel) => (
-            <li key={channel.id}>
-              {channel.type === 'protected' ? '🔒' : ''}
-              {channel.name} (owner: {channel.owner})
-              <button>Join</button>
-            </li>
-          ))}
+          {channels.length > 0 ? (
+            channels.map((channel) => (
+              <li key={channel.id}>
+                {channel.type === 'protected' ? '🔒' : ''}
+                {channel.name} (owner: {channel.owner})
+                <button>Join</button>
+              </li>
+            ))
+          ) : (
+            <p>현재 입장할 수 있는 방이 없습니다.</p>
+          )}
         </ul>
         <div>
           <h3>Create Channel</h3>
