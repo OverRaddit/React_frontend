@@ -3,12 +3,11 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Modal from 'react-modal';
 import Channel from './interfaces/Channel.interface';
-import Friend from './interfaces/Friend.interface';
 import './Navigation.css';
 import { useMyContext } from '../MyContext';
 import axios from 'axios';
 import ChannelSearch from './ChannelSearch';
-
+import FriendModal from './FriendModal';
 
 type ListName = 'friends' | 'channels';
 
@@ -161,7 +160,7 @@ const Navigation: FC = () => {
       <ul className="friends-list">
         {sortedFriends.map((friend) => (
           <li key={friend.id} className="friend">
-            <span>{friend.nickname} ({friend.status})</span>
+            <FriendModal friend={friend} />
           </li>
         ))}
       </ul>

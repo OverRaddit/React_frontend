@@ -9,7 +9,7 @@ export interface MyFriend {
 	id: number;
 	nickname: string;
 	intraid: string;
-	sockerid: string;
+	socketid: string;
 	avatar: string;
 	status: UserStatus;
-}
+  }
