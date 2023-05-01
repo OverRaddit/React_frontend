@@ -1,0 +1,42 @@
+.ChannelSearch button {
+    font-size: 1.2rem;
+    padding: 10px 20px;
+    border-radius: 5px;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+  }
+  
+.ChannelSearch button:hover {
+background-color: #005
+}
+    
+.ChannelSearch ul {
+list-style: none;
+padding: 0;
+margin-bottom: 1rem;
+}
+
+.ChannelSearch li {
+display: flex;
+align-items: center;
+justify-content: space-between;
+margin-bottom: 5px;
+}
+
+.ChannelSearch input,
+.ChannelSearch select {
+font-size: 1rem;
+padding: 5px;
+margin-bottom: 5px;
+border: 1px solid #ced4da;
+border-radius: 4px;
+display: block;
+width: 100%;
+}
+
+.ChannelSearch h3 {
+margin-bottom: 10px;
+}
+    
