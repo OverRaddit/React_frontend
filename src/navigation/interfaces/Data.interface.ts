@@ -3,6 +3,6 @@ export interface MyData {
     socketid: string;
     id: number;
     avatar: string;
-	nickname: string;
+	  nickname: string;
   }
   

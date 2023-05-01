@@ -10,6 +10,7 @@ export interface MyUser {
 	nickname: string;
 	intraId: string;
 	sockerId: string;
+    avatar: string;
 	status: UserStatus;
 	isOwner: boolean;
 	isAdmin: boolean;

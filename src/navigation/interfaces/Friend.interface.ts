@@ -10,5 +10,6 @@ export interface MyFriend {
 	nickname: string;
 	intraid: string;
 	sockerid: string;
+	avatar: string;
 	status: UserStatus;
 }
