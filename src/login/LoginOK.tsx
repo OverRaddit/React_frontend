@@ -9,33 +9,34 @@ interface Props {
 
 const LoginOK: React.FC<Props> = ({ onShowNavigation }) => {
   const navigate = useNavigate();
-  const { myData, setMyData, friends, setFriends, initSocket, mySocket } = useMyContext();
+  const { myData, setMyData, friends, setFriends } = useMyContext();
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await axios.get(
-          `http://localhost:3000/user`, { withCredentials: true }
-        );
-        setMyData(response.data);
-        const response2 = await axios.get(
-          `http://localhost:3000/friendlist`, { withCredentials: true }
-        );
-        setFriends(response2.data);
-
-        initSocket('http://localhost:4242/chat');
+        if (!myData) {
+          const response = await axios.get(
+            `http://localhost:3000/user`, { withCredentials: true }
+          );
+          setMyData(response.data);
+        }
+        if (!friends) {
+          const response2 = await axios.get(
+            `http://localhost:3000/friendlist`, { withCredentials: true }
+          );
+          setFriends(response2.data);
+        }
         onShowNavigation();
       } catch (error) {
         console.error('Failed to fetch user data:', error);
       }
     };
     fetchUserData();
-  }, [setMyData, setFriends, onShowNavigation, initSocket]);
+  }, [setMyData, setFriends, onShowNavigation]);
 
   return (
     <div>
       <h1>intraId : {myData?.intraid}!</h1>
-      <h1>socketId : {mySocket?.socket.toString()}!</h1>
       <h1>id : {myData?.id}!</h1>
       <h1>profile : {myData?.avatar}!</h1>
       <h1>nickname : {myData?.nickname}!</h1>

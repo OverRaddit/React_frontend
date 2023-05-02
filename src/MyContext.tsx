@@ -53,7 +53,6 @@ export const MyContextProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         userId: myData!.id.toString(),
       },
     });
-
     setMySocket({ socket });
   };
 

@@ -93,21 +93,35 @@ const Navigation: FC = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await axios.get(
-          `http://localhost:3000/user`, { withCredentials: true }
-        );
-        setMyData(response.data);
-        const response2 = await axios.get(
-          `http://localhost:3000/friendlist`, { withCredentials: true }
-        );
-        setFriends(response2.data);
-        initSocket('http://localhost:4242/chat');
+        if (!myData) {
+          const response = await axios.get(
+            `http://localhost:3000/user`, { withCredentials: true }
+          );
+          setMyData(response.data);
+        }
+        if (!friends) {
+          const response2 = await axios.get(
+            `http://localhost:3000/friendlist`, { withCredentials: true }
+          );
+          setFriends(response2.data);
+        }
       } catch (error) {
         console.error('Failed to fetch user data:', error);
       }
     };
     fetchUserData();
   }, [setMyData, setFriends, initSocket]);
+
+  useEffect(() => {
+    if (myData && !mySocket) {
+      initSocket('http://localhost:4242/chat');
+    }
+  }, [myData]);
+
+  useEffect(() => {
+    console.log('mySocket:');
+    console.log(mySocket);
+  }, [mySocket]); // `mySocket`이 변경될 때마다 로깅합니다.
   
   const openModal = (channel: MyChannel) => {
     setChannelToLeave(channel);
