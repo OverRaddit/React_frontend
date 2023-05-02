@@ -4,6 +4,7 @@ import { CreateChannelForm } from 'components/chat/createChannelForm';
 import initSocket from 'socket';
 import { ChannelLookup } from 'components/chat/ChannelLookUp';
 import { Link } from 'react-router-dom';
+import { useMyContext } from 'MyContext';
 
 /*
 ㅇㅣ제 모든 소켓은, 이 컴포넌트에서 관리합니다!
@@ -108,6 +109,7 @@ const XPage = () => {
   const [chatRooms, setChatRooms] = useState(sampleChannelData);
   const [userChatRooms, setUserChatRooms] = useState(sampleChannelData2);
   const [currentChatRoom, setCurrentChatRoom] = useState('gshimRoom');  // 현재 선택된 채널의 이름을 저장한다.
+  const { myData, setMyData, friends, setFriends } = useMyContext();
 
   const [isModalOpen, setIsModalOpen] = useState(true);
   const [modalMessage, setModalMessage] = useState('');
@@ -116,9 +118,10 @@ const XPage = () => {
 
   useEffect(() => {
     const cookies = parseCookie(document.cookie);
-    //console.log('Xpage cookies: ', cookies);
+    console.log('Xpage cookies: ', cookies);
 
-    const newSocket = initSocket('http://localhost:4242/chat', cookies);
+    const newSocket = initSocket('http://localhost:4242/chat', cookies, setMyData);
+    console.log('newSocket: ', newSocket);
     setSocket(newSocket);
 
     return () => {
@@ -264,6 +267,7 @@ const XPage = () => {
 
   return (
     <div className="x-page">
+      <button onClick={() => console.log(myData)}>myData확인버튼</button>
       <h1>{chatRooms.length === 0 ? "You are not join any room!" : currentChatRoom}</h1>
       <div className="x-page-top">
         <button>Normal Button</button>

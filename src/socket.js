@@ -1,6 +1,6 @@
 import io from 'socket.io-client';
 
-const initSocket = (url, cookies) => {
+const initSocket = (url, cookies, setMyData) => {
   //console.log(cookies)
 
   const socket = io(url , {
@@ -12,7 +12,8 @@ const initSocket = (url, cookies) => {
   });
 
   socket.on('connect', () => {
-    console.log('Connected');
+    setMyData(prevState => ({ ...prevState, socketid: socket }));
+    console.log('Connected~~');
   });
 
   socket.on('disconnect', () => {
