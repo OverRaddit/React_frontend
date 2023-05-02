@@ -3,8 +3,6 @@ import { MyUser, MyChannel, MyFriend, MyData } from './navigation/interfaces/int
 import io, { Socket } from 'socket.io-client';
 import { useCookies } from 'react-cookie';
 
-const [cookies, setCookie, removeCookie] = useCookies(['session_key']);
-
 interface MySocket {
   socket: Socket;
 }
@@ -45,6 +43,7 @@ export const MyContextProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const [friends, setFriends] = useState<MyFriend[]>([]);
   const [myData, setMyData] = useState<MyData | null>(null);
   const [mySocket, setMySocket] = useState<MySocket | null>(null);
+  const [cookies, setCookie, removeCookie] = useCookies(['session_key']);
 
   const initSocket = (url: string) => {
     const socket = io(url, {
