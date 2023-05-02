@@ -86,9 +86,9 @@ const Navigation: FC = () => {
   const [channels, setChannels] = useState(channelList);                            // channel list
   const [isModalOpen, setIsModalOpen] = useState(false);                            // open modal or not
   const [channelToLeave, setChannelToLeave] = useState<MyChannel | null>(null);       // ??
-  const { myData, setMyData, friends, setFriends } = useMyContext();
   const [selectedUser, setSelectedUser] = useState<any | null>(null);
   const [selectedUserChannel, setSelectedUserChannel] = useState<any | null>(null); // 새로 추가된 줄
+  const { myData, setMyData, friends, setFriends, initSocket, mySocket } = useMyContext();
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -101,12 +101,13 @@ const Navigation: FC = () => {
           `http://localhost:3000/friendlist`, { withCredentials: true }
         );
         setFriends(response2.data);
+        initSocket('http://localhost:4242/chat');
       } catch (error) {
         console.error('Failed to fetch user data:', error);
       }
     };
     fetchUserData();
-  }, [setMyData, setFriends]);
+  }, [setMyData, setFriends, initSocket]);
   
   const openModal = (channel: MyChannel) => {
     setChannelToLeave(channel);
