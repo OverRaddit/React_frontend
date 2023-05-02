@@ -9,7 +9,7 @@ interface Props {
 
 const LoginOK: React.FC<Props> = ({ onShowNavigation }) => {
   const navigate = useNavigate();
-  const { myData, setMyData, friends, setFriends } = useMyContext();
+  const { myData, setMyData, friends, setFriends, initSocket, mySocket } = useMyContext();
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -23,18 +23,19 @@ const LoginOK: React.FC<Props> = ({ onShowNavigation }) => {
         );
         setFriends(response2.data);
 
+        initSocket('http://localhost:4242/chat');
         onShowNavigation();
       } catch (error) {
         console.error('Failed to fetch user data:', error);
       }
     };
     fetchUserData();
-  }, [setMyData, setFriends, onShowNavigation]);
+  }, [setMyData, setFriends, onShowNavigation, initSocket]);
 
   return (
     <div>
       <h1>intraId : {myData?.intraid}!</h1>
-      <h1>socketId : {myData?.socketid}!</h1>
+      <h1>socketId : {mySocket?.socket.toString()}!</h1>
       <h1>id : {myData?.id}!</h1>
       <h1>profile : {myData?.avatar}!</h1>
       <h1>nickname : {myData?.nickname}!</h1>
