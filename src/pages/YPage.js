@@ -4,7 +4,7 @@ import './YPage.css';
 import { useNavigate } from 'react-router-dom';
 
 
-function Game({socket, room, nickName}) {
+function Game({socket, room, nickName, isExtension}) {
   // console.log("In Game", Value);
   const canvasRef = useRef(null);
   const canvasMaxWidth = 600;
@@ -30,10 +30,10 @@ function Game({socket, room, nickName}) {
   const [pos1, setPos1] = useState(0);
   const [pos2, setPos2] = useState(0);
   const [ball, setBall] = useState({});
-  // const [room, setRoom] = useState("");
   const [keyDown, setKeyDown] = useState(false);
-  const [colorTemp, setColorTemp] = useState(0);
-  const [gameMode, setGameMode] = useState(1);
+  const [gameMode, setGameMode] = useState(0);
+  
+  const ballBlinkRate = 50;
 
   socket.on('isLeft', (num) => {
     const number = parseInt(num);
@@ -58,6 +58,8 @@ function Game({socket, room, nickName}) {
 	{
 		setIsInGame(true);
 	}
+
+	setGameMode(isExtension == false ? 0 : 1);
 	return () => {
 	};
   }, []);
@@ -79,6 +81,26 @@ function Game({socket, room, nickName}) {
       ctx.closePath();
       ctx.fill();
     }
+
+	function drawCircle_extension(gameMode)
+	{
+	  if (gameMode == 1)
+	  {
+		if (Math.floor(ball.x / ballBlinkRate) % 2 === 0)
+		{
+		  drawCircle(ball.x, ball.y, ball.radius, "WHITE");
+		}
+		else if (Math.floor(ball.x / ballBlinkRate) % 2 === 1)
+		{
+		  drawCircle(ball.x, ball.y, ball.radius, "BLACK");
+		}
+	  }
+	  else
+	  {
+		drawCircle(ball.x, ball.y, ball.radius, "WHITE");
+	  } 
+	}
+
     function drawText(text, x, y, color){
       ctx.fillStyle = color;
       ctx.font = "35px fantasy";
@@ -92,10 +114,7 @@ function Game({socket, room, nickName}) {
 
     function render(){
       //clear the canvas
-      // console.log("test\n");
       drawRect(0, 0, canvasMaxWidth, canvasMaxHeight, "BLACK");
-      
-      // console.log(pos1, pos2);
       drawRect(pos1.x, pos1.y, pos1.width, pos1.height, "WHITE");
       drawRect(pos2.x, pos2.y, pos2.width, pos2.height, "WHITE");
 
@@ -112,7 +131,8 @@ function Game({socket, room, nickName}) {
       // console.log("너나?",ball);
       // console.log(ball.x, ball.y, ball.radius);
       
-      drawCircle(ball.x, ball.y, ball.radius, "WHITE");
+	  //익스텐션 처리 + drawCircle 함수를 합친 함수 만들기? or 여기서 한번에 처리하기
+	  drawCircle_extension(gameMode);
 	}
     render();
 
@@ -138,8 +158,7 @@ function Game({socket, room, nickName}) {
 		});
 
 		socket.on('afk', (player) => {
-			console.log(player, 'p disconnected.', player == 1 ? 2 : 1, 'p wins.');
-			//나중에 player가 플레이어 순서를 이야기하는 것이 아니라, 플레이어명이 날라올 것. 그때 수정하기.
+			console.log('Game over. ' + player, ' wins.');
 			//백 측에서 게임을 멈춰야 함.
 			setGameOver(true);
 		});
