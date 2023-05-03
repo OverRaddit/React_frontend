@@ -47,6 +47,21 @@ function Game({socket, room}) {
     setBall(ball);
   });
 
+  useLayoutEffect(() => {
+	if (socket.status != "in-game")
+	{
+		window.alert('잘못된 접근입니다.');
+		setIsInGame(false);
+		navigate('/');
+	}
+	else
+	{
+		setIsInGame(true);
+	}
+	return () => {
+	};
+  }, []);
+
   useEffect(() => {
     const canvas = canvasRef.current;    
     const ctx = canvas.getContext("2d");
@@ -124,19 +139,10 @@ function Game({socket, room}) {
 
 		socket.on('afk', (player) => {
 			console.log(player, 'p disconnected.', player == 1 ? 2 : 1, 'p wins.');
+			//나중에 player가 플레이어 순서를 이야기하는 것이 아니라, 플레이어명이 날라올 것. 그때 수정하기.
 			//백 측에서 게임을 멈춰야 함.
 			setGameOver(true);
 		});
-		if (socket.status != "in-game")
-		{
-			window.alert('잘못된 접근입니다.');
-			setIsInGame(false);
-			navigate('/');
-		}
-		else
-		{
-			setIsInGame(true);
-		}
 
 		window.onpopstate = (event) => {
 			// socket.emit('playerBackspace', room, nickname); //닉네임을 받을 수 있다면 보내기.
