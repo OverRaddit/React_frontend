@@ -1,13 +1,15 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import { Link } from 'react-router-dom';
 import './YPage.css';
 import { useNavigate } from 'react-router-dom';
+
 
 function Game({socket, room}) {
   // console.log("In Game", Value);
   const canvasRef = useRef(null);
   const canvasMaxWidth = 600;
   const canvasMaxHeight = 400;
+
 
   const [gameOver, setGameOver] = useState(false);
   const [isInGame, setIsInGame] = useState(true);
@@ -97,24 +99,6 @@ function Game({socket, room}) {
       
       drawCircle(ball.x, ball.y, ball.radius, "WHITE");
 	}
-	//   if (gameMode == 1)
-	//   {
-	// 	if (colorTemp == 0)
-	// 	{
-	// 		drawCircle(ball.x, ball.y, ball.radius, "WHITE");
-	// 		setColorTemp(1);
-	// 	}
-	// 	else
-	// 	{
-	// 		drawCircle(ball.x, ball.y, ball.radius, "BLACK");
-	// 		setColorTemp(0);
-	// 	}
-	//   }
-	//   else
-	//   {
-	// 	drawCircle(ball.x, ball.y, ball.radius, "WHITE");
-	//   }
-    // }
     render();
 
     window.addEventListener('keydown', handleKeyDown);
@@ -154,20 +138,17 @@ function Game({socket, room}) {
 			setIsInGame(true);
 		}
 
-		const handleBackForward = (event) => {
+		window.onpopstate = (event) => {
+			// socket.emit('playerBackspace', room, nickname); //닉네임을 받을 수 있다면 보내기.
+			if (socket.status != 'in-game')
+			{
+				return ;
+			}
 			socket.emit('playerBackspace', room, playerId);
 			console.log("사용자의 뒤로가기 혹은 앞으로가기가 감지되었습니다.");
-			window.history.back();
-		};
-
-		window.addEventListener('popstate', handleBackForward);
-
-		return () => {
-			window.removeEventListener('popstate', handleBackForward);
-		}
+			backToMain();
+		  };
 	}, []);
-
-
 
 //   const handleKeyDown = (event) => {
     
@@ -240,20 +221,20 @@ return (
 		<div className="container">
 		  <div className="profile-container">
 			<img className="profile-pic-first" src={''} alt="Profile picture" />
-			<div className="nickname"><text className='nickname-first'>{'nickname'}</text></div>
+			<div className="nickname"><p className='nickname-first'>{'nickname'}</p></div>
 			<div className="profile-details">
-				<div className="rating"><text className='ratingText-first'>{'MMR : 0000'}</text></div>
-				<div className="history"><text className='historyText-first'>{'전적 : none'}</text></div>
+				<div className="rating"><p className='ratingText-first'>{'MMR : 0000'}</p></div>
+				<div className="history"><p className='historyText-first'>{'전적 : none'}</p></div>
 			</div>
 		  </div>
 		</div>
 		<div className="container">
 		  <div className="profile-container">
 			<img className="profile-pic-second" src={''} alt="Profile picture" />
-			<div className="nickname"><text className='nickname-second'>{'nickname'}</text></div>
+			<div className="nickname"><p className='nickname-second'>{'nickname'}</p></div>
 			<div className="profile-details">
-				<div className="rating"><text className='ratingText-second'>{'MMR : 0000'}</text></div>
-				<div className="history"><text className='historyText-second'>{'전적 : none'}</text></div>
+				<div className="rating"><p className='ratingText-second'>{'MMR : 0000'}</p></div>
+				<div className="history"><p className='historyText-second'>{'전적 : none'}</p></div>
 			</div>
 		  </div>
 		</div>
