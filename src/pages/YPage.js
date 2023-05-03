@@ -4,7 +4,7 @@ import './YPage.css';
 import { useNavigate } from 'react-router-dom';
 
 
-function Game({socket, room}) {
+function Game({socket, room, nickName}) {
   // console.log("In Game", Value);
   const canvasRef = useRef(null);
   const canvasMaxWidth = 600;
@@ -150,8 +150,9 @@ function Game({socket, room}) {
 			{
 				return ;
 			}
-			socket.emit('playerBackspace', room, playerId);
+			socket.emit('playerBackspace', room, nickName);
 			console.log("사용자의 뒤로가기 혹은 앞으로가기가 감지되었습니다.");
+      console.log(nickName)
 			backToMain();
 		  };
 	}, []);
