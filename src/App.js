@@ -202,18 +202,19 @@ function App() {
 
   const acceptClick = (e) => {
     console.log('Accept 클릭 되었음');
-    socket.emit('Accept invitation', nickName, false, false);
+    // socket.emit('Accept invitation', nickName, false, false);
+    socket.emit('Accept invitation', {oppNickName:nickName, myNickName:nickName, enqueueFlag:false, gameType:0});// TODO
   }
 
   const observeClick = (e) => {
     console.log(nickName);
     console.log('observeClick 클릭 되었음');
-    socket.emit('want observer', nickName);
+    socket.emit('want observer', {nickName:nickName});
   }
 
   const handleClick = (e) => {
 	  setInputText(e.target.value);
-    socket.emit('Invite Game', inputValue);
+    socket.emit('Invite Game', {nickName:inputValue});
   }
 
   const handleChange = (e) => {

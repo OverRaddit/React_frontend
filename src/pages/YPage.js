@@ -155,7 +155,7 @@ function Game({socket, room, nickName, isExtension}) {
 		socket.on('gameover', (data)=> {
 			const {state, message, dataObject} = data;
 			const {player} = dataObject;
-			console.log('game over! ', state, message, player, 'p wins.');
+			console.log('game over! ', player, 'p wins.');
 			setGameOver(true);
 		});
 
@@ -171,7 +171,7 @@ function Game({socket, room, nickName, isExtension}) {
 			{
 				return ;
 			}
-			socket.emit('playerBackspace', room, nickName);
+			socket.emit('playerBackspace', {roomName:room, nickName:nickName});
 			console.log("사용자의 뒤로가기 혹은 앞으로가기가 감지되었습니다.");
       console.log(nickName)
 			backToMain();
@@ -184,10 +184,10 @@ function Game({socket, room, nickName, isExtension}) {
     if (!keyDown) {
       if (event.key === 'ArrowUp') {
         console.log('Player: ', room, playerId, "press up");
-        socket.emit('handleKeyPressUp', room, playerId);
+        socket.emit('handleKeyPressUp', {roomName:room, id:playerId});
       } else if (event.key === 'ArrowDown') {
         console.log('Player: ', room, playerId, "press down");
-        socket.emit('handleKeyPressDown', room, playerId);
+        socket.emit('handleKeyPressDown', {roomName:room, id:playerId});
       }
       setKeyDown(true);
     }
@@ -196,10 +196,10 @@ function Game({socket, room, nickName, isExtension}) {
   const handleKeyUp = (event) => {
     if (event.key === 'ArrowUp') {
       console.log('Player: ', room, playerId, "relese up");
-      socket.emit('handleKeyRelUp', room,  playerId);
+      socket.emit('handleKeyRelUp', {roomName:room, id:playerId});
     } else if (event.key === 'ArrowDown') {
       console.log('Player: ', room, playerId, "relese down");
-      socket.emit('handleKeyRelDown', room, playerId);
+      socket.emit('handleKeyRelDown', {roomName:room, id:playerId});
     }
     setKeyDown(false);
   };
