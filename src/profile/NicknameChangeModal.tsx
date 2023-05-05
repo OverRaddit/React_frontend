@@ -6,12 +6,14 @@ interface NicknameChangeModalProps {
   isOpen: boolean;
   onRequestClose: () => void;
   userId?: string;
+  onNicknameChange: (newNickname: string) => void;
 }
 
 const NicknameChangeModal: React.FC<NicknameChangeModalProps> = ({
   isOpen,
   onRequestClose,
   userId,
+  onNicknameChange,
 }) => {
   const [nickname, setNickname] = useState('');
   const [isDuplicate, setIsDuplicate] = useState(false);
@@ -49,6 +51,8 @@ const NicknameChangeModal: React.FC<NicknameChangeModalProps> = ({
         const response = await axios.post('http://localhost:3000/user/join', { nickname: nickname }, { withCredentials: true });
         if (response.status >= 200 && response.status < 300) {
           onRequestClose();
+          // Call the onNicknameChange callback
+          onNicknameChange(nickname);
         }
       } catch (error: any) {
         if (error.response && typeof error.response.status === 'number') {
@@ -60,9 +64,8 @@ const NicknameChangeModal: React.FC<NicknameChangeModalProps> = ({
         }
       }
     }
-    // TODO: 변경 이후에 profile 에서 닉네임이 변경되어야함.
   };
-
+  
   return (
     <Modal isOpen={isOpen} onRequestClose={onRequestClose}>
       <h3>닉네임을 변경해주세요.</h3>

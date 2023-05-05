@@ -10,7 +10,7 @@ import { useParams } from 'react-router-dom';
 import { useMyContext } from '../MyContext'; // Import the context
 
 const ProfilePage: React.FC = () => {
-  const { myData, friends, setFriends } = useMyContext(); // Access the context
+  const { myData, setMyData, friends, setFriends } = useMyContext(); // Access the context
   const { userId } = useParams<{ userId?: string }>(); // Get the userId from the route
 
   const isMyProfile = !userId || (myData && myData.intraid === userId) || false;
@@ -19,13 +19,13 @@ const ProfilePage: React.FC = () => {
     id: null,
     intraid: '',
     avatar: '',
-    nickname: null,
+    nickname: '',
     rating: null,
     wincount: null,
     losecount: null,
     email: '',
     isotp: false,
-  });
+  });  
 
   const [isOtpModalOpen, setIsOtpModalOpen] = useState(false);
   const [isNicknameModalOpen, setIsNicknameModalOpen] = useState(false);
@@ -134,13 +134,35 @@ const ProfilePage: React.FC = () => {
           isOpen={isNicknameModalOpen}
           onRequestClose={closeNicknameModal}
           userId={userId}
+          onNicknameChange={(newNickname: string) => {
+            if (isMyProfile) {
+              if (myData) {
+                setMyData({
+                  avatar: myData.avatar,
+                  intraid: myData.intraid,
+                  id: myData.id,
+                  nickname: newNickname,
+                });
+              }
+            }
+            setUserData({ ...userData, nickname: newNickname });
+          }}
         />
+
       
         <ProfilePictureModal
           isOpen={isProfilePictureModalOpen}
           onRequestClose={closeProfilePictureModal}
           onUpload={(url: string) => {
             setUserData({ ...userData, avatar: url });
+            if (myData) {
+              setMyData({
+                avatar: url,
+                intraid: myData.intraid,
+                id: myData.id,
+                nickname: myData.nickname,
+              });
+            }
             closeProfilePictureModal();
           }}
         />
