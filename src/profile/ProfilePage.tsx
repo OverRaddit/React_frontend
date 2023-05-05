@@ -97,6 +97,22 @@ const ProfilePage: React.FC<ProfilePageProps> = ({
 
   const displayProfilePicture = userData.avatar || defaultProfilePicture;
 
+  const uploadFile = async (file: File) => {
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      const response = await axios.post('http://localhost:3000/uploads', formData, {
+        withCredentials: true,
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      return response.data.url;
+    } catch (error) {
+      console.error('Failed to upload file:', error);
+    }
+  };
+
   return (
     <div className="profile-page">
       <div className="profile-info">

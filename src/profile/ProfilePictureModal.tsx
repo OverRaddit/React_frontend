@@ -1,12 +1,12 @@
 import React, { useRef } from 'react';
 import Modal from 'react-modal';
+import axios from 'axios';
 
 interface ProfilePictureModalProps {
-    isOpen: boolean;
-    onRequestClose: () => void;
-    onUpload: (url: string) => void; // onUpload prop 타입 수정
-  }  
-
+  isOpen: boolean;
+  onRequestClose: () => void;
+  onUpload: (url: string) => void;
+}
 
 const ProfilePictureModal: React.FC<ProfilePictureModalProps> = ({
   isOpen,
@@ -15,24 +15,28 @@ const ProfilePictureModal: React.FC<ProfilePictureModalProps> = ({
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (fileInputRef.current?.files) {
       const file = fileInputRef.current.files[0];
-  
-      // FileReader 인스턴스 생성
-      const reader = new FileReader();
-  
-      // 파일 읽기 완료 시 호출되는 콜백 함수
-      reader.onload = (event) => {
-        const dataURL = event.target?.result as string;
-        onUpload(dataURL); // 읽은 파일의 dataURL을 onUpload prop으로 전달
+
+      try {
+        const formData = new FormData();
+        formData.append('file', file);
+        const response = await axios.post('http://localhost:3000/uploads', formData, {
+          withCredentials: true,
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+
+        const uploadedImageUrl = response.data.url;
+        onUpload(uploadedImageUrl);
         onRequestClose();
-      };
-  
-      reader.readAsDataURL(file); // 파일 읽기 시작
+      } catch (error) {
+        console.error('Failed to upload file:', error);
+      }
     }
   };
-  
 
   return (
     <Modal isOpen={isOpen} onRequestClose={onRequestClose}>
