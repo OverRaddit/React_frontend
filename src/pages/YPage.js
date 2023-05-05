@@ -153,8 +153,9 @@ function Game({socket, room, nickName, isExtension}) {
 		applyProfile(gshimData, 1);
 		applyProfile(gshimData, 2);
 		socket.on('gameover', (data)=> {
-			const {player} = data;
-			console.log('game over! ', player, 'p wins.');
+			const {state, message, dataObject} = data;
+			const {player} = dataObject;
+			console.log('game over! ', state, message, player, 'p wins.');
 			setGameOver(true);
 		});
 
