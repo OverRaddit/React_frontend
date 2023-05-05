@@ -104,19 +104,23 @@ function App() {
       }
     })
 
-    socket.on('matchingcomplete', (state, roomName) => {
+    socket.on('matchingcomplete', (data) => {
       console.log('matchingcomplete1')
-      console.log(state, roomName);
+      // console.log(state, roomName);
+      const {state, message, dataObject} = data;
+      const {roomName, leftPlayerNick, rightPlayerNick} = dataObject;
+      console.log(state, message, roomName, leftPlayerNick, rightPlayerNick);
       if (state === 200)
       {
         //window.location.href='http://localhost:3001/game'
-        console.log("matching 완료")
+        console.log("matching 완료", message);
+        // console.log(data.left, data.right);
 		setIsInQueue(false);
 		document.body.classList.remove('modal-open');
 		socket.status = "in-game";
 		socket.emit('status', socket.status);
         setRoom(roomName);
-        console.log(roomName);
+        console.log("room", roomName);
       }
     });
 
@@ -157,13 +161,13 @@ function App() {
 
   const sendJoin = () => {
     console.log("normalQueue Join");
-    socket.emit('match', false);
+    socket.emit('match', {gameType: 0, nickName:'a'}); // TODO nickName 넣으셈
 	setIsExQueue(false);
     // socket.emit('join', 'gshim');
   }
   const sendJoin_ex = () => {
     console.log("extensionQueue Join");
-    socket.emit('match', true);
+    socket.emit('match', {gameType: 1, nickName:'a'});socket.emit('match', {gameType: 0, nickName:'a'});
 	setIsExQueue(true);
     // socket.emit('join', 'gshim');
   }
