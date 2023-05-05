@@ -6,22 +6,15 @@ import defaultProfilePicture from './defaultProfilePicture.jpg';
 import NicknameChangeModal from './NicknameChangeModal';
 import FriendButton from './FriendButton';
 import ProfilePictureModal from './ProfilePictureModal';
+import { useParams } from 'react-router-dom';
+import { useMyContext } from '../MyContext'; // Import the context
 
-interface ProfilePageProps {
-  userId?: string;
-  isMyProfile?: boolean;
-  friendList?: { id: number }[];
-  onAddFriend?: () => void;
-  onRemoveFriend?: () => void;
-}
+const ProfilePage: React.FC = () => {
+  const { myData, friends, setFriends } = useMyContext(); // Access the context
+  const { userId } = useParams<{ userId?: string }>(); // Get the userId from the route
 
-const ProfilePage: React.FC<ProfilePageProps> = ({
-  userId,
-  isMyProfile = false,
-  friendList = [],
-  onAddFriend,
-  onRemoveFriend,
-}) => {
+  const isMyProfile = !userId || (myData && myData.intraid === userId) || false;
+
   const [userData, setUserData] = useState({
     id: null,
     intraid: '',
@@ -49,6 +42,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({
         console.error('Failed to fetch user data:', error);
       }
     };
+    // TODO: 없는 사람일때에(404 받으면?) 예외처리 필요 
 
     fetchUserData();
   }, [userId]);
@@ -93,25 +87,17 @@ const ProfilePage: React.FC<ProfilePageProps> = ({
     return <div>Loading...</div>;
   }
 
-  const isFriend = friendList.some((friend) => friend.id === userData.id);
+  const onAddFriend = () => {
+    // Implement the functionality for adding a friend
+  };
+
+  const onRemoveFriend = () => {
+    // Implement the functionality for removing a friend
+  };
+
+  const isFriend = friends.some((friend) => friend.id === userData.id);
 
   const displayProfilePicture = userData.avatar || defaultProfilePicture;
-
-  const uploadFile = async (file: File) => {
-    try {
-      const formData = new FormData();
-      formData.append('file', file);
-      const response = await axios.post('http://localhost:3000/uploads', formData, {
-        withCredentials: true,
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-      return response.data.url;
-    } catch (error) {
-      console.error('Failed to upload file:', error);
-    }
-  };
 
   return (
     <div className="profile-page">
