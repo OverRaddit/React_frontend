@@ -167,7 +167,7 @@ function App() {
   }
   const sendJoin_ex = () => {
     console.log("extensionQueue Join");
-    socket.emit('match', {gameType: 1, nickName:'a'});socket.emit('match', {gameType: 0, nickName:'a'});
+    socket.emit('match', {gameType: 1, nickName:'a'}); // TODO nickName 넣으셈
 	setIsExQueue(true);
     // socket.emit('join', 'gshim');
   }
