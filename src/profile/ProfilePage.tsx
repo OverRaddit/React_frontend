@@ -8,6 +8,7 @@ import FriendButton from './FriendButton';
 import ProfilePictureModal from './ProfilePictureModal';
 import { useParams } from 'react-router-dom';
 import { useMyContext } from '../MyContext'; // Import the context
+import { MyFriend } from 'navigation/interfaces/Friend.interface';
 
 const ProfilePage: React.FC = () => {
   const { myData, setMyData, friends, setFriends } = useMyContext(); // Access the context
@@ -16,7 +17,7 @@ const ProfilePage: React.FC = () => {
   const isMyProfile = !userId || (myData && myData.intraid === userId) || false;
 
   const [userData, setUserData] = useState({
-    id: null,
+    id: 0,
     intraid: '',
     avatar: '',
     nickname: '',
@@ -46,6 +47,9 @@ const ProfilePage: React.FC = () => {
 
     fetchUserData();
   }, [userId]);
+
+  const isFriend = friends.some((friend) => friend.id === userData.id);
+  const displayProfilePicture = userData.avatar || defaultProfilePicture;
 
   const openOtpModal = () => {
     setIsOtpModalOpen(true);
@@ -87,17 +91,40 @@ const ProfilePage: React.FC = () => {
     return <div>Loading...</div>;
   }
 
-  const onAddFriend = () => {
-    // Implement the functionality for adding a friend
+  const onAddFriend = async () => {
+    try {
+      await axios.post(
+        'http://localhost:3000/friendlist',
+        { friend: userData.intraid },
+        { withCredentials: true }
+      );
+  
+      const newFriend: MyFriend = {
+        ...userData,
+        socketid: '',
+        status: 'offline',
+      };
+  
+      setFriends([...friends, newFriend]);
+    } catch (error) {
+      console.error('Failed to add friend:', error);
+    }
   };
 
-  const onRemoveFriend = () => {
-    // Implement the functionality for removing a friend
+  const onRemoveFriend = async () => {
+    try {
+      await axios.delete(
+        `http://localhost:3000/friendlist/${userData.intraid}`,
+        { withCredentials: true }
+      );
+  
+      // 친구 목록에서 삭제된 친구를 제거
+      setFriends(friends.filter((friend) => friend.intraid !== userData.intraid));
+    } catch (error) {
+      console.error('Failed to remove friend:', error);
+    }
   };
 
-  const isFriend = friends.some((friend) => friend.id === userData.id);
-
-  const displayProfilePicture = userData.avatar || defaultProfilePicture;
 
   return (
     <div className="profile-page">
