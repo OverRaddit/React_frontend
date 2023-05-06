@@ -20,11 +20,19 @@ export function ChannelLookup({ setChatHistory, setCurrentChatRoom, chatRooms, s
 
   const handleJoinClick = (channelName) => {
     console.log(`Joining channel: ${channelName}`);
-    socket.emit('joinChannel', { userId: socket.userId, roomName: channelName });
+    socket.emit('joinChannel', { userId: socket.userId, roomName: channelName }, (response) => {
+      if (!response.success) {
+        console.log('Error가 발생했습니다.');
+        return ;
+      }
+      // 참여한 채널목록 map에 channelName과 channelName 채팅목록 배열을 추가합니다.
 
-    // joinChannel이 성공했다면 아래가 실행되어야 한다!!!!! 고쳐야함.
-    setChatHistory([]);
-    setCurrentChatRoom(channelName);
+      // 입장한 채널의 채팅목록을 ChatHistory에 set합니다.
+      setChatHistory([]);
+
+      // 입장한 채널의 이름을 CurrentChatRoom에 최신화합니다.
+      setCurrentChatRoom(channelName);
+    });
   };
 
   return (

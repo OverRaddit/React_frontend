@@ -133,7 +133,9 @@ function Game({socket, room}) {
 		// socket.emit('getProfile', dbId, applyProfile(data, 2));
 		applyProfile(gshimData, 1);
 		applyProfile(gshimData, 2);
-		socket.on('gameover', (player)=> {
+		socket.on('gameover', (data)=> {
+			const {state, message, dataObject} = data;
+			const {player} = dataObject;
 			console.log('game over! ', player, 'p wins.');
 			setGameOver(true);
 		});
@@ -175,10 +177,10 @@ function Game({socket, room}) {
     if (!keyDown) {
       if (event.key === 'ArrowUp') {
         console.log('Player: ', room, playerId, "press up");
-        socket.emit('handleKeyPressUp', room, playerId);
+        socket.emit('handleKeyPressUp', {roomName:room, id:playerId});
       } else if (event.key === 'ArrowDown') {
         console.log('Player: ', room, playerId, "press down");
-        socket.emit('handleKeyPressDown', room, playerId);
+        socket.emit('handleKeyPressDown', {roomName:room, id:playerId});
       }
       setKeyDown(true);
     }
@@ -187,10 +189,10 @@ function Game({socket, room}) {
   const handleKeyUp = (event) => {
     if (event.key === 'ArrowUp') {
       console.log('Player: ', room, playerId, "relese up");
-      socket.emit('handleKeyRelUp', room,  playerId);
+      socket.emit('handleKeyRelUp', {roomName:room, id:playerId});
     } else if (event.key === 'ArrowDown') {
       console.log('Player: ', room, playerId, "relese down");
-      socket.emit('handleKeyRelDown', room, playerId);
+      socket.emit('handleKeyRelDown', {roomName:room, id:playerId});
     }
     setKeyDown(false);
   };
