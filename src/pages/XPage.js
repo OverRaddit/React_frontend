@@ -72,6 +72,9 @@ const sampleChannelData2 = new Map([
   ],
  ]);
 
+ const userChannelList = new Map([]);
+//  const userChannelList = new Map([]);
+
 const exampleChatHistory = [
   'Hello, how are you?',
   'I am doing well, thanks for asking.',
@@ -103,11 +106,11 @@ const parseCookie = (cookie) => {
 }
 
 const XPage = () => {
-  const [chatHistory, setChatHistory] = useState(exampleChatHistory);
+  const [currentChatHistory, setChatHistory] = useState(['']);
   const [currentChat, setCurrentChat] = useState('');
   const [socket, setSocket] = useState(null);
   const [chatRooms, setChatRooms] = useState(sampleChannelData);
-  const [userChatRooms, setUserChatRooms] = useState(sampleChannelData2);
+  const [userChatRooms, setUserChatRooms] = useState(userChannelList);
   const [currentChatRoom, setCurrentChatRoom] = useState('gshimRoom');  // 현재 선택된 채널의 이름을 저장한다.
   const { myData, setMyData, friends, setFriends } = useMyContext();
 
@@ -117,6 +120,13 @@ const XPage = () => {
   const chatHistoryRef = useRef(null); // new2
 
   useEffect(() => {
+		// userChannelList.set('channelName', 
+		// {
+		// kind: 0,
+		// roomname: 'testRoom',
+		// owner: 'yson',
+		// chatHistory : [],
+		// });
     const cookies = parseCookie(document.cookie);
     console.log('Xpage cookies: ', cookies);
 
@@ -146,7 +156,7 @@ const XPage = () => {
       const { num, roomName } = data;
       console.log(`someone join ${roomName}(${num})`);
       if (roomName === currentChatRoom)
-        setChatHistory([...chatHistory, 'someone join the chatRoom!']);
+        setChatHistory([...currentChatHistory, 'someone join the chatRoom!']);
       console.log('someone join the chatRoom');
       console.log(`현재 방에 들어와 있던 인원은 ${num}명입니다`);
     });
@@ -166,7 +176,7 @@ const XPage = () => {
 
       // 현재 켜놓고 있는 채널의 chat만 저장합니다.
       if (currentChatRoom === roomName)
-        setChatHistory([...chatHistory, message]);
+        setChatHistory([...currentChatHistory, message]);
       else
         console.log('this room is not opened from my client!');
     })
@@ -182,7 +192,7 @@ const XPage = () => {
       socket.off('chat');
       //socket.off('joinChannel');
   });
-  }, [socket, chatHistory, currentChatRoom, currentChat]);
+  }, [socket, currentChatHistory, currentChatRoom, currentChat]);
 
   useEffect(() => {
     const chatHistoryBox = chatHistoryRef.current;
@@ -190,7 +200,11 @@ const XPage = () => {
     console.log('gap: ', gap);
     if (gap < 230)
       chatHistoryBox.scrollTop = chatHistoryBox.scrollHeight;
-  }, [chatHistory]);
+  }, [currentChatHistory]);
+
+	useEffect(() => {
+		console.log('map update!');
+	}, [userChatRooms]);
 
   const onCreateChannel = (data) => {
     console.log('data: ', data);
@@ -205,7 +219,7 @@ const XPage = () => {
   const handleChatSubmit = (e) => {
     e.preventDefault();
     if (currentChat.trim() !== '') {
-      setChatHistory([...chatHistory, 'You: ' + currentChat]);
+      setChatHistory([...currentChatHistory, 'You: ' + currentChat]);
 
       /*
       data = {
@@ -267,8 +281,9 @@ const XPage = () => {
 
   return (
     <div className="x-page">
+			<button onClick={() => console.log('userState' , userChatRooms)}>checkState</button>
       <button onClick={() => console.log(myData)}>myData확인버튼</button>
-      <h1>{chatRooms.length === 0 ? "You are not join any room!" : currentChatRoom}</h1>
+      <h1>{userChatRooms.size === 0 ? "You are not join any room!" : currentChatRoom}</h1>
       <div className="x-page-top">
         <button>Normal Button</button>
         <button>Expand Button</button>
@@ -291,15 +306,22 @@ const XPage = () => {
           )}
           <label>
             Channel Kind:
-            <select value ={0} >
-              {chatRooms.map((chatRoom, idx) => (
-                <option key={idx} value={chatRoom.roomname}>{chatRoom.roomname}</option>
-              ))}
+            <select >
+							{Array.from(userChatRooms).map(([key, chatRoom]) => {
+								console.log('foreach chatRoom: ', chatRoom, key);
+								console.log('roomname: ', chatRoom.roomname);
+								return (
+									<option key={key} value={chatRoom.roomname}>
+										{chatRoom.roomname}
+									</option>
+								);
+							})}
+							<option key={9} value={'fuck'}>fuck</option>
             </select>
             <button onClick={leftChannel}>방나가기</button>
           </label>
           <ul>
-            {chatHistory.map((chat, index) => (
+            {currentChatHistory.map((chat, index) => (
               <li key={index}>{chat}</li>
             ))}
           </ul>
@@ -323,7 +345,7 @@ const XPage = () => {
           : <h3>you can't make room now!</h3>
         }
 
-        <ChannelLookup setChatHistory={setChatHistory} setCurrentChatRoom={setCurrentChatRoom} socket={socket} chatRooms={chatRooms}/>
+        <ChannelLookup setChatHistory={setChatHistory} setCurrentChatRoom={setCurrentChatRoom} socket={socket} chatRooms={chatRooms} userChatRooms={userChatRooms} setUserChatRooms={setUserChatRooms}/>
       </div>
     </div>
   );
