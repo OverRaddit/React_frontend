@@ -22,7 +22,6 @@ function App() {
   const [lastPong, setLastPong] = useState(null);
   const [room, setRoom] = useState('none');
   const [isInQueue, setIsInQueue] = useState(false);
-  const [isExQueue, setIsExQueue] = useState(false);
   const [isNavigationVisible, setIsNavigationVisible] = useState(true);
 
   const showNavigation = () => {
@@ -156,28 +155,14 @@ function App() {
   }
 
   const sendJoin = () => {
-    console.log("normalQueue Join");
+    console.log("언제 Join");
     socket.emit('match', false);
-	setIsExQueue(false);
-    // socket.emit('join', 'gshim');
-  }
-  const sendJoin_ex = () => {
-    console.log("extensionQueue Join");
-    socket.emit('match', true);
-	setIsExQueue(true);
     // socket.emit('join', 'gshim');
   }
 
   const cancelQueue = () => {
 	console.log("cancelQueue called")
-	if (isExQueue == false)
-	{
-	  socket.emit('cancel queue', false);	
-	}
-	else
-	{
-	  socket.emit('cancel queue', true);
-	}
+	socket.emit('cancel queue', false);
 	setIsInQueue(false);
 	document.body.classList.remove('modal-open');
   }
@@ -230,7 +215,6 @@ function App() {
               <p>IsLeftPlayer: { '' + isLeftPlayer }</p>
               {/* <button onClick={sendPing}>Send ping</button> */}
               <button onClick={sendJoin}>Join</button>
-              <button onClick={sendJoin_ex}>Extension Join</button>
               <div>
                 <input type="text" value={inputValue} onChange={handleChange} />
                 <button onClick={handleClick}>Send</button>
@@ -251,9 +235,10 @@ function App() {
             <Routes>
               <Route path="/" element={<DefaultPage socket={socket}  />} />
               <Route path="/a" element={<XPage/>} />
-              <Route path="/game" element={<Game socket={socket} room={room} nickName={nickName} isExtension={isExQueue}/>} />
+              <Route path="/game" element={<Game socket={socket} room={room}/>} />
               <Route path="/c" element={<ZPage />} />
-              <Route path="/profile/:userId?" element={<ProfilePage />} />
+              <Route path="/profile" element={<ProfilePage userId="alee" isMyProfile={true} />} />
+              {/* TODO: 동적으로 props 넣어주는 부분 추가해야함 생각해보니 여기서 다 처리하면 안될것같은데 (youjeon) */}
               <Route path="/login" element={<LoginPage onHideNavigation={hideNavigation}/>} />
               <Route path="/loginok" element={<LoginOK onShowNavigation={showNavigation} />} />
               <Route path="/join" element={<JoinPage onHideNavigation={hideNavigation} />} />

@@ -1,15 +1,13 @@
-import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import './YPage.css';
 import { useNavigate } from 'react-router-dom';
 
-
-function Game({socket, room, nickName, isExtension}) {
+function Game({socket, room}) {
   // console.log("In Game", Value);
   const canvasRef = useRef(null);
   const canvasMaxWidth = 600;
   const canvasMaxHeight = 400;
-
 
   const [gameOver, setGameOver] = useState(false);
   const [isInGame, setIsInGame] = useState(true);
@@ -30,10 +28,10 @@ function Game({socket, room, nickName, isExtension}) {
   const [pos1, setPos1] = useState(0);
   const [pos2, setPos2] = useState(0);
   const [ball, setBall] = useState({});
+  // const [room, setRoom] = useState("");
   const [keyDown, setKeyDown] = useState(false);
-  const [gameMode, setGameMode] = useState(0);
-  
-  const ballBlinkRate = 50;
+  const [colorTemp, setColorTemp] = useState(0);
+  const [gameMode, setGameMode] = useState(1);
 
   socket.on('isLeft', (num) => {
     const number = parseInt(num);
@@ -46,23 +44,6 @@ function Game({socket, room, nickName, isExtension}) {
     setPos2(pos2);
     setBall(ball);
   });
-
-  useLayoutEffect(() => {
-	if (socket.status != "in-game")
-	{
-		window.alert('잘못된 접근입니다.');
-		setIsInGame(false);
-		navigate('/');
-	}
-	else
-	{
-		setIsInGame(true);
-	}
-
-	setGameMode(isExtension == false ? 0 : 1);
-	return () => {
-	};
-  }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;    
@@ -81,26 +62,6 @@ function Game({socket, room, nickName, isExtension}) {
       ctx.closePath();
       ctx.fill();
     }
-
-	function drawCircle_extension(gameMode)
-	{
-	  if (gameMode == 1)
-	  {
-		if (Math.floor(ball.x / ballBlinkRate) % 2 === 0)
-		{
-		  drawCircle(ball.x, ball.y, ball.radius, "WHITE");
-		}
-		else if (Math.floor(ball.x / ballBlinkRate) % 2 === 1)
-		{
-		  drawCircle(ball.x, ball.y, ball.radius, "BLACK");
-		}
-	  }
-	  else
-	  {
-		drawCircle(ball.x, ball.y, ball.radius, "WHITE");
-	  } 
-	}
-
     function drawText(text, x, y, color){
       ctx.fillStyle = color;
       ctx.font = "35px fantasy";
@@ -114,7 +75,10 @@ function Game({socket, room, nickName, isExtension}) {
 
     function render(){
       //clear the canvas
+      // console.log("test\n");
       drawRect(0, 0, canvasMaxWidth, canvasMaxHeight, "BLACK");
+      
+      // console.log(pos1, pos2);
       drawRect(pos1.x, pos1.y, pos1.width, pos1.height, "WHITE");
       drawRect(pos2.x, pos2.y, pos2.width, pos2.height, "WHITE");
 
@@ -131,9 +95,26 @@ function Game({socket, room, nickName, isExtension}) {
       // console.log("너나?",ball);
       // console.log(ball.x, ball.y, ball.radius);
       
-	  //익스텐션 처리 + drawCircle 함수를 합친 함수 만들기? or 여기서 한번에 처리하기
-	  drawCircle_extension(gameMode);
+      drawCircle(ball.x, ball.y, ball.radius, "WHITE");
 	}
+	//   if (gameMode == 1)
+	//   {
+	// 	if (colorTemp == 0)
+	// 	{
+	// 		drawCircle(ball.x, ball.y, ball.radius, "WHITE");
+	// 		setColorTemp(1);
+	// 	}
+	// 	else
+	// 	{
+	// 		drawCircle(ball.x, ball.y, ball.radius, "BLACK");
+	// 		setColorTemp(0);
+	// 	}
+	//   }
+	//   else
+	//   {
+	// 	drawCircle(ball.x, ball.y, ball.radius, "WHITE");
+	//   }
+    // }
     render();
 
     window.addEventListener('keydown', handleKeyDown);
@@ -158,23 +139,35 @@ function Game({socket, room, nickName, isExtension}) {
 		});
 
 		socket.on('afk', (player) => {
-			console.log('Game over. ' + player, ' wins.');
+			console.log(player, 'p disconnected.', player == 1 ? 2 : 1, 'p wins.');
 			//백 측에서 게임을 멈춰야 함.
 			setGameOver(true);
 		});
+		if (socket.status != "in-game")
+		{
+			window.alert('잘못된 접근입니다.');
+			setIsInGame(false);
+			navigate('/');
+		}
+		else
+		{
+			setIsInGame(true);
+		}
 
-		window.onpopstate = (event) => {
-			// socket.emit('playerBackspace', room, nickname); //닉네임을 받을 수 있다면 보내기.
-			if (socket.status != 'in-game')
-			{
-				return ;
-			}
-			socket.emit('playerBackspace', room, nickName);
+		const handleBackForward = (event) => {
+			socket.emit('playerBackspace', room, playerId);
 			console.log("사용자의 뒤로가기 혹은 앞으로가기가 감지되었습니다.");
-      console.log(nickName)
-			backToMain();
-		  };
+			window.history.back();
+		};
+
+		window.addEventListener('popstate', handleBackForward);
+
+		return () => {
+			window.removeEventListener('popstate', handleBackForward);
+		}
 	}, []);
+
+
 
 //   const handleKeyDown = (event) => {
     
@@ -247,20 +240,20 @@ return (
 		<div className="container">
 		  <div className="profile-container">
 			<img className="profile-pic-first" src={''} alt="Profile picture" />
-			<div className="nickname"><p className='nickname-first'>{'nickname'}</p></div>
+			<div className="nickname"><text className='nickname-first'>{'nickname'}</text></div>
 			<div className="profile-details">
-				<div className="rating"><p className='ratingText-first'>{'MMR : 0000'}</p></div>
-				<div className="history"><p className='historyText-first'>{'전적 : none'}</p></div>
+				<div className="rating"><text className='ratingText-first'>{'MMR : 0000'}</text></div>
+				<div className="history"><text className='historyText-first'>{'전적 : none'}</text></div>
 			</div>
 		  </div>
 		</div>
 		<div className="container">
 		  <div className="profile-container">
 			<img className="profile-pic-second" src={''} alt="Profile picture" />
-			<div className="nickname"><p className='nickname-second'>{'nickname'}</p></div>
+			<div className="nickname"><text className='nickname-second'>{'nickname'}</text></div>
 			<div className="profile-details">
-				<div className="rating"><p className='ratingText-second'>{'MMR : 0000'}</p></div>
-				<div className="history"><p className='historyText-second'>{'전적 : none'}</p></div>
+				<div className="rating"><text className='ratingText-second'>{'MMR : 0000'}</text></div>
+				<div className="history"><text className='historyText-second'>{'전적 : none'}</text></div>
 			</div>
 		  </div>
 		</div>
