@@ -9,13 +9,18 @@ import ProfilePictureModal from './ProfilePictureModal';
 import { useParams } from 'react-router-dom';
 import { useMyContext } from '../MyContext'; // Import the context
 import { MyFriend } from 'navigation/interfaces/Friend.interface';
+import RecentMatchCard, { RecentMatch } from './RecentMatchCard';
 
 const ProfilePage: React.FC = () => {
   const { myData, setMyData, friends, setFriends } = useMyContext(); // Access the context
-  const { userId } = useParams<{ userId?: string }>(); // Get the userId from the route
-
+  let { userId } = useParams<{ userId?: string }>();
   const isMyProfile = !userId || (myData && myData.intraid === userId) || false;
 
+  // userId가 없을 경우 myData의 intraid를 사용
+  if (!userId && myData) {
+    userId = myData.intraid;
+  }
+  
   const [userData, setUserData] = useState({
     id: 0,
     intraid: '',
@@ -31,6 +36,7 @@ const ProfilePage: React.FC = () => {
   const [isOtpModalOpen, setIsOtpModalOpen] = useState(false);
   const [isNicknameModalOpen, setIsNicknameModalOpen] = useState(false);
   const [isProfilePictureModalOpen, setIsProfilePictureModalOpen] = useState(false);
+  const [recentMatches, setRecentMatches] = useState<RecentMatch[]>([]);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -43,9 +49,20 @@ const ProfilePage: React.FC = () => {
         console.error('Failed to fetch user data:', error);
       }
     };
+    const fetchRecentMatches = async () => {
+      try {
+        const response = await axios.get(`http://localhost:3000/matchhistory/${userId}`);
+        setRecentMatches(response.data.slice(0, 5));
+        console.log(recentMatches[0]);
+      } catch (error) {
+        console.error('Failed to fetch recent matches:', error);
+      }
+    };
+  
     // TODO: 없는 사람일때에(404 받으면?) 예외처리 필요 
-
+    
     fetchUserData();
+    fetchRecentMatches();
   }, [userId]);
 
   const isFriend = friends.some((friend) => friend.id === userData.id);
@@ -125,6 +142,9 @@ const ProfilePage: React.FC = () => {
     }
   };
 
+  const recentMatchCards = recentMatches.map((match) => (
+    <RecentMatchCard key={match.id} {...match} />
+  ));
 
   return (
     <div className="profile-page">
@@ -153,9 +173,9 @@ const ProfilePage: React.FC = () => {
             />
           </div>
         </div>
-        <div className="profile-recent-record">
-          {/* 이 부분에 최근 전적을 출력하는 코드를 작성하세요. */}
-        </div>
+          <div className="profile-recent-record">
+            {recentMatchCards}
+          </div>
       
         <NicknameChangeModal
           isOpen={isNicknameModalOpen}

@@ -1,0 +1,32 @@
+.recent-match-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    margin-bottom: 15px;
+    background-color: #f0f0f0;
+    border-radius: 5px;
+    width: 100%;
+    max-width: 600px;
+  }
+  
+  .winner,
+  .loser {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  
+  .winner img,
+  .loser img {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    margin-bottom: 10px;
+  }
+  
+  .score {
+    font-size: 1.5rem;
+  }
+  
