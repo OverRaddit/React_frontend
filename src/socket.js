@@ -1,7 +1,7 @@
 import io from 'socket.io-client';
 
 const initSocket = (url, cookies, setMyData) => {
-  //console.log(cookies)
+  console.log('initSocket] cookies: ', cookies);
 
   const socket = io(url , {
     extraHeaders: {
@@ -11,9 +11,9 @@ const initSocket = (url, cookies, setMyData) => {
     },
   });
 
-  socket.on('connect', () => {
+  socket.on('connect', (response) => {
     setMyData(prevState => ({ ...prevState, socketid: socket }));
-    console.log('Connected~~');
+    console.log('Connected~~: ', response);
   });
 
   socket.on('disconnect', () => {

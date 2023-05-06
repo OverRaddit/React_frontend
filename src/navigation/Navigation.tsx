@@ -110,19 +110,22 @@ const Navigation: FC = () => {
       }
     };
     fetchUserData();
-  }, [setMyData, setFriends, initSocket]);
+  }, [setMyData, setFriends, initSocket, friends, myData]);
 
   useEffect(() => {
-    if (myData && !mySocket) {
+    console.log('myData: ', myData);
+    //if (myData && !mySocket) {
+    if (myData && myData.intraid && myData.id && !mySocket) {
+      console.log('initSocket!');
       initSocket('http://localhost:4242/chat');
     }
-  }, [myData]);
+  }, [myData, initSocket, mySocket]);
 
   useEffect(() => {
     console.log('mySocket:');
     console.log(mySocket);
   }, [mySocket]); // `mySocket`이 변경될 때마다 로깅합니다.
-  
+
   const openModal = (channel: MyChannel) => {
     setChannelToLeave(channel);
     setIsModalOpen(true);
@@ -150,9 +153,9 @@ const Navigation: FC = () => {
           : { ...channel }
       )
     );
-  };  
+  };
 
-  
+
 
   const renderChannelList = () => {
     return (
@@ -195,7 +198,7 @@ const Navigation: FC = () => {
       </ul>
     );
   };
-  
+
   const findMyChannelData = (channel: any) => {
     return channel.users.find(
       (user: any) => user.intraId === myData?.intraid
@@ -205,8 +208,8 @@ const Navigation: FC = () => {
   const handleUserClick = (user: any, channel: any) => {
     setSelectedUser(user);
     setSelectedUserChannel(channel);
-  };  
-  
+  };
+
   const handleListSwitch = (listName: ListName) => {
     setShowList(listName);
   };
@@ -231,7 +234,7 @@ const Navigation: FC = () => {
     if (friends.length === 0) {
       return <div>No friends found</div>;
     }
-  
+
     const sortedFriends = friends.sort((a, b) => {
       if (a.status === b.status) {
         if (a.status === 'online') {
@@ -255,14 +258,14 @@ const Navigation: FC = () => {
         return a.nickname.localeCompare(b.nickname);
       }
     });
-    
+
     return (
       <ul className="friends-list">
       {sortedFriends.map((friend) => (
         <li
           key={friend.id}
           className="friend"
-          onClick={() => handleFriendClick(friend)} 
+          onClick={() => handleFriendClick(friend)}
         >
           <span>{friend.nickname} ({friend.status})</span>
         </li>
@@ -270,7 +273,7 @@ const Navigation: FC = () => {
     </ul>
   );
   };
-  
+
   const handleChannelSearch = (searchQuery: any) => {
     // Implement channel search
   };

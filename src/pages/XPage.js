@@ -120,7 +120,7 @@ const XPage = () => {
   const chatHistoryRef = useRef(null); // new2
 
   useEffect(() => {
-		// userChannelList.set('channelName', 
+		// userChannelList.set('channelName',
 		// {
 		// kind: 0,
 		// roomname: 'testRoom',
@@ -235,7 +235,7 @@ const XPage = () => {
   const leftChannel = () => {
     console.log('방나가기 이벤트');
     const data = {
-      "roomname": currentChatRoom,
+      "roomName": currentChatRoom,
       "userId": socket.userId,
     };
     //console.log('data: ', data);

@@ -21,6 +21,13 @@ type MyContextProps = {
   initSocket: (url: string) => void;
 };
 
+interface EventResponse {
+  success: boolean;
+  message: string;
+  data: any[];
+}
+
+
 const defaultMyContext = {
   users: [],
   channels: [],
@@ -46,6 +53,7 @@ export const MyContextProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const [cookies, setCookie, removeCookie] = useCookies(['session_key']);
 
   const initSocket = (url: string) => {
+    console.log('initSocket in MyContext (intraId, userId): ', myData!.intraid, ',', myData!.id.toString());
     const socket = io(url, {
       extraHeaders: {
         Authorization: `Bearer ${cookies.session_key}`,
@@ -54,6 +62,14 @@ export const MyContextProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       },
     });
     setMySocket({ socket });
+
+    socket.on('initChannels', (response: EventResponse) => {
+      console.log(response);
+      if (!response.success) console.log(response.message);
+      else {
+        setChannels(response.data);
+      }
+    });
   };
 
   const value = {
