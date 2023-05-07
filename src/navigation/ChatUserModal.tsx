@@ -59,7 +59,7 @@ const handleBan = () => {
 };
 
 const handleMute = () => {
-  mySocket?.socket.emit('mute', { socketId: user.socketId }, (response:any) => {
+  mySocket?.socket.emit('mute', { userId: user.id, roomName: channelId }, (response:any) => {
     console.log(response);
   });
   onClose();

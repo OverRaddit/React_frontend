@@ -9,6 +9,7 @@ import axios from 'axios';
 import ChannelSearch from './ChannelSearch';
 import FriendModal from './FriendModal';
 import ChatUserModal from './ChatUserModal';
+import { resolve } from 'path';
 
 type ListName = 'friends' | 'channels';
 
@@ -20,6 +21,7 @@ const Navigation: FC = () => {
   const [selectedUser, setSelectedUser] = useState<any | null>(null);
   const [selectedUserChannel, setSelectedUserChannel] = useState<any | null>(null);
   const { myData, setMyData, friends, setFriends, channels, setChannels, initSocket, mySocket } = useMyContext();
+  const [modalMessage, setModalMessage] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -47,7 +49,136 @@ const Navigation: FC = () => {
     if (myData && myData.intraid && myData.id && !mySocket) {
       initSocket('http://localhost:4242/chat');
     }
+    if (mySocket) {
+      mySocket.socket.on('owner-granted', ({ roomName, user }) => {
+        if (user.intraid === myData?.intraid) {
+          setModalMessage('You have been granted ownership of the ' + roomName);  
+        }
+        setChannels(
+        channels.map((channel) => {
+          if (channel.name === roomName) {
+            return {
+              ...channel,
+              users: channel.users.map((channelUser) => {
+                if (channelUser.id === user.id) {
+                  return { ...channelUser, isOwner: true };
+                }
+                if (channelUser.isOwner) {
+                  return { ...channelUser, isOwner: false, isAdmin: false };
+                }
+                return channelUser;
+              }),
+            };
+          }
+          return channel;
+        })
+      );
+    });
+      
+    mySocket.socket.on('admin-granted', ({ roomName, user }) => {
+      if (user.intraid === myData?.intraid) {
+        setModalMessage('You have been granted admin of the ' + roomName);  
+      }
+      setChannels(
+      channels.map((channel) => {
+        if (channel.name === roomName) {
+          return {
+            ...channel,
+            users: channel.users.map((channelUser) => {
+              if (channelUser.id === user.id) {
+                return { ...channelUser, isAdmin: true };
+              }
+              return channelUser;
+            }),
+          };
+        }
+        return channel;
+      })
+    );
+  });
+      
+    mySocket.socket.on('admin-revoked', ({ roomName, user }) => {
+      if (user.intraid === myData?.intraid) {
+        setModalMessage('You have been revoked admin of the ' + roomName);  
+      }
+      setChannels(
+      channels.map((channel) => {
+        if (channel.name === roomName) {
+          return {
+            ...channel,
+            users: channel.users.map((channelUser) => {
+              if (channelUser.id === user.id) {
+                return { ...channelUser, isAdmin: false };
+              }
+              return channelUser;
+            }),
+          };
+        }
+        return channel;
+      })
+    );
+  });
+      
+  mySocket.socket.on('user-banned', ({ roomName, user }) => {
+    if (user.intraid === myData?.intraid) {
+      setModalMessage('You have been banned of the ' + roomName);  
+      setChannels(channels.filter((channel) => channel.name !== roomName));
+    }
+    setChannels(
+      channels.map((channel) => {
+        if (channel.name === roomName) {
+          return {
+            ...channel,
+            users: channel.users.filter((channelUser) => channelUser.intraId !== user.intraid),
+          };
+        }
+        return channel;
+      })
+    );
+  });
+      
+  mySocket.socket.on('user-kicked', ({ roomName, user }) => {
+    if (user.intraid === myData?.intraid) {
+      setModalMessage('You have been kicked from the ' + roomName);
+      // 채널리스트에서 해당 채팅방을 삭제합니다.
+      setChannels(channels.filter((channel) => channel.name !== roomName));
+    } else {
+      // 다른 사용자가 추방된 경우, 해당 사용자만 채널리스트에서 삭제합니다.
+      setChannels(
+        channels.map((channel) => {
+          if (channel.name === roomName) {
+            return {
+              ...channel,
+              users: channel.users.filter((channelUser) => channelUser.intraId !== user.intraid),
+            };
+          }
+          return channel;
+        })
+      );
+    }
+  });
+  mySocket.socket.on('chat', ( response ) => {
+    console.log(response);
+  });
+  mySocket.socket.on('user-muted', ( response ) => {
+    console.log(response);
+  });
+  
+  
+      // 다른 이벤트 리스너들도 여기에 추가합니다.
+  
+      // 컴포넌트가 언마운트될 때 이벤트 리스너를 제거합니다.
+      return () => {
+        mySocket.socket.off('owner-granted');
+        mySocket.socket.off('admin-granted');
+        mySocket.socket.off('admin-revoked');
+        mySocket.socket.off('user-banned');
+        mySocket.socket.off('user-kicked');
+        // 다른 이벤트 리스너들도 여기에서 제거합니다.
+      };
+    }
   }, [myData, initSocket, mySocket, channels, setChannels]);
+
 
   const openModal = (channel: MyChannel) => {
     setChannelToLeave(channel);
@@ -254,7 +385,14 @@ const Navigation: FC = () => {
           channelId={selectedUserChannel.name} // TODO: 이름 잘못됨
         />
       )}
-
+      <Modal
+        isOpen={modalMessage !== null}
+        onRequestClose={() => setModalMessage(null)}
+        contentLabel="Notification Modal"
+      >
+        <h2>{modalMessage}</h2>
+        <button onClick={() => setModalMessage(null)}>OK</button>
+      </Modal>
 
   </div>
   );
