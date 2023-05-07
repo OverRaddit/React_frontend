@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import { Link } from 'react-router-dom';
 import './YPage.css';
 import { useNavigate } from 'react-router-dom';
+import { useMyContext } from 'MyContext';
 
 
 function Game({socket, room, nickName, isExtension}) {
@@ -26,6 +27,8 @@ function Game({socket, room, nickName, isExtension}) {
     height : 10,
     color : "WHITE"
   }
+	const { mySocket, myData, initSocket, setMyData, setMySocket } = useMyContext();
+
   const [playerId, setPlayerId] = useState(0);
   const [pos1, setPos1] = useState(0);
   const [pos2, setPos2] = useState(0);
@@ -147,11 +150,27 @@ function Game({socket, room, nickName, isExtension}) {
 
 	useEffect(()=> {
 		//테스트용 변수
-		const gshimData = {"intraid":"gshim","avatar":"https://cdn.intra.42.fr/users/5b318ee00454b41113089517347a42ed/gshim.jpg","nickname":"anon_1","isotp":false,"email":"gshim@student.42seoul.kr","wincount":0,"losecount":0,"rating":1200,"id":1};
-		// socket.emit('getProfile', dbId, applyProfile(data, 1));
-		// socket.emit('getProfile', dbId, applyProfile(data, 2));
-		applyProfile(gshimData, 1);
-		applyProfile(gshimData, 2);
+		// const gshimData = {"intraid":"gshim","avatar":"https://cdn.intra.42.fr/users/5b318ee00454b41113089517347a42ed/gshim.jpg","nickname":"anon_1","isotp":false,"email":"gshim@student.42seoul.kr","wincount":0,"losecount":0,"rating":1200,"id":1};
+		/*
+		{
+			intraId: 'gshim'
+		}
+
+		const intraId = 'gshim';
+		{
+			intraId
+		}
+		*/
+		console.log('mysocket : ', mySocket);
+
+		setTimeout( () => {
+			console.log('--');
+			mySocket.emit('x');
+	
+			mySocket.emit('getProfile', { 'intraId':'yson' }, (data) => applyProfile(data, 1));
+			mySocket.emit('getProfile', { 'intraId':'gshim' }, (data) => applyProfile(data, 2));
+		}, 5000);
+
 		socket.on('gameover', (data)=> {
 			const {state, message, dataObject} = data;
 			const {player} = dataObject;
@@ -211,20 +230,21 @@ function Game({socket, room, nickName, isExtension}) {
   }
 
   const applyProfile = (data, playerNumber) => {
-	if (playerNumber == 1)
-	{
-		document.querySelector(".profile-pic-first").src = data.avatar;
-		document.querySelector(".nickname-first").textContent = data.nickname;
-		document.querySelector(".ratingText-first").textContent = 'MMR : ' + data.rating;
-		document.querySelector(".historyText-first").textContent = '전적 : ' + data.wincount + '승 ' + data.losecount + '패';
-	}
-	else if (playerNumber == 2)
-	{
-		document.querySelector(".profile-pic-second").src = data.avatar;
-		document.querySelector(".nickname-second").textContent = data.nickname;
-		document.querySelector(".ratingText-second").textContent = 'MMR : ' + data.rating;
-		document.querySelector(".historyText-second").textContent = '전적 : ' + data.wincount + '승 ' + data.losecount + '패';
-	}
+		console.log('applyProfile : ', data);
+		if (playerNumber == 1)
+		{
+			document.querySelector(".profile-pic-first").src = data.avatar;
+			document.querySelector(".nickname-first").textContent = data.nickname;
+			document.querySelector(".ratingText-first").textContent = 'MMR : ' + data.rating;
+			document.querySelector(".historyText-first").textContent = '전적 : ' + data.wincount + '승 ' + data.losecount + '패';
+		}
+		else if (playerNumber == 2)
+		{
+			document.querySelector(".profile-pic-second").src = data.avatar;
+			document.querySelector(".nickname-second").textContent = data.nickname;
+			document.querySelector(".ratingText-second").textContent = 'MMR : ' + data.rating;
+			document.querySelector(".historyText-second").textContent = '전적 : ' + data.wincount + '승 ' + data.losecount + '패';
+		}
   }
 
 return (
