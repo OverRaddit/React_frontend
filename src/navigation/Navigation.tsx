@@ -12,83 +12,14 @@ import ChatUserModal from './ChatUserModal';
 
 type ListName = 'friends' | 'channels';
 
-const channelList: MyChannel[] = [
-  {
-    id: 1,
-    name: 'Channel 1',
-    users: [
-      {
-        id: 1,
-        nickname: 'User 1',
-        intraId: 'youjeon',
-        socketId: 's1',
-        avatar: 'https://example.com/avatar1.png',
-        status: 'online',
-        isOwner: true,
-        isAdmin: true,
-      },
-      {
-        id: 2,
-        nickname: 'User 2',
-        intraId: 'user2',
-        socketId: 's2',
-        avatar: 'https://example.com/avatar2.png',
-        status: 'offline',
-        isOwner: false,
-        isAdmin: false,
-      },
-    ],
-    showUserList: false,
-  },
-  {
-    id: 2,
-    name: 'Channel 2',
-    users: [
-      {
-        id: 2,
-        nickname: 'User 2',
-        intraId: 'user2',
-        socketId: 's2',
-        avatar: 'https://example.com/avatar2.png',
-        status: 'offline',
-        isOwner: false,
-        isAdmin: false,
-      },
-      {
-        id: 3,
-        nickname: 'User 3',
-        intraId: 'user3',
-        socketId: 's3',
-        avatar: 'https://example.com/avatar3.png',
-        status: 'in-game',
-        isOwner: true,
-        isAdmin: true,
-      },
-      {
-        id: 4,
-        nickname: 'User 4',
-        intraId: 'user4',
-        socketId: 's4',
-        avatar: 'https://example.com/avatar4.png',
-        status: 'in-queue',
-        isOwner: false,
-        isAdmin: true,
-      },
-    ],
-    showUserList: false,
-  },
-];
-
-
 const Navigation: FC = () => {
-  const [showList, setShowList] = useState<ListName>('friends');                    // friends, channels toggle
-  const [expandedChannels, setExpandedChannels] = useState<Set<number>>(new Set()); // ??
-  const [channels, setChannels] = useState(channelList);                            // channel list
-  const [isModalOpen, setIsModalOpen] = useState(false);                            // open modal or not
-  const [channelToLeave, setChannelToLeave] = useState<MyChannel | null>(null);       // ??
+  const [showList, setShowList] = useState<ListName>('friends');
+  const [expandedChannels, setExpandedChannels] = useState<Set<number>>(new Set()); 
+  const [isModalOpen, setIsModalOpen] = useState(false);  
+  const [channelToLeave, setChannelToLeave] = useState<MyChannel | null>(null); 
   const [selectedUser, setSelectedUser] = useState<any | null>(null);
-  const [selectedUserChannel, setSelectedUserChannel] = useState<any | null>(null); // 새로 추가된 줄
-  const { myData, setMyData, friends, setFriends, initSocket, mySocket } = useMyContext();
+  const [selectedUserChannel, setSelectedUserChannel] = useState<any | null>(null);
+  const { myData, setMyData, friends, setFriends, channels, setChannels, initSocket, mySocket } = useMyContext();
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -113,18 +44,10 @@ const Navigation: FC = () => {
   }, [setMyData, setFriends, initSocket, friends, myData]);
 
   useEffect(() => {
-    console.log('myData: ', myData);
-    //if (myData && !mySocket) {
     if (myData && myData.intraid && myData.id && !mySocket) {
-      console.log('initSocket!');
       initSocket('http://localhost:4242/chat');
     }
-  }, [myData, initSocket, mySocket]);
-
-  useEffect(() => {
-    console.log('mySocket:');
-    console.log(mySocket);
-  }, [mySocket]); // `mySocket`이 변경될 때마다 로깅합니다.
+  }, [myData, initSocket, mySocket, channels, setChannels]);
 
   const openModal = (channel: MyChannel) => {
     setChannelToLeave(channel);
@@ -146,16 +69,14 @@ const Navigation: FC = () => {
   };
 
   const toggleUserList = (channelId: number) => {
-    setChannels((prevChannelList) =>
-      prevChannelList.map((channel) =>
+    setChannels(
+      channels.map((channel) =>
         channel.id === channelId
           ? { ...channel, showUserList: !channel.showUserList }
-          : { ...channel }
+          : channel
       )
     );
   };
-
-
 
   const renderChannelList = () => {
     return (
@@ -330,6 +251,7 @@ const Navigation: FC = () => {
           myChannelData={findMyChannelData(selectedUserChannel)}
           onClose={() => setSelectedUser(null)}
           isOpen={selectedUser !== null}
+          channelId={selectedUserChannel.name} // TODO: 이름 잘못됨
         />
       )}
 

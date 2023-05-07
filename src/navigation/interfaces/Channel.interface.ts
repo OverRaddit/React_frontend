@@ -5,5 +5,5 @@ export interface MyChannel
 	id: number;
 	name: string;
 	users: MyUser[];
-	showUserList?: boolean;
+	showUserList: boolean;
 }
