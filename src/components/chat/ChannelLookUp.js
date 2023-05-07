@@ -1,6 +1,7 @@
-import { useState } from 'react';
+// import { channel } from 'diagnostics_channel';
+import { useState, useEffect } from 'react';
 
-export function ChannelLookup({ setChatHistory, setCurrentChatRoom, chatRooms, socket, userChatRooms, setUserChatRooms }) {
+export function ChannelLookup({ setChatHistory, setCurrentChatRoom, chatRooms, socket, userChatRooms, setUserChatRooms, setSelectedChannel }) {
   const [filterKind, setFilterKind] = useState('');
 
   const filteredChannels =
@@ -30,27 +31,27 @@ export function ChannelLookup({ setChatHistory, setCurrentChatRoom, chatRooms, s
 
   const handleJoinClick = (channelName) => {
     console.log(`Joining channel: ${channelName}`);
-		console.log('before : ' + userChatRooms);
+		setSelectedChannel(channelName);
     socket.emit('joinChannel', { userId: socket.userId, roomName: channelName }, (response) => {
       if (!response.success) {
         console.log('Error가 발생했습니다.');
         return ;
       }
       // 참여한 채널목록 map에 channelName과 channelName 채팅목록 배열을 추가합니다.
-	  	setUserChatRooms([...userChatRooms, response.data]);
-      setCurrentChatRoom(channelName);
-      setChatHistory([]);
+      // setCurrentChatRoom(channelName);
+      // setChatHistory([]);
     });
-		setUserChatRooms(prev => new Map([...prev, [  'channelName', 
+		setUserChatRooms(prev => new Map([...prev, [  channelName, 
 			{
 			kind: 0,
-			roomname: 'testRoom',
+			roomname: channelName,
 			owner: 'yson',
 			chatHistory : [],
 			}]
 		]));
-    setCurrentChatRoom(channelName);
-    setChatHistory([]);
+    // setCurrentChatRoom(channelName);
+    // setCurrentChatRoom(userChatRooms.get(channelName).roomname);
+    // setChatHistory(userChatRooms.get(channelName).chatHistory);
   };
 
   return (

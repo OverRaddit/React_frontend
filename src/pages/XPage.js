@@ -106,7 +106,7 @@ const parseCookie = (cookie) => {
 }
 
 const XPage = () => {
-  const [currentChatHistory, setChatHistory] = useState(['']);
+  const [currentChatHistory, setCurrentChatHistory] = useState([]);
   const [currentChat, setCurrentChat] = useState('');
   const [socket, setSocket] = useState(null);
   const [chatRooms, setChatRooms] = useState(sampleChannelData);
@@ -116,6 +116,7 @@ const XPage = () => {
 
   const [isModalOpen, setIsModalOpen] = useState(true);
   const [modalMessage, setModalMessage] = useState('');
+	const [selectedChannel, setSelectedChannel] = useState('');
 
   const chatHistoryRef = useRef(null); // new2
 
@@ -156,7 +157,7 @@ const XPage = () => {
       const { num, roomName } = data;
       console.log(`someone join ${roomName}(${num})`);
       if (roomName === currentChatRoom)
-        setChatHistory([...currentChatHistory, 'someone join the chatRoom!']);
+        setCurrentChatHistory([...currentChatHistory, 'someone join the chatRoom!']);
       console.log('someone join the chatRoom');
       console.log(`현재 방에 들어와 있던 인원은 ${num}명입니다`);
     });
@@ -176,7 +177,7 @@ const XPage = () => {
 
       // 현재 켜놓고 있는 채널의 chat만 저장합니다.
       if (currentChatRoom === roomName)
-        setChatHistory([...currentChatHistory, message]);
+        setCurrentChatHistory([...currentChatHistory, message]);
       else
         console.log('this room is not opened from my client!');
     })
@@ -203,7 +204,17 @@ const XPage = () => {
   }, [currentChatHistory]);
 
 	useEffect(() => {
-		console.log('map update!');
+		const previousChannel = userChatRooms.get(currentChatRoom);
+		if (previousChannel)
+		{
+			previousChannel.chatHistory = currentChatHistory;
+		}
+		const selectedChannelData = userChatRooms.get(selectedChannel);
+		if (selectedChannelData) {
+			console.log('selectedChannelData :', selectedChannelData);
+			setCurrentChatRoom(selectedChannelData.roomname);
+			setCurrentChatHistory(selectedChannelData.chatHistory);
+		}
 	}, [userChatRooms]);
 
   const onCreateChannel = (data) => {
@@ -219,7 +230,7 @@ const XPage = () => {
   const handleChatSubmit = (e) => {
     e.preventDefault();
     if (currentChat.trim() !== '') {
-      setChatHistory([...currentChatHistory, 'You: ' + currentChat]);
+      setCurrentChatHistory([...currentChatHistory, 'You: ' + currentChat]);
 
       /*
       data = {
@@ -279,9 +290,20 @@ const XPage = () => {
     }
   };
 
+	const switchRoom = (event) =>
+	{
+		userChatRooms.get(currentChatRoom).chatHistory = currentChatHistory; //방을 바꾸기 전 현재 채팅방의 채팅내역을 백업.
+		const selectedRoomName = event.target.value;
+
+		setCurrentChatRoom(selectedRoomName);
+		setCurrentChatHistory(userChatRooms.get(selectedRoomName).chatHistory);
+	}
+
   return (
     <div className="x-page">
-			<button onClick={() => console.log('userState' , userChatRooms)}>checkState</button>
+			<button onClick={() => console.log('currentRoom : ', userChatRooms)}>currentRoom</button>
+			<button onClick={() => console.log('selectedRoomHistory : ', userChatRooms.get(selectedChannel).chatHistory)}>currentChannel ChatHistory</button>
+			<button onClick={() => console.log('currentChatHistory : ', currentChatHistory)}>currentChatHistory</button>
       <button onClick={() => console.log(myData)}>myData확인버튼</button>
       <h1>{userChatRooms.size === 0 ? "You are not join any room!" : currentChatRoom}</h1>
       <div className="x-page-top">
@@ -306,7 +328,7 @@ const XPage = () => {
           )}
           <label>
             Channel Kind:
-            <select >
+            <select value={currentChatRoom} onChange={switchRoom}>
 							{Array.from(userChatRooms).map(([key, chatRoom]) => {
 								console.log('foreach chatRoom: ', chatRoom, key);
 								console.log('roomname: ', chatRoom.roomname);
@@ -316,7 +338,6 @@ const XPage = () => {
 									</option>
 								);
 							})}
-							<option key={9} value={'fuck'}>fuck</option>
             </select>
             <button onClick={leftChannel}>방나가기</button>
           </label>
@@ -340,12 +361,12 @@ const XPage = () => {
         { true ?
           <>
             <h3>Make your own</h3>
-            <CreateChannelForm setChatHistory={setChatHistory} setCurrentChatRoom={setCurrentChatRoom} onCreateChannel={onCreateChannel}/>
+            <CreateChannelForm setChatHistory={setCurrentChatHistory} setCurrentChatRoom={setCurrentChatRoom} onCreateChannel={onCreateChannel}/>
           </>
           : <h3>you can't make room now!</h3>
         }
 
-        <ChannelLookup setChatHistory={setChatHistory} setCurrentChatRoom={setCurrentChatRoom} socket={socket} chatRooms={chatRooms} userChatRooms={userChatRooms} setUserChatRooms={setUserChatRooms}/>
+        <ChannelLookup setChatHistory={setCurrentChatHistory} setCurrentChatRoom={setCurrentChatRoom} socket={socket} chatRooms={chatRooms} userChatRooms={userChatRooms} setUserChatRooms={setUserChatRooms} setSelectedChannel={setSelectedChannel}/>
       </div>
     </div>
   );
