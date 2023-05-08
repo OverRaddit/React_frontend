@@ -8,7 +8,7 @@ import ProfilePage from './profile/ProfilePage.tsx';
 import LoginPage from './login/LoginPage.tsx';
 import JoinPage from './join/JoinPage';
 import OtpPage from './otp/OtpPage';
-import Game from './game/Game';
+import Game from './game/GamePage';
 import { MyContextProvider } from './MyContext';
 import LoginOK from 'login/LoginOK';
 import MainPage from 'main/MainPage';

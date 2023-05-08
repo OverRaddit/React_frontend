@@ -25,9 +25,10 @@ const MainPage: React.FC<Props> = ({ onShowNavigation }) => {
               setIsInQueue(true);
             }
           };
-          const handleMatchingComplete = () => {
+          const handleMatchingComplete = (res: any) => {
+            console.log(res);
             setIsInQueue(false);
-            navigate('/game');
+            navigate('/game', { state: { gameData: res } });
           };
       
           mySocket.gameSocket.on('enqueuecomplete', handleEnqueueComplete);

@@ -1,17 +1,11 @@
 import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import { Link } from 'react-router-dom';
-import './Game.css';
-import { useNavigate } from 'react-router-dom';
+import './GamePage.css';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useMyContext } from 'MyContext';
 
-interface GameProps {
-  room: string;
-  myIntraId: string;
-  opponentIntraId: string;
-  isExtension: boolean;
-}
 
-function Game({ room, myIntraId, opponentIntraId, isExtension }: GameProps) {
+function Game() {
   const navigate = useNavigate();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const canvasMaxWidth = 600;
@@ -24,6 +18,8 @@ function Game({ room, myIntraId, opponentIntraId, isExtension }: GameProps) {
   const [ball, setBall] = useState({ x: 0, y: 0, radius: 0 });
   const [keyDown, setKeyDown] = useState(false);
   const [gameMode, setGameMode] = useState(0);
+  const location = useLocation();
+  const gameData = location.state?.gameData.dataObject;
 
   const net = {
     x: canvasMaxWidth / 2 - 1,
@@ -43,6 +39,7 @@ function Game({ room, myIntraId, opponentIntraId, isExtension }: GameProps) {
   mySocket?.gameSocket.on('isLeft', (num: string) => {
     const number = parseInt(num);
     setPlayerId(number);
+    console.log("my number", num);
   });
 
   mySocket?.gameSocket.on('render', (pos1: any, pos2: any, ball: any) => {
@@ -52,16 +49,15 @@ function Game({ room, myIntraId, opponentIntraId, isExtension }: GameProps) {
   });
 
   useLayoutEffect(() => {
-    // if (mySocket?.gameSocket.status !== 'in-game') {
-    //   window.alert('잘못된 접근입니다.');
-    //   setIsInGame(false);
-    //   navigate('/');
-    // } else {
-    //   setIsInGame(true);
-    // }
+    if (!gameData) {
+      window.alert('잘못된 접근입니다.');
+      setIsInGame(false);
+      navigate('/');
+    } else {
       setIsInGame(true);
+    }
 
-    setGameMode(isExtension === false ? 0 : 1);
+    setGameMode(gameData.gameType);
     return () => {};
   }, []);
 
@@ -108,15 +104,19 @@ function Game({ room, myIntraId, opponentIntraId, isExtension }: GameProps) {
   
     const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
       if (!keyDown) {
+        console.log(gameData);
+        console.log(gameData.roomName);
         setKeyDown(true);
-        mySocket?.gameSocket.emit('keyDown', playerId);
+        mySocket?.gameSocket.emit('keyDown', {roomName:gameData.roomName, id:playerId});
       }
+      console.log(playerId);
+
     };
   
     const handleKeyUp = (e: React.KeyboardEvent<HTMLDivElement>) => {
       if (keyDown) {
         setKeyDown(false);
-        mySocket?.gameSocket.emit('keyUp', playerId);
+        mySocket?.gameSocket.emit('keyUp', {roomName:gameData.roomName, id:playerId});
       }
     };
   
