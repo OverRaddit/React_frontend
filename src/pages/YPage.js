@@ -149,27 +149,8 @@ function Game({socket, room, nickName, isExtension}) {
     }, [pos1, pos2, ball])
 
 	useEffect(()=> {
-		//테스트용 변수
-		// const gshimData = {"intraid":"gshim","avatar":"https://cdn.intra.42.fr/users/5b318ee00454b41113089517347a42ed/gshim.jpg","nickname":"anon_1","isotp":false,"email":"gshim@student.42seoul.kr","wincount":0,"losecount":0,"rating":1200,"id":1};
-		/*
-		{
-			intraId: 'gshim'
-		}
-
-		const intraId = 'gshim';
-		{
-			intraId
-		}
-		*/
-		console.log('mysocket : ', mySocket);
-
-		setTimeout( () => {
-			console.log('--');
-			mySocket.chatSocket.emit('x');
-	
-			mySocket.chatSocket.emit('getProfile', { 'intraId':'yson' }, (data) => applyProfile(data, 1));
-			mySocket.chatSocket.emit('getProfile', { 'intraId':'gshim' }, (data) => applyProfile(data, 2));
-		}, 5000);
+		mySocket.socket.emit('getProfile', { 'intraId':'yson' }, (data) => applyProfile(data, 1));
+		mySocket.socket.emit('getProfile', { 'intraId':'gshim' }, (data) => applyProfile(data, 2));
 
 		socket.on('gameover', (data)=> {
 			const {state, message, dataObject} = data;
