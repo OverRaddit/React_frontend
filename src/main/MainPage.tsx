@@ -17,7 +17,6 @@ const MainPage: React.FC<Props> = ({ onShowNavigation }) => {
   useEffect(() => {
     onShowNavigation();
     if (mySocket) {
-        console.log("TEST");
         const handleEnqueueComplete = (state: number) => {
             if (state === 200) {
               console.log("queue에 삽입되었습니다.");

@@ -7,34 +7,32 @@ import { useMyContext } from 'MyContext';
 
 function Game({socket, room, nickName, isExtension}) {
   // console.log("In Game", Value);
+  const navigate = useNavigate();
   const canvasRef = useRef(null);
   const canvasMaxWidth = 600;
   const canvasMaxHeight = 400;
-
-
   const [gameOver, setGameOver] = useState(false);
   const [isInGame, setIsInGame] = useState(true);
-
-  function handleGameOver() {
-    setGameOver(true);
-  }
-  
-  const navigate = useNavigate();
-  const net = {
-    x : canvasMaxWidth / 2 - 1,
-    y : 0,
-    width : 2,
-    height : 10,
-    color : "WHITE"
-  }
-	const { mySocket, myData, initSocket, setMyData, setMySocket } = useMyContext();
-
   const [playerId, setPlayerId] = useState(0);
   const [pos1, setPos1] = useState(0);
   const [pos2, setPos2] = useState(0);
   const [ball, setBall] = useState({});
   const [keyDown, setKeyDown] = useState(false);
   const [gameMode, setGameMode] = useState(0);
+
+  
+  const net = {
+	  x : canvasMaxWidth / 2 - 1,
+	  y : 0,
+	  width : 2,
+	  height : 10,
+	  color : "WHITE"
+	}
+	const { mySocket, myData } = useMyContext();
+	
+	function handleGameOver() {
+	  setGameOver(true);
+	}
   
   const ballBlinkRate = 50;
 
