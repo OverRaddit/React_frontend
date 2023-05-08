@@ -49,8 +49,8 @@ const Navigation: FC = () => {
     if (myData && myData.intraid && myData.id && !mySocket) {
       initSocket('http://localhost:4242/chat');
     }
-    if (mySocket) {
-      mySocket.socket.on('owner-granted', ({ roomName, user }) => {
+    if (myData && mySocket) {
+      mySocket.chatSocket.on('owner-granted', ({ roomName, user }) => {
         if (user.intraid === myData?.intraid) {
           setModalMessage('You have been granted ownership of the ' + roomName);  
         }
@@ -75,7 +75,7 @@ const Navigation: FC = () => {
       );
     });
       
-    mySocket.socket.on('admin-granted', ({ roomName, user }) => {
+    mySocket.chatSocket.on('admin-granted', ({ roomName, user }) => {
       if (user.intraid === myData?.intraid) {
         setModalMessage('You have been granted admin of the ' + roomName);  
       }
@@ -97,7 +97,7 @@ const Navigation: FC = () => {
     );
   });
       
-    mySocket.socket.on('admin-revoked', ({ roomName, user }) => {
+    mySocket.chatSocket.on('admin-revoked', ({ roomName, user }) => {
       if (user.intraid === myData?.intraid) {
         setModalMessage('You have been revoked admin of the ' + roomName);  
       }
@@ -119,7 +119,7 @@ const Navigation: FC = () => {
     );
   });
       
-  mySocket.socket.on('user-banned', ({ roomName, user }) => {
+  mySocket.chatSocket.on('user-banned', ({ roomName, user }) => {
     if (user.intraid === myData?.intraid) {
       setModalMessage('You have been banned of the ' + roomName);  
       setChannels(channels.filter((channel) => channel.name !== roomName));
@@ -137,7 +137,7 @@ const Navigation: FC = () => {
     );
   });
       
-  mySocket.socket.on('user-kicked', ({ roomName, user }) => {
+  mySocket.chatSocket.on('user-kicked', ({ roomName, user }) => {
     if (user.intraid === myData?.intraid) {
       setModalMessage('You have been kicked from the ' + roomName);
       // 채널리스트에서 해당 채팅방을 삭제합니다.
@@ -157,27 +157,25 @@ const Navigation: FC = () => {
       );
     }
   });
-  mySocket.socket.on('chat', ( response ) => {
+  mySocket.chatSocket.on('chat', ( response ) => {
     console.log(response);
   });
-  mySocket.socket.on('user-muted', ( response ) => {
+  mySocket.chatSocket.on('user-muted', ( response ) => {
     console.log(response);
   });
+
   
-  
-      // 다른 이벤트 리스너들도 여기에 추가합니다.
-  
-      // 컴포넌트가 언마운트될 때 이벤트 리스너를 제거합니다.
       return () => {
-        mySocket.socket.off('owner-granted');
-        mySocket.socket.off('admin-granted');
-        mySocket.socket.off('admin-revoked');
-        mySocket.socket.off('user-banned');
-        mySocket.socket.off('user-kicked');
-        // 다른 이벤트 리스너들도 여기에서 제거합니다.
+        mySocket.chatSocket.off('owner-granted');
+        mySocket.chatSocket.off('admin-granted');
+        mySocket.chatSocket.off('admin-revoked');
+        mySocket.chatSocket.off('user-banned');
+        mySocket.chatSocket.off('user-kicked');
       };
     }
   }, [myData, initSocket, mySocket, channels, setChannels]);
+
+  
 
 
   const openModal = (channel: MyChannel) => {

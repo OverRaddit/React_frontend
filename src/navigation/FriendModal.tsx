@@ -2,17 +2,8 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Modal from 'react-modal';
 import './FriendModal.css';
-
-type UserStatus = 'online' | 'in-game' | 'in-queue' | 'offline';
-
-export interface MyFriend {
-  id: number;
-  nickname: string;
-  intraid: string;
-  socketid: string;
-  avatar: string;
-  status: UserStatus;
-}
+import { useMyContext } from '../MyContext';
+import { MyChannel, MyFriend } from './interfaces/interfaces';
 
 interface FriendModalProps {
   friend: MyFriend;
@@ -21,12 +12,25 @@ interface FriendModalProps {
 
 const FriendModal: React.FC<FriendModalProps> = ({ friend, onClose }) => {
   const [isModalOpen, setIsModalOpen] = useState(true);
+  const { myData, mySocket } = useMyContext();
 
   const closeModal = () => {
     setIsModalOpen(false);
     onClose();
   };
 
+  // TODO: invite 모달 만들면 이동
+  const acceptInvite = (e: React.MouseEvent<HTMLButtonElement>) => {
+    mySocket?.gameSocket.emit('Accept invitation', {myIntraId: myData!.intraid, oppIntraId: friend.intraid, enqueueFlag: false, gameType: 0}); // TODO
+  };
+  
+  const sendInvite0 = (e: React.MouseEvent<HTMLButtonElement>) => {
+    mySocket?.gameSocket.emit('Invite Game', {myIntraId: myData!.intraid, oppIntraId: friend.intraid, gameType: 0}); 
+  };
+  const sendInvite1 = (e: React.MouseEvent<HTMLButtonElement>) => {
+    mySocket?.gameSocket.emit('Invite Game', {myIntraId: myData!.intraid, oppIntraId: friend.intraid, gameType: 1}); 
+  };
+  
   const isDMEnabled = friend.status === 'online' || friend.status === 'in-queue';
   const isInviteEnabled = friend.status === 'online';
 

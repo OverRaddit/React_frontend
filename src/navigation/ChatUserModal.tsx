@@ -24,42 +24,42 @@ const ChatUserModal: FC<ChatUserModalProps> = ({
   const { mySocket } = useContext(MyContext);
 
   const handleDelegate = () => {
-    mySocket?.socket.emit('delegateChannel', { userId: user.id, roomName: channelId }, (response:any) => {
+    mySocket?.chatSocket.emit('delegateChannel', { userId: user.id, roomName: channelId }, (response:any) => {
       console.log(response);
     });
     onClose();
   };
 
 const handlePermission = () => {
-  mySocket?.socket.emit('permissionChannel', { userId: user.id, roomName: channelId }, (response:any) => {
+  mySocket?.chatSocket.emit('permissionChannel', { userId: user.id, roomName: channelId }, (response:any) => {
     console.log(response);
   });
   onClose();
 };
 
 const handleRevoke = () => {
-  mySocket?.socket.emit('revokeChannel', { userId: user.id, roomName: channelId }, (response:any) => {
+  mySocket?.chatSocket.emit('revokeChannel', { userId: user.id, roomName: channelId }, (response:any) => {
     console.log(response);
   });
   onClose();
 };
 
 const handleKick = () => {
-  mySocket?.socket.emit('kick', { userId: user.id, roomName: channelId }, (response:any) => {
+  mySocket?.chatSocket.emit('kick', { userId: user.id, roomName: channelId }, (response:any) => {
     console.log(response);
   });
   onClose();
 };
 
 const handleBan = () => {
-  mySocket?.socket.emit('ban', { userId: user.id, roomName: channelId }, (response:any) => {
+  mySocket?.chatSocket.emit('ban', { userId: user.id, roomName: channelId }, (response:any) => {
     console.log(response);
   });
   onClose();
 };
 
 const handleMute = () => {
-  mySocket?.socket.emit('mute', { userId: user.id, roomName: channelId }, (response:any) => {
+  mySocket?.chatSocket.emit('mute', { userId: user.id, roomName: channelId }, (response:any) => {
     console.log(response);
   });
   onClose();

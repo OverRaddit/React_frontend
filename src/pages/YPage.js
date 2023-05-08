@@ -18,7 +18,7 @@ function Game({socket, room, nickName, isExtension}) {
   function handleGameOver() {
     setGameOver(true);
   }
-
+  
   const navigate = useNavigate();
   const net = {
     x : canvasMaxWidth / 2 - 1,
@@ -165,10 +165,10 @@ function Game({socket, room, nickName, isExtension}) {
 
 		setTimeout( () => {
 			console.log('--');
-			mySocket.emit('x');
+			mySocket.chatSocket.emit('x');
 	
-			mySocket.emit('getProfile', { 'intraId':'yson' }, (data) => applyProfile(data, 1));
-			mySocket.emit('getProfile', { 'intraId':'gshim' }, (data) => applyProfile(data, 2));
+			mySocket.chatSocket.emit('getProfile', { 'intraId':'yson' }, (data) => applyProfile(data, 1));
+			mySocket.chatSocket.emit('getProfile', { 'intraId':'gshim' }, (data) => applyProfile(data, 2));
 		}, 5000);
 
 		socket.on('gameover', (data)=> {

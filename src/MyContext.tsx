@@ -4,7 +4,8 @@ import io, { Socket } from 'socket.io-client';
 import { useCookies } from 'react-cookie';
 
 interface MySocket {
-  socket: Socket;
+  chatSocket: Socket;
+  gameSocket: Socket;
 }
 
 type MyContextProps = {
@@ -54,22 +55,24 @@ export const MyContextProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
   const initSocket = (url: string) => {
     console.log('initSocket in MyContext (intraId, userId): ', myData!.intraid, ',', myData!.id.toString());
-    const socket = io(url, {
+    const ChatSocket = io(url, {
       extraHeaders: {
         Authorization: `Bearer ${cookies.session_key}`,
         intraId: myData!.intraid,
         userId: myData!.id.toString(),
       },
     });
-    setMySocket({ socket });
-
-    socket.on('initChannels', (response: EventResponse) => {
+    const GameSocket = io("ws://localhost:8000");
+    
+    ChatSocket.on('initChannels', (response: EventResponse) => {
       console.log(response);
       if (!response.success) console.log(response.message);
       else {
         setChannels(response.data);
       }
     });
+
+    setMySocket({ chatSocket:ChatSocket, gameSocket:GameSocket });
   };
 
   const value = {
