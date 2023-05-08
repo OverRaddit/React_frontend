@@ -73,7 +73,6 @@ const sampleChannelData2 = new Map([
  ]);
 
  const userChannelList = new Map([]);
-//  const userChannelList = new Map([]);
 
 const exampleChatHistory = [
   'Hello, how are you?',
@@ -112,7 +111,7 @@ const XPage = () => {
   const [chatRooms, setChatRooms] = useState(sampleChannelData);
   const [userChatRooms, setUserChatRooms] = useState(userChannelList);
   const [currentChatRoom, setCurrentChatRoom] = useState('gshimRoom');  // 현재 선택된 채널의 이름을 저장한다.
-  const { myData, setMyData, friends, setFriends } = useMyContext();
+  const { myData, setMyData, friends, setFriends, channels, mySocket } = useMyContext();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
@@ -131,13 +130,12 @@ const XPage = () => {
     const cookies = parseCookie(document.cookie);
     console.log('Xpage cookies: ', cookies);
 
-    const newSocket = initSocket('http://localhost:4242/chat', cookies, setMyData);
-    console.log('newSocket: ', newSocket);
-    setSocket(newSocket);
-
+    // const newSocket = initSocket('http://localhost:4242/chat', cookies, setMyData);
+    // console.log('newSocket: ', newSocket);
+		if (mySocket) {
+			setSocket(mySocket.chatSocket);	
+		}
     return () => {
-      newSocket.disconnect();
-      setSocket(null);
     };
   }, []);
 
@@ -229,13 +227,6 @@ const XPage = () => {
     e.preventDefault();
     if (currentChat.trim() !== '') {
       setCurrentChatHistory([...currentChatHistory, 'You: ' + currentChat]);
-
-      /*
-      data = {
-        "message": "hello world!",
-        "roomName": ""
-      }
-      */
       socket.emit('chat', { roomName: currentChatRoom, message: currentChat});
       setCurrentChat('');
     }

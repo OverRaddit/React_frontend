@@ -7,4 +7,5 @@ export interface MyChannel
 	name: string;
 	users: MyUser[];
 	showUserList: boolean;
+	chatHistory: string[];
 }
