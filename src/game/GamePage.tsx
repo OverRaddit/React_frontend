@@ -102,49 +102,53 @@ function Game() {
       render();
     }, [pos1, pos2, ball]);
   
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
-      if (!keyDown) {
-        console.log(gameData);
-        console.log(gameData.roomName);
-        setKeyDown(true);
-        mySocket?.gameSocket.emit('keyDown', {roomName:gameData.roomName, id:playerId});
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (!keyDown) {
+      if (e.key === 'ArrowUp') {
+        // console.log('Player: ', room, playerId, "press up");
+        mySocket?.gameSocket.emit('handleKeyPressUp', { roomName: gameData.roomName, id: playerId });
+      } else if (e.key === 'ArrowDown') {
+        // console.log('Player: ', room, playerId, "press down");
+        mySocket?.gameSocket.emit('handleKeyPressDown', { roomName: gameData.roomName, id: playerId });
       }
-      console.log(playerId);
+      setKeyDown(true);
+    }
+  };
 
-    };
+  const handleKeyUp = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === 'ArrowUp') {
+      mySocket?.gameSocket.emit('handleKeyRelUp', { roomName: gameData.roomName, id: playerId });
+    } else if (e.key === 'ArrowDown') {
+      mySocket?.gameSocket.emit('handleKeyRelDown', { roomName: gameData.roomName, id: playerId });
+    }
+    setKeyDown(false);
+  };
   
-    const handleKeyUp = (e: React.KeyboardEvent<HTMLDivElement>) => {
-      if (keyDown) {
-        setKeyDown(false);
-        mySocket?.gameSocket.emit('keyUp', {roomName:gameData.roomName, id:playerId});
-      }
-    };
-  
-    return (
-      <div
-        className="Game"
-        tabIndex={0}
-        onKeyDown={handleKeyDown}
-        onKeyUp={handleKeyUp}
-      >
-        {isInGame && (
-          <>
-            <canvas
-              ref={canvasRef}
-              width={canvasMaxWidth}
-              height={canvasMaxHeight}
-            />
-            {gameOver && (
-              <div className="game-over">
-                <h1>게임 오버</h1>
-                <Link to="/">홈으로 돌아가기</Link>
-              </div>
-            )}
-          </>
-        )}
-      </div>
-    );
-  }
+  return (
+    <div
+      className="Game"
+      tabIndex={0}
+      onKeyDown={handleKeyDown}
+      onKeyUp={handleKeyUp}
+    >
+      {isInGame && (
+        <>
+          <canvas
+            ref={canvasRef}
+            width={canvasMaxWidth}
+            height={canvasMaxHeight}
+          />
+          {gameOver && (
+            <div className="game-over">
+              <h1>게임 오버</h1>
+              <Link to="/">홈으로 돌아가기</Link>
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  );
+}
   
   export default Game;
   
