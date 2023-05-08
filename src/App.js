@@ -105,8 +105,8 @@ function App() {
     })
 
     socket.on('matchingcomplete', (data) => {
-      console.log('matchingcomplete1')
       // console.log(state, roomName);
+      console.log("here is matchingcomplete1 appjs", data);
       const {state, message, dataObject} = data;
       const {roomName, leftPlayerNick, rightPlayerNick} = dataObject;
       console.log(state, message, roomName, leftPlayerNick, rightPlayerNick);
@@ -203,7 +203,10 @@ function App() {
   const acceptClick = (e) => {
     console.log('Accept 클릭 되었음');
     // socket.emit('Accept invitation', nickName, false, false);
-    socket.emit('Accept invitation', {oppNickName:nickName, myNickName:nickName, enqueueFlag:false, gameType:0});// TODO
+    console.log("before nick:", nickName);
+    console.log(`socket.id: ${socket.id}, nickName:${nickName}`);
+    console.log("after nick:", nickName);
+    socket.emit('Accept invitation', {oppIntraId:nickName, myIntraId:socket.id, enqueueFlag:false, gameType:0});// TODO
   }
 
   const observeClick = (e) => {
@@ -214,7 +217,11 @@ function App() {
 
   const handleClick = (e) => {
 	  setInputText(e.target.value);
-    socket.emit('Invite Game', {nickName:inputValue});
+    console.log("Invite nick: ", nickName);
+    socket.emit('Invite Game', {myIntraId:socket.id, oppIntraId:nickName,  gameType:0}); // TODO
+    console.log("before nick: ", nickName);
+    setNickName(nickName);
+    console.log("after nick: ", nickName);
   }
 
   const handleChange = (e) => {
