@@ -10,6 +10,7 @@ import ChannelSearch from './ChannelSearch';
 import FriendModal from './FriendModal';
 import ChatUserModal from './ChatUserModal';
 import { resolve } from 'path';
+import InviteModal from './InviteModal';
 
 type ListName = 'friends' | 'channels';
 
@@ -47,7 +48,7 @@ const Navigation: FC = () => {
 
   useEffect(() => {
     if (myData && myData.intraid && myData.id && !mySocket) {
-      initSocket('http://localhost:4242/chat');
+      initSocket();
     }
     if (myData && mySocket) {
       mySocket.chatSocket.on('owner-granted', ({ roomName, user }) => {
@@ -391,6 +392,8 @@ const Navigation: FC = () => {
         <h2>{modalMessage}</h2>
         <button onClick={() => setModalMessage(null)}>OK</button>
       </Modal>
+
+      <InviteModal />
 
   </div>
   );
