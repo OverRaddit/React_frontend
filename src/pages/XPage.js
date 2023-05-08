@@ -114,7 +114,7 @@ const XPage = () => {
   const [currentChatRoom, setCurrentChatRoom] = useState('gshimRoom');  // 현재 선택된 채널의 이름을 저장한다.
   const { myData, setMyData, friends, setFriends } = useMyContext();
 
-  const [isModalOpen, setIsModalOpen] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
 	const [selectedChannel, setSelectedChannel] = useState('');
 
