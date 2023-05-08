@@ -153,13 +153,11 @@ const XPage = () => {
       setChatRooms(channels);
     });
 
-    socket.on('welcome', (data) => {
-      const { num, roomName } = data;
-      console.log(`someone join ${roomName}(${num})`);
+    socket.on('user-join', (data) => {
+      const { roomName, userId } = data;
+      console.log(`${userId} joined ${roomName} channel.`);
       if (roomName === currentChatRoom)
-        setCurrentChatHistory([...currentChatHistory, 'someone join the chatRoom!']);
-      console.log('someone join the chatRoom');
-      console.log(`현재 방에 들어와 있던 인원은 ${num}명입니다`);
+        setCurrentChatHistory([...currentChatHistory, `${userId} joined ${roomName} channel.`]);
     });
 
     /*
