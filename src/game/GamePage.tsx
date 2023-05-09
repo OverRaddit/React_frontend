@@ -34,6 +34,32 @@ function Game() {
     setGameOver(true);
   }
 
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (!keyDown) {
+      console.log(gameData.roomName, playerId);
+      if (e.key === 'ArrowUp') {
+        // console.log('Player: ', room, playerId, "press up");
+        mySocket?.gameSocket.emit('handleKeyPressUp', { roomName: gameData.roomName, id: playerId });
+      } else if (e.key === 'ArrowDown') {
+        // console.log('Player: ', room, playerId, "press down");
+        mySocket?.gameSocket.emit('handleKeyPressDown', { roomName: gameData.roomName, id: playerId });
+      }
+      setKeyDown(true);
+    }
+  };
+
+  const handleKeyUp = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    console.log(gameData.roomName, playerId);
+    if (e.key === 'ArrowUp') {
+      mySocket?.gameSocket.emit('handleKeyRelUp', { roomName: gameData.roomName, id: playerId });
+    } else if (e.key === 'ArrowDown') {
+      mySocket?.gameSocket.emit('handleKeyRelDown', { roomName: gameData.roomName, id: playerId });
+    }
+    setKeyDown(false);
+  };
+
+
   const ballBlinkRate = 50;
 
   mySocket?.gameSocket.on('isLeft', (num: string) => {
@@ -62,6 +88,26 @@ function Game() {
   }, []);
 
   useEffect(() => {
+    // const windowKeyDownHandler = (e: KeyboardEvent) => {
+    //   handleKeyDown(e as unknown as React.KeyboardEvent<HTMLDivElement>);
+    // };
+  
+    // const windowKeyUpHandler = (e: KeyboardEvent) => {
+    //   handleKeyUp(e as unknown as React.KeyboardEvent<HTMLDivElement>);
+    // };
+  
+    window.addEventListener('keydown', windowKeyDownHandler);
+    window.addEventListener('keyup', windowKeyUpHandler);
+  
+    return () => {
+      window.removeEventListener('keydown', windowKeyDownHandler);
+      window.removeEventListener('keyup', windowKeyUpHandler);
+    };
+  }, [playerId]);
+
+  useEffect(() => {
+    // window.addEventListener('keydown', handleKeyDown as (e: React.KeyboardEvent<HTMLDivElement>) => void);
+    // window.addEventListener('keyup', handleKeyUp as (e: React.KeyboardEvent<HTMLDivElement>) => void);
     if (!canvasRef.current) return;
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
@@ -102,34 +148,12 @@ function Game() {
       render();
     }, [pos1, pos2, ball]);
   
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
-    if (!keyDown) {
-      if (e.key === 'ArrowUp') {
-        // console.log('Player: ', room, playerId, "press up");
-        mySocket?.gameSocket.emit('handleKeyPressUp', { roomName: gameData.roomName, id: playerId });
-      } else if (e.key === 'ArrowDown') {
-        // console.log('Player: ', room, playerId, "press down");
-        mySocket?.gameSocket.emit('handleKeyPressDown', { roomName: gameData.roomName, id: playerId });
-      }
-      setKeyDown(true);
-    }
-  };
-
-  const handleKeyUp = (e: React.KeyboardEvent<HTMLDivElement>) => {
-    if (e.key === 'ArrowUp') {
-      mySocket?.gameSocket.emit('handleKeyRelUp', { roomName: gameData.roomName, id: playerId });
-    } else if (e.key === 'ArrowDown') {
-      mySocket?.gameSocket.emit('handleKeyRelDown', { roomName: gameData.roomName, id: playerId });
-    }
-    setKeyDown(false);
-  };
   
+  
+  // window.addEventListener('keyup', handleKeyUp);
   return (
     <div
       className="Game"
-      tabIndex={0}
-      onKeyDown={handleKeyDown}
-      onKeyUp={handleKeyUp}
     >
       {isInGame && (
         <>
