@@ -35,36 +35,36 @@ const MainPage: React.FC<Props> = ({ onShowNavigation }) => {
   useEffect(() => {
     onShowNavigation();
     if (mySocket) {
-        const handleEnqueueComplete = (state: number) => {
-            if (state === 200) {
-              console.log("queue에 삽입되었습니다.");
-              // gameSocket.status = "in-queue";s
-              // gameSocket.emit('status', gameSocket.status);
-              setIsInQueue(true);
-            }
-          };
-          const handleMatchingComplete = (res: any) => {
-            console.log(res);
-            setIsInQueue(false);
-            navigate('/game', { state: { gameData: res } });
-          };
-      
-          mySocket.gameSocket.on('enqueuecomplete', handleEnqueueComplete);
-          mySocket.gameSocket.on('matchingcomplete', handleMatchingComplete);
-      
-          return () => {
-            mySocket.gameSocket.off('enqueuecomplete');
-            mySocket.gameSocket.off('matchingcomplete');
-          };
+      const handleEnqueueComplete = (state: number) => {
+        if (state === 200) {
+          console.log("queue에 삽입되었습니다.");
+          setIsInQueue(true);
+        }
+      };
+      const handleMatchingComplete = (res: any) => {
+        console.log("여긴가", res);
+        setIsInQueue(false);
+        navigate('/game', { state: { gameData: res } });
+      };
+
+      mySocket.gameSocket.on('enqueuecomplete', handleEnqueueComplete);
+      mySocket.gameSocket.on('matchingcomplete', handleMatchingComplete);
+
+      return () => {
+        mySocket.gameSocket.off('enqueuecomplete');
+        mySocket.gameSocket.off('matchingcomplete');
+      };
     }
   }, [mySocket]);
 
   const joinNormalQueue = () => {
-    console.log("Joining normal queue");
+    console.log("joinNormalQueue function");
     const nickName = myData?.intraid;
-    console.log(mySocket?.gameSocket);
-    mySocket?.gameSocket.emit('match', {gameType: 0, nickName});
+    console.log("nickName:", nickName);
+    console.log("gameSocket:", mySocket?.gameSocket);
+    mySocket?.gameSocket.emit('match', {gameType: 0, nickName:nickName});
     setIsExQueue(false);
+    console.log("joinNormalQueue function end");
   };
 
   const joinExtendedQueue = () => {
@@ -78,7 +78,7 @@ const MainPage: React.FC<Props> = ({ onShowNavigation }) => {
     console.log("Cancelling queue");
     const isExtendedQueue = isExQueue;
     mySocket?.gameSocket.emit('cancel queue', isExtendedQueue);
-    setIsInQueue(false);
+    // setIsInQueue(false);
   };
 
 	const onCreateChannel = (data: any): void => {

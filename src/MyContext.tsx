@@ -69,22 +69,24 @@ export const MyContextProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       },
     });
     const GameSocket = io("ws://localhost:8000");
-    
     ChatSocket.on('initChannels', (response: EventResponse) => {
-      console.log(response);
+      console.log("chating 초기화", response);
       if (!response.success) console.log(response.message);
       else {
         setChannels(response.data);
       }
     });
 
+    GameSocket.on('connect', () => {
+      console.log("Game socket Id", GameSocket.id);
+    });
+
     setMySocket({ chatSocket:ChatSocket, gameSocket:GameSocket });
   };
-
   const removeInvite = () => {
     setMyInvite(myInvite.slice(1));
   };
-
+  
   const value = {
     users,
     channels,
@@ -102,7 +104,8 @@ export const MyContextProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     initSocket,
   };
   
-
+  
+  
   return <MyContext.Provider value={value}>{children}</MyContext.Provider>;
 };
 
