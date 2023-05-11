@@ -4,6 +4,7 @@ import './GamePage.css';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useMyContext } from 'MyContext';
 import { drawRect, drawCircle, drawText, drawCircleBall } from './painting';
+import { GameWindow } from 'UserProfile/GameWidow';
 
 const canvasMaxWidth = 600;
 const canvasMaxHeight = 400;
@@ -120,7 +121,10 @@ function Game() {
   }, [pos1, pos2, ball]);
   
   return (
-    <canvas ref={canvasRef} width={canvasMaxWidth} height={canvasMaxHeight}/>
+    <div>
+      <canvas ref={canvasRef} width={canvasMaxWidth} height={canvasMaxHeight}/>
+      <GameWindow leftUser = {gameData.leftUser} rightUser = {gameData.rightUser}></GameWindow>
+    </div>
   );
 }
   
