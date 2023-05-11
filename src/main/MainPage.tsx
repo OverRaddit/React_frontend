@@ -14,7 +14,6 @@ interface Props {
 const MainPage: React.FC<Props> = ({ onShowNavigation }) => {
   const navigate = useNavigate();
   const [isInQueue, setIsInQueue] = useState<boolean>(false);
-  const [isExQueue, setIsExQueue] = useState<boolean>(false);
   const { myData, mySocket, channels } = useContext(MyContext);
 
 
@@ -63,7 +62,6 @@ const MainPage: React.FC<Props> = ({ onShowNavigation }) => {
     console.log("intraId:", intraId);
     console.log("gameSocket:", mySocket?.gameSocket);
     mySocket?.gameSocket.emit('match', {gameType: 0, intraId:intraId});
-    setIsExQueue(false);
     console.log("joinNormalQueue function end");
   };
 
@@ -71,14 +69,18 @@ const MainPage: React.FC<Props> = ({ onShowNavigation }) => {
     console.log("Joining extended queue");
     const intraId = myData?.intraid;
     mySocket?.gameSocket.emit('match', {gameType: 1, intraId:intraId});
-    setIsExQueue(true);
   };
 
   const cancelQueue = () => {
     console.log("Cancelling queue");
-    const isExtendedQueue = isExQueue;
-    mySocket?.gameSocket.emit('cancel queue', isExtendedQueue);
-    // setIsInQueue(false);
+    mySocket?.gameSocket.emit('cancel queue', (res:any) =>{
+      console.log(res);
+      if (res.state === 200) {
+        setIsInQueue(false);
+	      document.body.classList.remove('modal-open');
+      }
+      console.log(res.message);
+    });
   };
 
 	const onCreateChannel = (data: any): void => {
@@ -87,7 +89,6 @@ const MainPage: React.FC<Props> = ({ onShowNavigation }) => {
 		mySocket?.chatSocket.emit('createChannel', data);
 	};
 	
-
 	const handleChatChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setCurrentChat(e.target.value);
 	};
