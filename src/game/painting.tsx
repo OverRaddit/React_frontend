@@ -16,3 +16,22 @@ export function drawText(text: number, x: number, y: number, color: string, ctx:
     ctx!.font = "35px fantasy";
     ctx!.fillText(text.toString(), x, y);
 }
+
+export function drawCircleBall(gameMode: number, ball: any, ctx: CanvasRenderingContext2D | null) { // :TODO any... by hena
+    // A variable representing the degree of flicker
+    const ballBlinkRate = 50;
+
+    // Ball drawing logic according to mode
+    if (gameMode === 0) {         // normal mode
+        drawCircle(ball.x, ball.y, ball.radius, 'WHITE', ctx);
+    } else if (gameMode === 1) {  // extended mode
+        if (Math.floor(ball.x / ballBlinkRate) % 2 === 0) {
+            drawCircle(ball.x, ball.y, ball.radius, "WHITE", ctx);
+        }
+        else if (Math.floor(ball.x / ballBlinkRate) % 2 === 1) {
+            drawCircle(ball.x, ball.y, ball.radius, "BLACK", ctx);
+        }
+    } else {                      // Error Detected!!!
+        console.log("drawCircle_extension function Error value Detected");
+    }
+}
