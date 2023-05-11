@@ -6,8 +6,8 @@ import { useMyContext } from 'MyContext';
 import { drawRect, drawCircle, drawText, drawCircleBall } from './painting';
 import { GameWindow } from 'UserProfile/GameWidow';
 
-const canvasMaxWidth = 600;
-const canvasMaxHeight = 400;
+const canvasMaxWidth = 900;
+const canvasMaxHeight = 600;
 const net = {
   x: canvasMaxWidth / 2 - 1,
   y: 0,
@@ -121,9 +121,13 @@ function Game() {
   }, [pos1, pos2, ball]);
   
   return (
-    <div>
-      <canvas ref={canvasRef} width={canvasMaxWidth} height={canvasMaxHeight}/>
-      <GameWindow leftUser = {gameData.leftUser} rightUser = {gameData.rightUser}></GameWindow>
+    <div className='game-ui'>
+			<div className='canvas-container'>
+      	<canvas ref={canvasRef} width={canvasMaxWidth} height={canvasMaxHeight}/>
+			</div>
+			<div className='game-window-container'>
+				<GameWindow leftUser = {gameData.leftUser} rightUser = {gameData.rightUser}></GameWindow>
+			</div>
     </div>
   );
 }
