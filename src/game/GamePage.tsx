@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import './GamePage.css';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useMyContext } from 'MyContext';
-import { drawRect, drawCircle, drawText } from './painting';
+import { drawRect, drawCircle, drawText, drawCircleBall } from './painting';
 
 const canvasMaxWidth = 600;
 const canvasMaxHeight = 400;
@@ -30,7 +30,7 @@ function Game() {
   const { mySocket } = useMyContext();
   const gameData = location.state?.gameData.dataObject;
   
-  
+
   const windowKeyDownHandler = (e: KeyboardEvent) => {
     handleKeyDown(e as unknown as React.KeyboardEvent<HTMLDivElement>);
   };
@@ -74,16 +74,12 @@ function Game() {
     drawText(pos1.score, canvasMaxWidth / 4, canvasMaxHeight / 5, "WHITE", ctx);
     drawText(pos2.score, 3 * canvasMaxWidth / 4, canvasMaxHeight / 5, "WHITE", ctx);
     
-    drawCircle_extension(gameMode, ctx);
+    drawCircleBall(gameMode, ball, ctx);
   }
   
-  function drawCircle_extension(gameMode: number, ctx: CanvasRenderingContext2D | null) {
-    drawCircle(ball.x, ball.y, ball.radius, 'WHITE', ctx);
-  }
-  
-  // Prevent continuous keystrokes
+  // Prevent continuous keystrokes  // TODO: (gshim)님한테 체크 받아야 할 부분. key눌림 방지
   useEffect(() =>{
-    
+
   }, [keyDown]);
   
   // register 'render' event and set left or right
@@ -94,6 +90,9 @@ function Game() {
     else if (mySocket?.gameSocket.id === gameData.rightSockId)
     setPlayerId(2);
     else setPlayerId(42);
+
+    // setGameMode
+    setGameMode(gameData.gameType); // TODO: (gshim)님한테 체크 받아야 할 부분. 게임 모드 설정.
 
     mySocket?.gameSocket.on('render', (pos1: any, pos2: any, ball: any) => {
       setPos1(pos1);
@@ -121,11 +120,7 @@ function Game() {
   }, [pos1, pos2, ball]);
   
   return (
-    <canvas
-      ref={canvasRef}
-      width={canvasMaxWidth}
-      height={canvasMaxHeight}
-    />
+    <canvas ref={canvasRef} width={canvasMaxWidth} height={canvasMaxHeight}/>
   );
 }
   
