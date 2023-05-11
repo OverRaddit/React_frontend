@@ -59,18 +59,18 @@ const MainPage: React.FC<Props> = ({ onShowNavigation }) => {
 
   const joinNormalQueue = () => {
     console.log("joinNormalQueue function");
-    const nickName = myData?.intraid;
-    console.log("nickName:", nickName);
+    const intraId = myData?.intraid;
+    console.log("intraId:", intraId);
     console.log("gameSocket:", mySocket?.gameSocket);
-    mySocket?.gameSocket.emit('match', {gameType: 0, nickName:nickName});
+    mySocket?.gameSocket.emit('match', {gameType: 0, intraId:intraId});
     setIsExQueue(false);
     console.log("joinNormalQueue function end");
   };
 
   const joinExtendedQueue = () => {
     console.log("Joining extended queue");
-    const nickName = myData?.intraid;
-    mySocket?.gameSocket.emit('match', {gameType: 1, nickName});
+    const intraId = myData?.intraid;
+    mySocket?.gameSocket.emit('match', {gameType: 1, intraId:intraId});
     setIsExQueue(true);
   };
 
