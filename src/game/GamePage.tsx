@@ -32,7 +32,7 @@ function Game() {
   const location = useLocation();
   const { mySocket } = useMyContext();
   const gameData = location.state?.gameData.dataObject;
-  
+  // console.log('gameData : ', gameData);
 
   const windowKeyDownHandler = (e: KeyboardEvent) => {
     handleKeyDown(e as unknown as React.KeyboardEvent<HTMLDivElement>);
@@ -89,12 +89,10 @@ function Game() {
   useEffect(()=>{
     if (!mySocket) return;
     if (mySocket?.gameSocket.id === gameData.leftSockId)
-    setPlayerId(1);
+    	setPlayerId(1);
     else if (mySocket?.gameSocket.id === gameData.rightSockId)
-    setPlayerId(2);
+    	setPlayerId(2);
     else setPlayerId(42);
-
-    // setGameMode
     setGameMode(gameData.gameType); // TODO: (gshim)님한테 체크 받아야 할 부분. 게임 모드 설정.
 
     mySocket?.gameSocket.on('render', (pos1: any, pos2: any, ball: any) => {
@@ -103,24 +101,45 @@ function Game() {
       setBall(ball);
     });
 
+		mySocket.gameSocket.on('gameover', (data) => {
+			const {state, message, dataObject} = data;
+			const {player} = dataObject;
+			if (state == 200)
+			{
+				console.log('game over! ', player, 'p wins.');
+				setIsModalOpen(true);
+				// setGameOver(true);
+			}
+		})
+
 		const backToMain = () => {
-			// mySocket.gameSocket.status = "online";
-			// mySocket.gameSocket.emit('status', mySocket.gameSocket.status);
-			// setIsInGame(false);
+			navigate('/');
   	}
 
+		function getCurrentUsername(player : number) : string {
+			if (player == 1)
+				return gameData.leftUser.intraid;
+			else if (player == 2)
+				return gameData.rightUser.intraid;
+			return 'error : wrong playerID';
+		}
+
 		window.onpopstate = (event: PopStateEvent) => {
-			// socket. emit('playerBackspace', room, nickname); //Send if you can get a nickname.
-			// if (mySocket?.gameSocket.status !== 'in-game') {
-			// 	return;
-			// }
-			// mySocket?.gameSocket.emit('playerBackspace', { roomName: room, nickName: nickName });
+			let player = 0;
+
+			if (mySocket?.gameSocket.id === gameData.leftSockId)
+    		player = 1;
+			else
+    		player = 2;
+			mySocket?.gameSocket.emit('playerBackspace', { roomName: gameData.roomName, intraId:  getCurrentUsername(player)});
+			//유저의 status를 수정해주어야 함.
 			console.log("Your back or forward has been detected.");
 			backToMain();
 		};
     
     return () => {
       mySocket?.gameSocket.off('render');
+      mySocket?.gameSocket.off('gameover');
     };
   },[]);
   
@@ -148,7 +167,7 @@ function Game() {
 				<div className='canvas-container'>
 					<canvas ref={canvasRef} width={canvasMaxWidth} height={canvasMaxHeight}/>
 					<button onClick={turnOnState}>pop up modal</button>
-					<GameModal isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} firstScore={pos1.score} secondScore={pos2.score}></GameModal>
+					<GameModal isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} firstScore={pos1.score} secondScore={pos2.score} navigate={navigate}></GameModal>
 				</div>
 				<div className='game-window-container'>
 					<GameWindow leftUser = {gameData.leftUser} rightUser = {gameData.rightUser}></GameWindow>

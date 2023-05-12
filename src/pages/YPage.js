@@ -36,11 +36,6 @@
   
 //   const ballBlinkRate = 50;
 
-//   socket.on('isLeft', (num) => {
-//     const number = parseInt(num);
-//     setPlayerId(number);
-//   });
-
 //   socket.on('render', (pos1, pos2, ball) => {
 //     // console.log(roomdId);
 //     setPos1(pos1);
@@ -147,8 +142,6 @@
 //     }, [pos1, pos2, ball])
 
 // 	useEffect(()=> {
-// 		mySocket.socket.emit('getProfile', { 'intraId':'yson' }, (data) => applyProfile(data, 1));
-// 		mySocket.socket.emit('getProfile', { 'intraId':'gshim' }, (data) => applyProfile(data, 2));
 
 // 		socket.on('gameover', (data)=> {
 // 			const {state, message, dataObject} = data;

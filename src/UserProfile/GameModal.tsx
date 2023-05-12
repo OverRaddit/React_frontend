@@ -1,9 +1,11 @@
 import './GameModal.css'
 
 export function GameModal(props:any){
-	const {isModalOpen, setIsModalOpen, firstScore, secondScore} = props;
+	const {isModalOpen, setIsModalOpen, firstScore, secondScore, navigate} = props;
 
 	function closeModal() {
+		//status 변경이 필요함.
+		navigate('/');
 		setIsModalOpen(false);
 	}
 
