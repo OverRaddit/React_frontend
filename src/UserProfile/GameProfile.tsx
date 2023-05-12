@@ -3,7 +3,6 @@ import './GameProfile.css';
 
 export function GameProfile(props: any) {
 	const {user} = props;
-	console.log('user.avatar', user.avatar);
 	// img, nickname, mmr, 전적
 	return (
 		<div className="game-profile" style={{ width: props.widthSize, height: props.heightSize }}>

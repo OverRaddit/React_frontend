@@ -5,9 +5,10 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useMyContext } from 'MyContext';
 import { drawRect, drawCircle, drawText, drawCircleBall } from './painting';
 import { GameWindow } from 'UserProfile/GameWidow';
+import { GameModal } from 'UserProfile/GameModal';
 
-const canvasMaxWidth = 900;
-const canvasMaxHeight = 600;
+const canvasMaxWidth = 600;
+const canvasMaxHeight = 400;
 const net = {
   x: canvasMaxWidth / 2 - 1,
   y: 0,
@@ -26,6 +27,7 @@ function Game() {
   const [ball, setBall] = useState({ x: 0, y: 0, radius: 0 });
   const [keyDown, setKeyDown] = useState(false);
   const [gameMode, setGameMode] = useState(0);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const location = useLocation();
   const { mySocket } = useMyContext();
@@ -100,6 +102,22 @@ function Game() {
       setPos2(pos2);
       setBall(ball);
     });
+
+		const backToMain = () => {
+			// mySocket.gameSocket.status = "online";
+			// mySocket.gameSocket.emit('status', mySocket.gameSocket.status);
+			// setIsInGame(false);
+  	}
+
+		window.onpopstate = (event: PopStateEvent) => {
+			// socket. emit('playerBackspace', room, nickname); //Send if you can get a nickname.
+			// if (mySocket?.gameSocket.status !== 'in-game') {
+			// 	return;
+			// }
+			// mySocket?.gameSocket.emit('playerBackspace', { roomName: room, nickName: nickName });
+			console.log("Your back or forward has been detected.");
+			backToMain();
+		};
     
     return () => {
       mySocket?.gameSocket.off('render');
@@ -119,16 +137,23 @@ function Game() {
       window.removeEventListener('keyup', windowKeyUpHandler);
     };
   }, [pos1, pos2, ball]);
+
+	const turnOnState = () => {
+		setIsModalOpen(true);
+		console.log('turnOnState :', turnOnState);
+	}
   
   return (
-    <div className='game-ui'>
-			<div className='canvas-container'>
-      	<canvas ref={canvasRef} width={canvasMaxWidth} height={canvasMaxHeight}/>
+			<div className='game-ui'>
+				<div className='canvas-container'>
+					<canvas ref={canvasRef} width={canvasMaxWidth} height={canvasMaxHeight}/>
+					<button onClick={turnOnState}>pop up modal</button>
+					<GameModal isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} firstScore={pos1.score} secondScore={pos2.score}></GameModal>
+				</div>
+				<div className='game-window-container'>
+					<GameWindow leftUser = {gameData.leftUser} rightUser = {gameData.rightUser}></GameWindow>
+				</div>
 			</div>
-			<div className='game-window-container'>
-				<GameWindow leftUser = {gameData.leftUser} rightUser = {gameData.rightUser}></GameWindow>
-			</div>
-    </div>
   );
 }
   

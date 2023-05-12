@@ -4,8 +4,8 @@ import './GameWidow.css'
 export function GameWindow(props: any) {
 	const {widthSize, heightSize, leftUser, rightUser} = props;
 
-	console.log("leftUser", leftUser);
-	console.log("leftUser", rightUser);
+	// console.log("leftUser", leftUser);
+	// console.log("leftUser", rightUser);
 
   return (
     <div className="game-profile-container" style={{ width: widthSize, height: heightSize }}>
