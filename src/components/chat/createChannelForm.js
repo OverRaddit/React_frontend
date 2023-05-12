@@ -1,9 +1,11 @@
+import { useMyContext } from 'MyContext';
 import { useState } from 'react';
 
-export function CreateChannelForm({ setChatHistory, setCurrentChatRoom, onCreateChannel }) {
+export function CreateChannelForm() {
   const [channelName, setChannelName] = useState('');
   const [channelKind, setChannelKind] = useState(0);
   const [channelPassword, setChannelPassword] = useState('');
+  const { setChannels, mySocket } = useMyContext();
 
   const handleNameChange = (event) => {
     setChannelName(event.target.value);
@@ -19,17 +21,20 @@ export function CreateChannelForm({ setChatHistory, setCurrentChatRoom, onCreate
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    console.log('createChannelForm 제출!')
     const data = {
       kind: channelKind,
       roomName: channelName,
       roomPassword: channelPassword,
     };
-    // 채널 생성이벤트를 발생시킨다.
-    onCreateChannel(data);
-    // 현재 채팅창을 바꾼다.
-    setCurrentChatRoom(channelName);
-    setChatHistory([]);
+    mySocket.chatSocket.emit('createChannel', data, (response) => {
+      if (!response.success) return;
+
+      const newChannel = response.data[0];
+      console.log('created Channel: ', newChannel);
+
+      // 현재 채팅창을 바꾼다.
+      setChannels((prevchannels) => {return [...prevchannels, newChannel]});
+    })
   };
 
   return (

@@ -11,12 +11,16 @@ interface MySocket {
 type MyContextProps = {
   users: MyUser[];
   channels: MyChannel[];
+  currentChannel: MyChannel | null;
+  mapChannels: Map<string, MyChannel>;
   friends: MyFriend[];
   myData: MyData | null;
   mySocket: MySocket | null;
   myInvite: MyInvite[];
   setUsers: (users: MyUser[]) => void;
   setChannels: (channels: MyChannel[]) => void;
+  setCurrentChannel: (channel: MyChannel | null) => void;
+  setMapChannels: (mapChannels: Map<string, MyChannel>) => void;
   setFriends: (friends: MyFriend[]) => void;
   setMyData: (myData: MyData | null) => void;
   setMySocket: (mySocket: MySocket | null) => void;
@@ -25,7 +29,7 @@ type MyContextProps = {
   initSocket: () => void;
 };
 
-interface EventResponse {
+export interface EventResponse {
   success: boolean;
   message: string;
   data: any[];
@@ -34,12 +38,16 @@ interface EventResponse {
 const defaultMyContext = {
   users: [],
   channels: [],
+  currentChannel: null,
+  mapChannels: new Map<string, MyChannel>(),
   friends: [],
   myData: null,
   mySocket: null,
   myInvite: [],
   setUsers: () => {},
   setChannels: () => {},
+  setCurrentChannel: () => {},
+  setMapChannels: () => {},
   setFriends: () => {},
   setMyData: () => {},
   setMySocket: () => {},
@@ -53,6 +61,8 @@ export const MyContext = createContext<MyContextProps>(defaultMyContext);
 export const MyContextProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [users, setUsers] = useState<MyUser[]>([]);
   const [channels, setChannels] = useState<MyChannel[]>([]);
+  const [currentChannel, setCurrentChannel] = useState<MyChannel | null>(null);
+  const [mapChannels, setMapChannels] = useState<Map<string, MyChannel>>(new Map<string, MyChannel>());
   const [friends, setFriends] = useState<MyFriend[]>([]);
   const [myData, setMyData] = useState<MyData | null>(null);
   const [mySocket, setMySocket] = useState<MySocket | null>(null);
@@ -64,18 +74,33 @@ export const MyContextProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     const ChatSocket = io('http://localhost:4242/chat', {
       extraHeaders: {
         Authorization: `Bearer ${cookies.session_key}`,
+        session_key: cookies.session_key,
         intraId: myData!.intraid,
         userId: myData!.id.toString(),
       },
     });
     const GameSocket = io("ws://localhost:8000");
-    
+
+
+    console.log('ChatSocket: ', ChatSocket);
     ChatSocket.on('initChannels', (response: EventResponse) => {
       console.log(response);
       if (!response.success) console.log(response.message);
       else {
-        setChannels(response.data);
+        response.data.forEach((channel: MyChannel) => {
+          mapChannels.set(channel.name, channel);
+        })
+        //console.log('mapChannels: ', mapChannels);
+        const X = response.data.map((channel) => {
+          return { ...channel, chatHistory: [] }
+        });
+
+        setChannels(X);
       }
+    });
+
+    ChatSocket.on('auth_error', (response) => {
+      console.log(response);
     });
 
     setMySocket({ chatSocket:ChatSocket, gameSocket:GameSocket });
@@ -88,12 +113,16 @@ export const MyContextProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const value = {
     users,
     channels,
+    currentChannel,
+    mapChannels,
     friends,
     myData,
     mySocket,
     myInvite,
     setUsers,
     setChannels,
+    setCurrentChannel,
+    setMapChannels,
     setFriends,
     setMyData,
     setMySocket,
@@ -101,7 +130,7 @@ export const MyContextProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     removeInvite,
     initSocket,
   };
-  
+
 
   return <MyContext.Provider value={value}>{children}</MyContext.Provider>;
 };
