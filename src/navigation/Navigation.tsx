@@ -193,25 +193,6 @@ const Navigation: FC = () => {
         setChannels(newChannels);
       });
 
-      // mySocket.chatSocket.on('user-join', ( response: EventResponse ) => {
-      //   console.log('user-join from Nav');
-      //   return; // 일단 사용금지.
-      //   // if (!response.success) return;
-
-      //   // const newChannels = {
-      //   //   ...channels,
-      //   //   chatHistory: [...channels[channelIndex].chatHistory, 'You: ' + currentChat]
-      //   // };
-
-      //   // const updatedChannels = [
-      //   //   ...channels,
-      //   //   response.data
-      //   // ];
-
-      //   // console.log('update complete');
-      //   // setChannels(updatedChannels);
-      // });
-
     return () => {
       mySocket.chatSocket.off('owner-granted');
       mySocket.chatSocket.off('admin-granted');
@@ -221,7 +202,6 @@ const Navigation: FC = () => {
       mySocket.chatSocket.off('chat');
       mySocket.chatSocket.off('user-muted');
       mySocket.chatSocket.off('user-dm');
-      //mySocket.chatSocket.off('user-join');
     };
     }
   }, [myData, initSocket, mySocket, channels, setChannels]);
