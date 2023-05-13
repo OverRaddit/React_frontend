@@ -1,22 +1,41 @@
 import React, { FC } from 'react';
 import Modal from 'react-modal';
-import { useMyContext } from '../MyContext';
+import { EventResponse, useMyContext } from '../MyContext';
 
 const InviteModal: FC = () => {
-  const { myInvite, setMyInvite, mySocket, myData, removeInvite } = useMyContext();
+  const { myInvite, setMyInvite, mySocket, myData, removeInvite, channels, setChannels, setCurrentChannel } = useMyContext();
 
   const handleEvent = (type: number) => {
     switch (type) {
       case 0:
 
-        console.log("TEST",myInvite[0].user.intraId);
+        console.log("TEST",myInvite[0]);
         mySocket?.gameSocket.emit('Accept invitation',  {myIntraId: myData?.intraid, oppintraId: myInvite[0].user.intraId,  gameType:0} );
         setMyInvite(myInvite.slice(1));
         break;
       case 1:
-        
+
         break;
-    
+
+      case 2:
+        const data: any = myInvite[0];
+        mySocket?.chatSocket?.emit('invitedChannel', { userId: myData?.id, roomName: data?.channel?.roomname }, (response: EventResponse) => {
+          if (!response.success) {
+            console.log('An error occurred.');
+            return;
+          }
+
+          // 이거 왜 추가가 안되냐;;
+          const newChannel = response.data[0];
+          newChannel.setChatHistory = [];
+          newChannel.showUserList = false;
+
+          setChannels([...channels, newChannel]);
+          setCurrentChannel(newChannel);
+        });
+        setMyInvite(myInvite.slice(1));
+      break;
+
       default:
         break;
     }

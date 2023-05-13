@@ -237,6 +237,17 @@ const Navigation: FC = () => {
     );
   };
 
+  const handleChatInvite = (channel: any) => {
+    console.log(channel);
+    const data = {
+      userId: '2',
+      roomName: channel.name,
+    };
+    mySocket?.chatSocket.emit('channel-invite', data, (response : any) => {
+      console.log('invite response:', response);
+    })
+  };
+
   const renderChannelList = () => {
     return (
       <ul className="channel-list">
@@ -250,7 +261,12 @@ const Navigation: FC = () => {
                 className="leave-channel-btn"
                 onClick={() => openModal(channel)}
               >
-                Leave
+                ❌
+              </button>
+              <button
+                onClick={() => handleChatInvite(channel)}
+              >
+                📧
               </button>
             </div>
             {channel.showUserList && (
@@ -315,7 +331,7 @@ const Navigation: FC = () => {
     if (friends.length === 0) {
       return <div>No friends found</div>;
     }
-    
+
     const sortedFriends = friends.sort((a, b) => {
       // Treat undefined status as 'offline'
       const statusA = a.status || 'offline';

@@ -117,6 +117,17 @@ export const MyContextProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
     ChatSocket.on('user-channel-invited', (response) => {
       console.log('user-channel-invited res: ', response);
+      const { channel, clientUser } = response;
+      const channelType = 2;
+      const transformedUser = { ...clientUser, intraId: clientUser.intraid };
+      setMyInvite((prevInvites) => [
+        ...prevInvites,
+        {
+          type: channelType,
+          user: transformedUser,
+          channel,
+        },
+      ]);
     });
 
     ChatSocket.on('user-join', (response) => {
@@ -163,7 +174,7 @@ export const MyContextProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       console.log("USER", user);
 
       const transformedUser = { ...user, intraId: user.intraid };
-    
+
       setMyInvite((prevInvites) => [
         ...prevInvites,
         {
@@ -178,7 +189,7 @@ export const MyContextProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const removeInvite = () => {
     setMyInvite(myInvite.slice(1));
   };
-  
+
   const value = {
     users,
     channels,
