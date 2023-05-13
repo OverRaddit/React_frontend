@@ -237,7 +237,7 @@ const MainPage: React.FC<Props> = ({ onShowNavigation }) => {
           : <h3>you can't make room now!</h3>
         } */}
 
-        <ChannelLookup setChatHistory={setCurrentChatHistory} setCurrentChatRoom={setCurrentChatRoom} chatRooms={chatRooms} setSelectedChannel={setSelectedChannel}/>
+        {/* <ChannelLookup setChatHistory={setCurrentChatHistory} setCurrentChatRoom={setCurrentChatRoom} chatRooms={chatRooms} setSelectedChannel={setSelectedChannel}/> */}
       </div>
 
     </div>
