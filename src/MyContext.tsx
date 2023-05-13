@@ -109,10 +109,11 @@ export const MyContextProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
     ChatSocket.on('user-join', (response) => {
       console.log('user-join from MyContext');
-      console.log('user-join res: ', response);
       const { roomName, clientUser } = response;
-      setChannels(
-        channels.map((channel) => {
+      console.log('user-join res: ', response);
+
+      setChannels((prevChannels) => {
+        return prevChannels.map((channel) => {
           if (channel.name === roomName) {
             return {
               ...channel,
@@ -120,9 +121,27 @@ export const MyContextProvider: React.FC<{ children: React.ReactNode }> = ({ chi
             };
           }
           return channel;
-        })
-      );
+        });
+      });
     });
+
+    ChatSocket.on('user-left', (response) => {
+      const { roomName, clientUser } = response;
+      console.log('user-left res: ', response);
+
+      setChannels((prevChannels) => {
+        return prevChannels.map((channel) => {
+          if (channel.name === roomName) {
+            return {
+              ...channel,
+              users: channel.users.filter(user => user.id !== clientUser.id),
+            };
+          }
+          return channel;
+        });
+      });
+    });
+
 
     ChatSocket.on('user-muted', ( response ) => {
       console.log(response);

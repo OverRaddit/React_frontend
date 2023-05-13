@@ -4,7 +4,7 @@ import { useMyContext } from 'MyContext';
 
 export function ChannelLookup({ setChatHistory, setCurrentChatRoom, chatRooms, socket, userChatRooms, setUserChatRooms, setSelectedChannel }) {
   const [filterKind, setFilterKind] = useState('');
-  const { myData, setMyData, friends, setFriends, channels, setChannels, mySocket, mapChannels, setMapChannels } = useMyContext();
+  const { myData, setMyData, friends, setFriends, channels, setChannels, mySocket, currentChannel, setCurrentChannel } = useMyContext();
   const [channelList, setChannelList] = useState([]);
 
   useEffect(() => {
@@ -62,7 +62,7 @@ export function ChannelLookup({ setChatHistory, setCurrentChatRoom, chatRooms, s
       //setChannels([newChannel]);
       console.log('next Channels: ', [...channels, newChannel]);
       setChannels([...channels, newChannel]);
-      setCurrentChatRoom(newChannel.name); // 이거 해야함?
+      setCurrentChannel(newChannel);
     });
   };
 
