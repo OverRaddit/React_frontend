@@ -1,22 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
-import './XPage.css';
+import './test.css';
 import { CreateChannelForm } from 'components/chat/createChannelForm';
 import { ChannelLookup } from 'components/chat/ChannelLookUp';
 import { useMyContext } from 'MyContext';
 import { MyChannel } from 'navigation/interfaces/Channel.interface';
 
-interface ChatRoom {
-  name: string;
-  kind: number;
-  owner: {
-	id: number;
-  };
-  chatHistory: string[];
-}
-
 const XPage = () => {
   const [currentChat, setCurrentChat] = useState('');
-  const [chatRooms, setChatRooms] = useState<ChatRoom[]>([]);
+  const [chatRooms, setChatRooms] = useState<MyChannel[]>([]);
   const { myData, setMyData, friends, setFriends, channels, setChannels,
 	 mySocket, mapChannels, setMapChannels, currentChannel, setCurrentChannel, } = useMyContext();
   const [userChatRooms, setUserChatRooms] = useState<MyChannel[]>(channels);
@@ -57,7 +48,7 @@ const XPage = () => {
   const handleChatSubmit = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 		if (currentChat.trim() !== '') {
-			const targetRoom = currentChannel?.kind === 3 ? currentChannel?.owner.id : currentChannel?.name;
+			const targetRoom = currentChannel?.kind === 3 ? currentChannel?.owner : currentChannel?.name;
 			console.log('targetRoom: ', targetRoom);
 			mySocket?.chatSocket.emit('chat', { roomName: targetRoom, message: currentChat });
 
@@ -203,8 +194,7 @@ const XPage = () => {
 		  ) : (
 			<h3>you can't make room now!</h3>
 		  )}
-  
-		  <ChannelLookup chatRooms={chatRooms} setSelectedChannel={setSelectedChannel} />
+			<ChannelLookup chatRooms={chatRooms} setSelectedChannel={setSelectedChannel}/>
 		</div>
 	  </div>
 	);
