@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext, useRef } from 'react';
-import { MyContext } from '../MyContext'; 
+import { MyContext } from '../MyContext';
 import './MainPage.css';
 import { useNavigate } from 'react-router-dom';
 import { Socket } from 'socket.io-client';
@@ -21,7 +21,7 @@ const MainPage: React.FC<Props> = ({ onShowNavigation }) => {
 	// type chatHistory = {
 	// 	myArray: string[];
 	// };
-	
+
 	const [currentChatHistory, setCurrentChatHistory] = useState<string[]>([]);
   const [currentChat, setCurrentChat] = useState('');
   const [chatRooms, setChatRooms] = useState<MyChannel[]>([]);
@@ -48,10 +48,10 @@ const MainPage: React.FC<Props> = ({ onShowNavigation }) => {
             setIsInQueue(false);
             navigate('/game', { state: { gameData: res } });
           };
-      
+
           mySocket.gameSocket.on('enqueuecomplete', handleEnqueueComplete);
           mySocket.gameSocket.on('matchingcomplete', handleMatchingComplete);
-      
+
           return () => {
             mySocket.gameSocket.off('enqueuecomplete');
             mySocket.gameSocket.off('matchingcomplete');
@@ -86,7 +86,7 @@ const MainPage: React.FC<Props> = ({ onShowNavigation }) => {
 		console.log('send onCreateChannel event');
 		mySocket?.chatSocket.emit('createChannel', data);
 	};
-	
+
 
 	const handleChatChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setCurrentChat(e.target.value);
@@ -95,14 +95,14 @@ const MainPage: React.FC<Props> = ({ onShowNavigation }) => {
 	function findChannelByName(channels: MyChannel[], channelName: string): MyChannel | undefined {
 		return channels.find((channel: MyChannel) => channel.name === channelName);
 	}
-	
+
 	const handleChatSubmit = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 		if (currentChat.trim() !== '') {
 			// setCurrentChatHistory((prevState) => ({
 			// 	myArray: [...prevState.myArray, 'You: ' + currentChat],
 			// }));
-			setCurrentChatHistory([...currentChatHistory, 'You: ' + currentChat]);
+			setCurrentChatHistory([...currentChatHistory, 'You : ' + currentChat]);
 			mySocket?.chatSocket.emit('chat', { roomName: currentChatRoom, message: currentChat });
 			setCurrentChat('');
 		}
@@ -116,7 +116,7 @@ const MainPage: React.FC<Props> = ({ onShowNavigation }) => {
 			foundChannel.chatHistory = currentChatHistory;
 		}
 		const selectedRoomName: string = event.target.value;
-	
+
 		setCurrentChatRoom(selectedRoomName);
 		const newChannel = findChannelByName(channels, selectedRoomName);
 		if (newChannel)
@@ -124,8 +124,8 @@ const MainPage: React.FC<Props> = ({ onShowNavigation }) => {
 			setCurrentChatHistory(newChannel.chatHistory);
 		}
 	};
-	
-	
+
+
 	const leftChannel = (): void => {
 		console.log('방나가기 이벤트');
 		const data = {
@@ -137,22 +137,22 @@ const MainPage: React.FC<Props> = ({ onShowNavigation }) => {
 			console.log('leftChannel: ', message);
 			setModalMessage(message);
 			setIsModalOpen(true);
-	
+
 			const isError: boolean = true;
-	
+
 			// ㅇㅔ러가 발생한 경우
 			if (isError) {
 				return;
 			}
-	
+
 			// 성공한 경우
-	
+
 			// 1. chatRooms에서 나간 채널을 삭제합니다.
-	
+
 			// 2. currentChatRoom을 chatRooms의 첫번째 방으로 재설정합니다.
 		});
 	};
-	
+
 
   return (
 		<div className="main-page">
@@ -237,7 +237,7 @@ const MainPage: React.FC<Props> = ({ onShowNavigation }) => {
           : <h3>you can't make room now!</h3>
         } */}
 
-        <ChannelLookup setChatHistory={setCurrentChatHistory} setCurrentChatRoom={setCurrentChatRoom} socket={mySocket?.chatSocket} chatRooms={chatRooms} userChatRooms={userChatRooms} setUserChatRooms={setUserChatRooms} setSelectedChannel={setSelectedChannel}/>
+        <ChannelLookup setChatHistory={setCurrentChatHistory} setCurrentChatRoom={setCurrentChatRoom} chatRooms={chatRooms} setSelectedChannel={setSelectedChannel}/>
       </div>
 
     </div>
