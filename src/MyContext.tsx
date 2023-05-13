@@ -75,6 +75,7 @@ export const MyContextProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       extraHeaders: {
         foo:'bar',
         Authorization: `Bearer ${cookies.session_key}`,
+				session_key: cookies.session_key,
         intraId: myData!.intraid,
         userId: myData!.id.toString(),
       },
