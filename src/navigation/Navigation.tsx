@@ -41,7 +41,7 @@ const Navigation: FC = () => {
             setFriends(response2.data);
         }
       } catch (error) {
-        console.error('Failed to fetOch user data:', error);
+        console.error('Failed to fetch user data:', error);
         navigate('/login');
       }
     };
