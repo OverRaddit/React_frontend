@@ -42,6 +42,8 @@ const MainPage: React.FC<Props> = ({ onShowNavigation }) => {
       };
       const handleMatchingComplete = (res: any) => {
         console.log("여긴가", res);
+        console.log(mySocket.gameSocket);
+
         setIsInQueue(false);
         navigate('/game', { state: { gameData: res } });
       };
@@ -57,18 +59,16 @@ const MainPage: React.FC<Props> = ({ onShowNavigation }) => {
   }, [mySocket]);
 
   const joinNormalQueue = () => {
-    console.log("joinNormalQueue function");
+    console.log("test", myData);
     const intraId = myData?.intraid;
-    console.log("intraId:", intraId);
-    console.log("gameSocket:", mySocket?.gameSocket);
-    mySocket?.gameSocket.emit('match', {gameType: 0, intraId:intraId});
-    console.log("joinNormalQueue function end");
+    const userId = myData?.id;
+    mySocket?.gameSocket.emit('match', {gameType: 0, intraId:intraId, userId});
   };
 
   const joinExtendedQueue = () => {
-    console.log("Joining extended queue");
     const intraId = myData?.intraid;
-    mySocket?.gameSocket.emit('match', {gameType: 1, intraId:intraId});
+    const userId = myData?.id;
+    mySocket?.gameSocket.emit('match', {gameType: 1, intraId:intraId, userId});
   };
 
   const cancelQueue = () => {
