@@ -36,9 +36,9 @@ function App() {
               <Route path="/" element={<MainPage onShowNavigation={showNavigation} />} />
               <Route path="/a" element={<XPage/>} />
               {/* <Route path="/game" element={<Game socket={socket} room={room} nickName={nickName} isExtension={isExQueue}/>} /> */}
-              <Route path="/game" element={<Game />} />
+              <Route path="/game" element={<Game onHideNavigation={hideNavigation}/>} />
               <Route path="/c" element={<ZPage />} />
-              <Route path="/profile/:userId?" element={<ProfilePage />} />
+              <Route path="/profile/:userId?" element={<ProfilePage onShowNavigation={showNavigation}/>} />
               <Route path="/login" element={<LoginPage onHideNavigation={hideNavigation}/>} />
               <Route path="/loginok" element={<LoginOK onShowNavigation={showNavigation} />} />
               <Route path="/join" element={<JoinPage onHideNavigation={hideNavigation} />} />

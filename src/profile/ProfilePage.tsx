@@ -11,7 +11,11 @@ import { useMyContext } from '../MyContext'; // Import the context
 import { MyFriend } from 'navigation/interfaces/Friend.interface';
 import RecentMatchCard, { RecentMatch } from './RecentMatchCard';
 
-const ProfilePage: React.FC = () => {
+interface Props {
+  onShowNavigation: () => void;
+}
+
+const ProfilePage: React.FC<Props> = ({ onShowNavigation }) => {
   const { myData, setMyData, friends, setFriends } = useMyContext(); // Access the context
   let { userId } = useParams<{ userId?: string }>();
   const isMyProfile = !userId || (myData && myData.intraid === userId) || false;
@@ -39,6 +43,7 @@ const ProfilePage: React.FC = () => {
   const [recentMatches, setRecentMatches] = useState<RecentMatch[]>([]);
 
   useEffect(() => {
+    onShowNavigation();
     const fetchUserData = async () => {
       try {
         const response = await axios.get(
@@ -63,7 +68,7 @@ const ProfilePage: React.FC = () => {
     
     fetchUserData();
     fetchRecentMatches();
-  }, [userId]);
+  }, [userId, onShowNavigation]);
 
   const isFriend = friends.some((friend) => friend.id === userData.id);
   const displayProfilePicture = userData.avatar || defaultProfilePicture;

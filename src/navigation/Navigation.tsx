@@ -1,6 +1,6 @@
 import { FC, useEffect } from 'react';
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Modal from 'react-modal';
 import { MyChannel, MyFriend } from './interfaces/interfaces';
 import './Navigation.css';
@@ -23,6 +23,7 @@ const Navigation: FC = () => {
   const [selectedUserChannel, setSelectedUserChannel] = useState<any | null>(null);
   const { myData, setMyData, friends, setFriends, channels, setChannels, initSocket, mySocket } = useMyContext();
   const [modalMessage, setModalMessage] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -36,12 +37,12 @@ const Navigation: FC = () => {
         if (friends.length === 0) {
           const response2 = await axios.get(
             `http://localhost:3000/friendlist`, { withCredentials: true }
-          );
-          setFriends(response2.data);
-          console.log(response2.data);
+            );
+            setFriends(response2.data);
         }
       } catch (error) {
         console.error('Failed to fetOch user data:', error);
+        navigate('/login');
       }
     };
     fetchUserData();
@@ -356,15 +357,14 @@ const Navigation: FC = () => {
     <div className="Navigation" id="navigation">
       <div className="container">
       <div className="profile-row">
+      <Link to="/profile">
         <img className="nav_profile-picture" src={myData?.avatar} alt="Profile" />
         <span>{myData?.nickname}</span>
+      </Link>
       </div>
 
       {/* Button group */}
       <div className="button-group">
-        <Link to="/"><button>X</button></Link>
-        <Link to="/game"><button>Y</button></Link>
-        <Link to="/c"><button>Z</button></Link>
         <button onClick={() => handleListSwitch('friends')}>Friends</button>
         <button onClick={() => handleListSwitch('channels')}>Channels</button>
       </div>
