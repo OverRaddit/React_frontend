@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import './GamePage.css';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -6,6 +6,7 @@ import { useMyContext } from 'MyContext';
 import { drawRect, drawCircle, drawText, drawCircleBall } from './painting';
 import { GameWindow } from 'UserProfile/GameWidow';
 import { GameModal } from 'UserProfile/GameModal';
+
 
 const canvasMaxWidth = 600;
 const canvasMaxHeight = 400;
@@ -79,6 +80,18 @@ function Game() {
     
     drawCircleBall(gameMode, ball, ctx);
   }
+
+	const backToMain = () => {
+		navigate('/');
+	}
+
+	function getCurrentUsername(player : number) : string {
+		if (player == 1)
+			return gameData.leftUser.intraid;
+		else if (player == 2)
+			return gameData.rightUser.intraid;
+		return 'error : wrong playerID';
+	}
   
   // Prevent continuous keystrokes  // TODO: (gshim)님한테 체크 받아야 할 부분. key눌림 방지
   useEffect(() =>{
@@ -87,13 +100,19 @@ function Game() {
   
   // register 'render' event and set left or right
   useEffect(()=>{
-    if (!mySocket) return;
+		if (!mySocket)
+		{
+			window.alert('잘못된 접근입니다.');
+			navigate('/', {replace: true});
+			return ;
+		}
     if (mySocket?.gameSocket.id === gameData.leftSockId)
     	setPlayerId(1);
     else if (mySocket?.gameSocket.id === gameData.rightSockId)
     	setPlayerId(2);
     else setPlayerId(42);
     setGameMode(gameData.gameType); // TODO: (gshim)님한테 체크 받아야 할 부분. 게임 모드 설정.
+
 
     mySocket?.gameSocket.on('render', (pos1: any, pos2: any, ball: any) => {
       setPos1(pos1);
@@ -111,18 +130,6 @@ function Game() {
 				// setGameOver(true);
 			}
 		})
-
-		const backToMain = () => {
-			navigate('/');
-  	}
-
-		function getCurrentUsername(player : number) : string {
-			if (player == 1)
-				return gameData.leftUser.intraid;
-			else if (player == 2)
-				return gameData.rightUser.intraid;
-			return 'error : wrong playerID';
-		}
 
 		window.onpopstate = (event: PopStateEvent) => {
 			let player = 0;
@@ -145,6 +152,8 @@ function Game() {
   
   useEffect(() => {
     const canvas = canvasRef.current;
+		if (!canvas)
+			return ;
     const ctx = canvas!.getContext('2d');
 
     window.addEventListener('keydown', windowKeyDownHandler);
@@ -157,22 +166,38 @@ function Game() {
     };
   }, [pos1, pos2, ball]);
 
+	// useLayoutEffect(() => {
+	// if (mySocket?.gameSocket == null)
+	// {
+	// 	console.log('MySocket', mySocket);
+	// 	console.log('GameSocket', mySocket?.gameSocket);
+	// 	// window.alert('잘못된 접근입니다.');
+	// }
+	// else
+	// {
+	// 	console.log('정상 접근입니다.')
+	// }
+	// return () => {};
+  // }, []);
+
 	const turnOnState = () => {
 		setIsModalOpen(true);
 		console.log('turnOnState :', turnOnState);
 	}
   
   return (
-			<div className='game-ui'>
-				<div className='canvas-container'>
-					<canvas ref={canvasRef} width={canvasMaxWidth} height={canvasMaxHeight}/>
-					<button onClick={turnOnState}>pop up modal</button>
-					<GameModal isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} firstScore={pos1.score} secondScore={pos2.score} navigate={navigate}></GameModal>
-				</div>
-				<div className='game-window-container'>
-					<GameWindow leftUser = {gameData.leftUser} rightUser = {gameData.rightUser}></GameWindow>
-				</div>
-			</div>
+		( mySocket?.gameSocket &&
+		<div className='game-ui'>
+		<div className='canvas-container'>
+			<canvas ref={canvasRef} width={canvasMaxWidth} height={canvasMaxHeight}/>
+			<button onClick={turnOnState}>pop up modal</button>
+			<GameModal isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} firstScore={pos1.score} secondScore={pos2.score} navigate={navigate}></GameModal>
+		</div>
+		<div className='game-window-container'>
+			<GameWindow leftUser = {gameData.leftUser} rightUser = {gameData.rightUser}></GameWindow>
+		</div>
+	</div>
+	)	
   );
 }
   
