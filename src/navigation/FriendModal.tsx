@@ -7,7 +7,7 @@ import { MyChannel, MyFriend } from './interfaces/interfaces';
 
 interface FriendModalProps {
   friend: MyFriend;
-  onClose: () => void; 
+  onClose: () => void;
 }
 
 const FriendModal: React.FC<FriendModalProps> = ({ friend, onClose }) => {
@@ -21,43 +21,70 @@ const FriendModal: React.FC<FriendModalProps> = ({ friend, onClose }) => {
 
   // TODO: invite 모달 만들면 이동
   const acceptInvite = (e: React.MouseEvent<HTMLButtonElement>) => {
-    mySocket?.gameSocket.emit('Accept invitation', {myIntraId: myData!.intraid, oppIntraId: friend.intraid, enqueueFlag: false, gameType: 0}); // TODO
+    mySocket?.gameSocket.emit('Accept invitation', { myIntraId: myData!.intraid, oppIntraId: friend.intraid, enqueueFlag: false, gameType: 0 }); // TODO
   };
-  
+
   const sendInvite0 = (e: React.MouseEvent<HTMLButtonElement>) => {
-    mySocket?.gameSocket.emit('Invite Game', {myIntraId: myData!.intraid, oppIntraId: friend.intraid, gameType: 0}); 
+    mySocket?.gameSocket.emit('Invite Game', { myIntraId: myData!.intraid, oppIntraId: friend.intraid, gameType: 0 }, 
+    (res:any) =>{
+      if (res.state != 200) {
+        window.alert('초대에 실패했습니다');
+      }
+    });
   };
   const sendInvite1 = (e: React.MouseEvent<HTMLButtonElement>) => {
-    mySocket?.gameSocket.emit('Invite Game', {myIntraId: myData!.intraid, oppIntraId: friend.intraid, gameType: 1}); 
+    mySocket?.gameSocket.emit('Invite Game', { myIntraId: myData!.intraid, oppIntraId: friend.intraid, gameType: 1 }, 
+    (res:any) =>{
+      if (res.state != 200) {
+        window.alert('초대에 실패했습니다');
+      }
+    });
   };
-  
+
   const isDMEnabled = friend.status === 'online' || friend.status === 'in-queue';
   const isInviteEnabled = friend.status === 'online';
 
   return (
-      <Modal
-        isOpen={isModalOpen}
-        onRequestClose={closeModal}
-        contentLabel="Friend Information Modal"
-        className="friend-modal"
-        overlayClassName="friend-modal-overlay"
-      >
-        <div className="friend-modal-content">
+    <Modal
+      isOpen={isModalOpen}
+      onRequestClose={closeModal}
+      contentLabel="Friend Information Modal"
+      className="friend-modal"
+      overlayClassName="friend-modal-overlay"
+    >
+      <div className="friend-modal-content">
         <div className="profile-info">
           <img src={friend.avatar} alt={`${friend.nickname}'s avatar`} />
           <h2>{friend.nickname}</h2>
         </div>
-          <Link to={`/profile/${friend.intraid}`}>
-            <button onClick={closeModal}>프로필 보기</button>
-          </Link>
-          <button className={isDMEnabled ? '' : 'disabled'} disabled={!isDMEnabled}>
+        <Link to={`/profile/${friend.intraid}`}>
+          <button onClick={closeModal}>프로필 보기</button>
+        </Link>
+        <button className={isDMEnabled ? '' : 'disabled'} disabled={!isDMEnabled}>
             DM 보내기
           </button>
-          <button className={isInviteEnabled ? '' : 'disabled'} disabled={!isInviteEnabled}>
-            게임 초대
-          </button>
+        <div className="invite-buttons">
+          <div>
+            <button
+              // className={isInviteEnabled ? '' : 'disabled'}
+              // disabled={!isInviteEnabled}
+              onClick={sendInvite0}
+            >
+              기본
+            </button>
+          </div>
+          <div>
+            <button
+              // className={isInviteEnabled ? '' : 'disabled'}
+              // disabled={!isInviteEnabled}
+              onClick={sendInvite1}
+            >
+              확장
+            </button>
+          </div>
         </div>
-      </Modal>
+      </div>
+    </Modal>
   );
 };
 

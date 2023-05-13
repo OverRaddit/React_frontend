@@ -2,7 +2,7 @@ import './App.css';
 import { useState, useEffect } from 'react';
 import Navigation from './navigation/Navigation.tsx';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import XPage from './pages/XPage';
+import XPage from 'main/test';
 import ZPage from './pages/ZPage';
 import ProfilePage from './profile/ProfilePage.tsx';
 import LoginPage from './login/LoginPage.tsx';
@@ -12,6 +12,7 @@ import Game from './game/GamePage';
 import { MyContextProvider } from './MyContext';
 import LoginOK from 'login/LoginOK';
 import MainPage from 'main/MainPage';
+// import MainPage from 'main/test';
 
 function App() {
   const [isNavigationVisible, setIsNavigationVisible] = useState(false);

@@ -13,7 +13,7 @@ const LoginPage: React.FC<Props> = ({ onHideNavigation }) => {
 
   const handleLoginButtonClick = () => {
     // 로그인 처리
-    window.location.replace('http://localhost:3000/auth');
+    window.location.replace('http://localhost:3000/auth/login');
   };
 
   return (

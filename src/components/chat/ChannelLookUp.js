@@ -1,26 +1,14 @@
+// import { channel } from 'diagnostics_channel';
 import { useState, useEffect } from 'react';
 import { useMyContext } from 'MyContext';
-import { MyChannel } from 'navigation/interfaces/Channel.interface';
 
-interface EventResponse {
-  success: boolean;
-  message: string;
-  data: any[];
-}
-
-export function ChannelLookup({
-  chatRooms,
-  setSelectedChannel,
-}: {
-  chatRooms: MyChannel[];
-  setSelectedChannel: Function;
-}) {
+export function ChannelLookup({ setChatHistory, setCurrentChatRoom, chatRooms, socket, userChatRooms, setUserChatRooms, setSelectedChannel }) {
   const [filterKind, setFilterKind] = useState('');
-	const { myData, channels, setChannels, mySocket, setCurrentChannel } = useMyContext();
-  const [channelList, setChannelList] = useState<MyChannel[]>([]);
+  const { myData, setMyData, friends, setFriends, channels, setChannels, mySocket, currentChannel, setCurrentChannel } = useMyContext();
+  const [channelList, setChannelList] = useState([]);
 
   useEffect(() => {
-    mySocket?.chatSocket.on('getChannel', (response: MyChannel[]) => {
+    mySocket?.chatSocket.on('getChannel', (response) => {
       console.log('getChannel: ', response);
       setChannelList(response);
     });
@@ -31,7 +19,7 @@ export function ChannelLookup({
       ? chatRooms
       : chatRooms.filter((channel) => channel.kind === parseInt(filterKind));
 
-  const handleKindFilterChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleKindFilterChange = (event) => {
     const kind = event.target.value;
     setFilterKind(kind);
   };
@@ -39,14 +27,24 @@ export function ChannelLookup({
   const handleLookupClick = () => {
     const kind = filterKind !== '' ? parseInt(filterKind) : null;
     console.log('handleLookupClick!~');
-    mySocket?.chatSocket.emit('getChannel', (response: Response) => {
+    mySocket?.chatSocket.emit('getChannel', (response) => {
       console.log('getChannel Response: ', response);
     });
   };
 
-  const handleJoinClick = (channelName: string) => {
+	const stateToMap = ([newKey, newValue]) => {
+		let newMap = new Map();
+		userChatRooms.map = ([key, value]) => {
+			newMap.set(key, value);
+		}
+
+		newMap.set(newKey, newValue);
+		setUserChatRooms(newMap);
+	}
+
+  const handleJoinClick = (channelName) => {
     console.log(`Tried to join channel: ${channelName}`);
-    mySocket?.chatSocket?.emit('joinChannel', { userId: myData?.id, roomName: channelName }, (response: EventResponse) => {
+    mySocket?.chatSocket?.emit('joinChannel', { userId: myData.id, roomName: channelName }, (response) => {
       console.log('joinChannel Response: ', response);
       if (!response.success) {
         console.log('An error occurred.');
@@ -64,9 +62,11 @@ export function ChannelLookup({
       //setChannels([newChannel]);
       console.log('next Channels: ', [...channels, newChannel]);
       setChannels([...channels, newChannel]);
-			setCurrentChannel(newChannel);
+      setCurrentChannel(newChannel);
     });
   };
+
+
 
   return (
     <div>
@@ -75,9 +75,9 @@ export function ChannelLookup({
         Filter by Kind:
         <select value={filterKind} onChange={handleKindFilterChange}>
           <option value="">All</option>
-          <option value="0">Public</option>
-          <option value="1">Password Protected</option>
-          <option value          ={2}>Private</option>
+          <option value={0}>Public</option>
+          <option value={1}>Password Protected</option>
+          <option value={2}>Private</option>
         </select>
       </label>
       <button type="button" onClick={handleLookupClick}>
@@ -115,4 +115,3 @@ export function ChannelLookup({
     </div>
   );
 }
-

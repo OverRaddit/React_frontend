@@ -1,0 +1,27 @@
+.chat-history-box {
+	height: 200px; /* set a fixed height */
+	overflow-y: scroll; /* add a scroll if the content overflows */
+  }
+
+.chat-history-box, .chat-input-box {
+background-color: #F0F0F0;
+}
+
+.chat-history-box,
+.x-page-bottom input[type='text'],
+.x-page-bottom button {
+  background-color: #f5f5f5;
+}
+
+.popup {
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	background-color: white;
+	padding: 50px;
+	border-radius: 5px;
+	box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
+	z-index: 9999;
+	text-align: center;
+  }

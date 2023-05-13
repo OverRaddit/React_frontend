@@ -1,117 +1,14 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './XPage.css'
 import { CreateChannelForm } from 'components/chat/createChannelForm';
-import initSocket from 'socket';
 import { ChannelLookup } from 'components/chat/ChannelLookUp';
-import { Link } from 'react-router-dom';
 import { useMyContext } from 'MyContext';
 
-/*
-ㅇㅣ제 모든 소켓은, 이 컴포넌트에서 관리합니다!
-
-발생할 수 있는 문제점은 다음과 같다.
-- XPage라는 컴포넌트가 다시 렌더링되면, 소켓이 끊겼다가 다시 연결됩니다.
-  - 소켓과 관련된 이벤트리스너가 다시 추가되고, 새로 렌더링될때마다 이벤트리스너가 늘어납니다.
-    - 서버에서 보내는 단일 이벤트에 대해 여러 이벤트핸들러가 동작하게 됩니다.
-    -> 이벤트리스너가 계속 추가되는 것은 useEffect의 반환부에서 취소함으로써 해결할 수 있습니다.
-
-내가 알아봐야 할 것.
-- 일반적으로 SocketIO client에서 socket을 어디에 선언해두어야 합니까?
-- 근데 가만 생각해보니,,,, 전역에서 한번만 선언하면 되는거 아닌가?
-- 전역이면 외부파일에서 동작시키고 import하는 것만으로 충분할 것 같은데???!
-*/
-
-const sampleChannelData = [
-  {
-    kind: 0,
-    roomname: 'Public Room 1',
-    owner: 'Alice',
-    roompassword: '',
-  },
-  {
-    kind: 1,
-    roomname: 'Password Protected Room',
-    owner: 'Bob',
-    roompassword: 'password',
-  },
-  {
-    kind: 0,
-    roomname: 'Public Room 2',
-    owner: 'Charlie',
-    roompassword: '',
-  },
-];
-
-const sampleChannelData2 = new Map([
-  [
-    'Public Room 1',
-    {
-      kind: 0,
-      roomname: 'Public Room 1',
-      owner: 'Alice',
-      roompassword: '',
-    }
-  ],
-  [
-    'Password Protected Room',
-    {
-      kind: 1,
-      roomname: 'Password Protected Room',
-      owner: 'Bob',
-      roompassword: 'password',
-    },
-  ],
-  [
-    'Public Room 2',
-    {
-      kind: 0,
-      roomname: 'Public Room 2',
-      owner: 'Charlie',
-      roompassword: '',
-    }
-  ],
- ]);
-
- const userChannelList = new Map([]);
-
-const exampleChatHistory = [
-  'Hello, how are you?',
-  'I am doing well, thanks for asking.',
-  'What have you been up to lately?',
-  'Not much, just working on some coding projects.',
-];
-
-const parseCookie = (cookie) => {
-  const cookies = cookie.split(';');
-  const cookieData = {};
-
-  cookies.forEach((cookie) => {
-    const [key, value] = cookie.split('=');
-    if (key.trim() === 'userData')
-    {
-      const decodedString = decodeURIComponent(value);
-      const javascriptObject = JSON.parse(decodedString);
-      console.log('key1: ', key);
-      cookieData[key.trim()] = javascriptObject;
-    }
-    else
-    {
-      console.log('key2: ', key);
-      cookieData[key.trim()] = value;
-    }
-  });
-
-  return cookieData;
-}
-
 const XPage = () => {
-  const [currentChatHistory, setCurrentChatHistory] = useState([]);
   const [currentChat, setCurrentChat] = useState('');
-  const [socket, setSocket] = useState(null);
-  const [chatRooms, setChatRooms] = useState(sampleChannelData);
-  const [userChatRooms, setUserChatRooms] = useState(userChannelList);
-  const [currentChatRoom, setCurrentChatRoom] = useState('gshimRoom');  // 현재 선택된 채널의 이름을 저장한다.
-  const { myData, setMyData, friends, setFriends, channels, mySocket } = useMyContext();
+  const [chatRooms, setChatRooms] = useState([]);
+  const { myData, setMyData, friends, setFriends, channels, setChannels, mySocket, mapChannels, setMapChannels, currentChannel, setCurrentChannel } = useMyContext();
+  const [userChatRooms, setUserChatRooms] = useState(channels);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
@@ -120,76 +17,16 @@ const XPage = () => {
   const chatHistoryRef = useRef(null); // new2
 
   useEffect(() => {
-		// userChannelList.set('channelName',
-		// {
-		// kind: 0,
-		// roomname: 'testRoom',
-		// owner: 'yson',
-		// chatHistory : [],
-		// });
-    const cookies = parseCookie(document.cookie);
-    console.log('Xpage cookies: ', cookies);
+    console.log('channels: ', channels);
+    if (channels.length === 0) return;
 
-    // const newSocket = initSocket('http://localhost:4242/chat', cookies, setMyData);
-    // console.log('newSocket: ', newSocket);
-		if (mySocket) {
-			setSocket(mySocket.chatSocket);	
-		}
-    return () => {
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!socket) return;
-    socket.on('getChannel', (channels) => {
-      console.log('getChannel: ', channels);
-
-      // 이 부분을 바꿔야 한다...
-      // 이건 사용자가 참여한 채널목록이 아니다.
-      // 채널 조회를 통해 받아온 채널목록일 뿐이다.
-      // channel를 순회하며
-      setChatRooms(channels);
-    });
-
-    socket.on('user-join', (data) => {
-      const { roomName, userId } = data;
-      console.log(`${userId} joined ${roomName} channel.`);
-      if (roomName === currentChatRoom)
-        setCurrentChatHistory([...currentChatHistory, `${userId} joined ${roomName} channel.`]);
-    });
-
-    /*
-    data = {
-      "message": "hello world!",
-      "roomName": ""
+    if (!currentChannel) {
+      setCurrentChannel(channels[0]);
     }
-    */
-    socket.on('chat', (data) => {
-      const { message, roomName } = data;
-      console.log('detect chat event: ', data);
+    else
+      setCurrentChannel(channels.find((channel) => channel.name === currentChannel?.name));
+  }, [channels, currentChannel, setCurrentChannel]);
 
-      console.log('currentChatRoom: ', currentChatRoom);
-      console.log('roomName: ', roomName);
-
-      // 현재 켜놓고 있는 채널의 chat만 저장합니다.
-      if (currentChatRoom === roomName)
-        setCurrentChatHistory([...currentChatHistory, message]);
-      else
-        console.log('this room is not opened from my client!');
-    })
-
-    // socket.on('joinChannel'), (data) => {
-
-    // });
-
-    // 왜 여기는 이벤트를 해제하는 리턴 함수를 쓰지 않았지?
-    return (() => {
-      socket.off('getChannel');
-      socket.off('welcome');
-      socket.off('chat');
-      //socket.off('joinChannel');
-  });
-  }, [socket, currentChatHistory, currentChatRoom, currentChat]);
 
   useEffect(() => {
     const chatHistoryBox = chatHistoryRef.current;
@@ -197,27 +34,7 @@ const XPage = () => {
     console.log('gap: ', gap);
     if (gap < 230)
       chatHistoryBox.scrollTop = chatHistoryBox.scrollHeight;
-  }, [currentChatHistory]);
-
-	useEffect(() => {
-		const previousChannel = userChatRooms.get(currentChatRoom);
-		if (previousChannel)
-		{
-			previousChannel.chatHistory = currentChatHistory;
-		}
-		const selectedChannelData = userChatRooms.get(selectedChannel);
-		if (selectedChannelData) {
-			console.log('selectedChannelData :', selectedChannelData);
-			setCurrentChatRoom(selectedChannelData.roomname);
-			setCurrentChatHistory(selectedChannelData.chatHistory);
-		}
-	}, [userChatRooms]);
-
-  const onCreateChannel = (data) => {
-    console.log('data: ', data);
-    console.log('send onCreateChannel event')
-    socket.emit('createChannel', data);
-  };
+  }, [currentChannel?.chatHistory]);
 
   const handleChatChange = (e) => {
     setCurrentChat(e.target.value);
@@ -226,8 +43,30 @@ const XPage = () => {
   const handleChatSubmit = (e) => {
     e.preventDefault();
     if (currentChat.trim() !== '') {
-      setCurrentChatHistory([...currentChatHistory, 'You: ' + currentChat]);
-      socket.emit('chat', { roomName: currentChatRoom, message: currentChat});
+      const targetRoom = currentChannel?.kind === 3 ? currentChannel?.owner.id : currentChannel.name;
+      console.log('targetRoom: ', targetRoom);
+      mySocket.chatSocket.emit('chat', { roomName: targetRoom, message: currentChat});
+
+    // 내 채팅을 채널의 채팅목록에 추가하는 코드===================
+      const channelIndex = channels.findIndex(channel => channel.name === currentChannel.name);
+      console.log('channelIndex: ', channelIndex);
+
+      if (channelIndex !== -1) {
+        const updatedChannel = {
+          ...channels[channelIndex],
+          chatHistory: [...channels[channelIndex].chatHistory, 'You: ' + currentChat]
+        };
+
+        const updatedChannels = [
+          ...channels.slice(0, channelIndex),
+          updatedChannel,
+          ...channels.slice(channelIndex + 1)
+        ];
+
+        console.log('updatedChannels: ', updatedChannels);
+        setChannels(updatedChannels);
+      }
+    // 내 채팅을 채널의 채팅목록에 추가하는 코드===================
       setCurrentChat('');
     }
   };
@@ -235,66 +74,60 @@ const XPage = () => {
   const leftChannel = () => {
     console.log('방나가기 이벤트');
     const data = {
-      "roomName": currentChatRoom,
-      "userId": socket.userId,
+      "roomName": currentChannel.name,
     };
-    //console.log('data: ', data);
-    socket.emit('leftChannel', data, (message)=> {
-      console.log('leftChannel: ', message);
-      setModalMessage(message);
+    mySocket.chatSocket.emit('leftChannel', data, (response)=> {
+      console.log('leftChannel: ', response);
+      setModalMessage(response.message);
       setIsModalOpen(true);
 
-      const isError = true;
-
       // ㅇㅔ러가 발생한 경우
-      if (isError) {
-        return;
-      }
+      if (!response.success) return;
 
       // 성공한 경우
-
+      setChannels(channels.filter((channel) => channel.name !== currentChannel.name));
       //1. chatRooms에서 나간 채널을 삭제합니다.
-
       //2. currentChatRoom을 chatRooms의 첫번째 방으로 재설정합니다.
-
     });
   }
 
-  // data = {
-  //   "kind": 0,
-  //   "roomName": "sample room name",
-  //   "roomPassword": "sample room name", <- optional property
-  // }
-  const handleChatRoomSubmit = (e) => {
-    e.preventDefault();
-
-    // 룸 생성 옵션
-    const kind = 0;
-    const roomName = 'default_name';
-    const roomPassword = undefined;
-
-    if (roomName.trim() !== '') {
-      //socket.emit('createChannel', { kind, roomName, roomPassword });
-      setCurrentChat('');
-    }
-  };
-
 	const switchRoom = (event) =>
 	{
-		userChatRooms.get(currentChatRoom).chatHistory = currentChatHistory; //방을 바꾸기 전 현재 채팅방의 채팅내역을 백업.
-		const selectedRoomName = event.target.value;
+    console.log('switchRoom] chathistory: ');
+    console.log('switchRoom] channels:', channels);
 
-		setCurrentChatRoom(selectedRoomName);
-		setCurrentChatHistory(userChatRooms.get(selectedRoomName).chatHistory);
-	}
+    // 선택한 channel의 대화목록을 불러오기
+    const selectedRoomName = event.target.value;
+    const selectedChannel = channels.find((channel) => channel.name === selectedRoomName);
+    setCurrentChannel(selectedChannel);
+  }
+
+  const debugAllState = () => {
+    console.log('---------------------------------------------');
+    console.log('currentChatHistory: ', currentChannel.chatHistory);
+    console.log('currentChannel: ', currentChannel);
+    console.log('channels: ', channels);
+    console.log('selectedChannel: ', selectedChannel);
+    console.log('---------------------------------------------');
+  }
+
+  const handleDM = () => {
+    mySocket.chatSocket.emit('createDm', { userId: 2 }, (response) => {
+      console.log(response);
+      setChannels([...channels, response.data[0]]);
+    });
+  }
 
   return (
     <div className="x-page">
-			<button onClick={() => console.log('currentRoom : ', userChatRooms)}>currentRoom</button>
-			<button onClick={() => console.log('selectedRoomHistory : ', userChatRooms.get(selectedChannel).chatHistory)}>currentChannel ChatHistory</button>
-			<button onClick={() => console.log('currentChatHistory : ', currentChatHistory)}>currentChatHistory</button>
+			<button onClick={debugAllState}>debugAllState</button>
+			<button onClick={handleDM}>channels</button>
+			<button onClick={() => console.log('channels : ', channels)}>channels</button>
+			<button onClick={() => console.log('currentRoom : ', currentChannel)}>currentRoom</button>
+			<button onClick={() => console.log('selectedRoomHistory : ', channels.find((channel) => channel.name === selectedChannel))}>currentChannel ChatHistory</button>
+			<button onClick={() => console.log('currentChatHistory : ', currentChannel.chatHistory)}>currentChatHistory</button>
       <button onClick={() => console.log(myData)}>myData확인버튼</button>
-      <h1>{userChatRooms.size === 0 ? "You are not join any room!" : currentChatRoom}</h1>
+      <h1>{channels.size === 0 ? "You are not join any room!" : currentChannel?.name}</h1>
       <div className="x-page-top">
         <button>Normal Button</button>
         <button>Expand Button</button>
@@ -316,22 +149,20 @@ const XPage = () => {
             </div>
           )}
           <label>
-            Channel Kind:
-            <select value={currentChatRoom} onChange={switchRoom}>
-							{Array.from(userChatRooms).map(([key, chatRoom]) => {
-								console.log('foreach chatRoom: ', chatRoom, key);
-								console.log('roomname: ', chatRoom.roomname);
-								return (
-									<option key={key} value={chatRoom.roomname}>
-										{chatRoom.roomname}
-									</option>
-								);
-							})}
+            채팅방 목록:
+            <select value={currentChannel?.name} onChange={switchRoom}>
+              {channels.map((channel) => {
+                return (
+                  <option key={channel.name} value={channel.name}>
+                    {channel.name}
+                  </option>
+                );
+              })}
             </select>
             <button onClick={leftChannel}>방나가기</button>
           </label>
           <ul>
-            {currentChatHistory.map((chat, index) => (
+            {currentChannel?.chatHistory?.map((chat, index) => (
               <li key={index}>{chat}</li>
             ))}
           </ul>
@@ -350,12 +181,12 @@ const XPage = () => {
         { true ?
           <>
             <h3>Make your own</h3>
-            <CreateChannelForm setChatHistory={setCurrentChatHistory} setCurrentChatRoom={setCurrentChatRoom} onCreateChannel={onCreateChannel}/>
+            <CreateChannelForm />
           </>
           : <h3>you can't make room now!</h3>
         }
 
-        <ChannelLookup setChatHistory={setCurrentChatHistory} setCurrentChatRoom={setCurrentChatRoom} socket={socket} chatRooms={chatRooms} userChatRooms={userChatRooms} setUserChatRooms={setUserChatRooms} setSelectedChannel={setSelectedChannel}/>
+        <ChannelLookup chatRooms={chatRooms} setSelectedChannel={setSelectedChannel}/>
       </div>
     </div>
   );

@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import Modal from 'react-modal';
 import { MyChannel, MyFriend } from './interfaces/interfaces';
 import './Navigation.css';
-import { useMyContext } from '../MyContext';
+import { EventResponse, useMyContext } from '../MyContext';
 import axios from 'axios';
 import ChannelSearch from './ChannelSearch';
 import FriendModal from './FriendModal';
@@ -16,9 +16,9 @@ type ListName = 'friends' | 'channels';
 
 const Navigation: FC = () => {
   const [showList, setShowList] = useState<ListName>('friends');
-  const [expandedChannels, setExpandedChannels] = useState<Set<number>>(new Set()); 
-  const [isModalOpen, setIsModalOpen] = useState(false);  
-  const [channelToLeave, setChannelToLeave] = useState<MyChannel | null>(null); 
+  const [expandedChannels, setExpandedChannels] = useState<Set<number>>(new Set());
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [channelToLeave, setChannelToLeave] = useState<MyChannel | null>(null);
   const [selectedUser, setSelectedUser] = useState<any | null>(null);
   const [selectedUserChannel, setSelectedUserChannel] = useState<any | null>(null);
   const { myData, setMyData, friends, setFriends, channels, setChannels, initSocket, mySocket } = useMyContext();
@@ -33,18 +33,19 @@ const Navigation: FC = () => {
           );
           setMyData(response.data);
         }
-        if (!friends) {
+        if (friends.length === 0) {
           const response2 = await axios.get(
             `http://localhost:3000/friendlist`, { withCredentials: true }
           );
           setFriends(response2.data);
+          console.log(response2.data);
         }
       } catch (error) {
         console.error('Failed to fetOch user data:', error);
       }
     };
     fetchUserData();
-  }, [setMyData, setFriends, initSocket, friends, myData]);
+  }, [setMyData, setFriends, myData]);
 
   useEffect(() => {
     if (myData && myData.intraid && myData.id && !mySocket) {
@@ -53,7 +54,7 @@ const Navigation: FC = () => {
     if (myData && mySocket) {
       mySocket.chatSocket.on('owner-granted', ({ roomName, user }) => {
         if (user.intraid === myData?.intraid) {
-          setModalMessage('You have been granted ownership of the ' + roomName);  
+          setModalMessage('You have been granted ownership of the ' + roomName);
         }
         setChannels(
         channels.map((channel) => {
@@ -74,77 +75,57 @@ const Navigation: FC = () => {
           return channel;
         })
       );
-    });
-      
-    mySocket.chatSocket.on('admin-granted', ({ roomName, user }) => {
+      });
+
+      mySocket.chatSocket.on('admin-granted', ({ roomName, user }) => {
+        if (user.intraid === myData?.intraid) {
+          setModalMessage('You have been granted admin of the ' + roomName);
+        }
+        setChannels(
+          channels.map((channel) => {
+            if (channel.name === roomName) {
+              return {
+                ...channel,
+                users: channel.users.map((channelUser) => {
+                  if (channelUser.id === user.id) {
+                    return { ...channelUser, isAdmin: true };
+                  }
+                  return channelUser;
+                }),
+              };
+            }
+            return channel;
+          })
+        );
+      });
+
+      mySocket.chatSocket.on('admin-revoked', ({ roomName, user }) => {
+        if (user.intraid === myData?.intraid) {
+          setModalMessage('You have been revoked admin of the ' + roomName);
+        }
+        setChannels(
+        channels.map((channel) => {
+          if (channel.name === roomName) {
+            return {
+              ...channel,
+              users: channel.users.map((channelUser) => {
+                if (channelUser.id === user.id) {
+                  return { ...channelUser, isAdmin: false };
+                }
+                return channelUser;
+              }),
+            };
+          }
+          return channel;
+        })
+      );
+      });
+
+      mySocket.chatSocket.on('user-banned', ({ roomName, user }) => {
       if (user.intraid === myData?.intraid) {
-        setModalMessage('You have been granted admin of the ' + roomName);  
+        setModalMessage('You have been banned of the ' + roomName);
+        setChannels(channels.filter((channel) => channel.name !== roomName));
       }
-      setChannels(
-      channels.map((channel) => {
-        if (channel.name === roomName) {
-          return {
-            ...channel,
-            users: channel.users.map((channelUser) => {
-              if (channelUser.id === user.id) {
-                return { ...channelUser, isAdmin: true };
-              }
-              return channelUser;
-            }),
-          };
-        }
-        return channel;
-      })
-    );
-  });
-      
-    mySocket.chatSocket.on('admin-revoked', ({ roomName, user }) => {
-      if (user.intraid === myData?.intraid) {
-        setModalMessage('You have been revoked admin of the ' + roomName);  
-      }
-      setChannels(
-      channels.map((channel) => {
-        if (channel.name === roomName) {
-          return {
-            ...channel,
-            users: channel.users.map((channelUser) => {
-              if (channelUser.id === user.id) {
-                return { ...channelUser, isAdmin: false };
-              }
-              return channelUser;
-            }),
-          };
-        }
-        return channel;
-      })
-    );
-  });
-      
-  mySocket.chatSocket.on('user-banned', ({ roomName, user }) => {
-    if (user.intraid === myData?.intraid) {
-      setModalMessage('You have been banned of the ' + roomName);  
-      setChannels(channels.filter((channel) => channel.name !== roomName));
-    }
-    setChannels(
-      channels.map((channel) => {
-        if (channel.name === roomName) {
-          return {
-            ...channel,
-            users: channel.users.filter((channelUser) => channelUser.intraId !== user.intraid),
-          };
-        }
-        return channel;
-      })
-    );
-  });
-      
-  mySocket.chatSocket.on('user-kicked', ({ roomName, user }) => {
-    if (user.intraid === myData?.intraid) {
-      setModalMessage('You have been kicked from the ' + roomName);
-      // 채널리스트에서 해당 채팅방을 삭제합니다.
-      setChannels(channels.filter((channel) => channel.name !== roomName));
-    } else {
-      // 다른 사용자가 추방된 경우, 해당 사용자만 채널리스트에서 삭제합니다.
       setChannels(
         channels.map((channel) => {
           if (channel.name === roomName) {
@@ -156,28 +137,74 @@ const Navigation: FC = () => {
           return channel;
         })
       );
-    }
-  });
-  mySocket.chatSocket.on('chat', ( response ) => {
-    console.log(response);
-  });
-  mySocket.chatSocket.on('user-muted', ( response ) => {
-    console.log(response);
-  });
+      });
 
-  
-      return () => {
-        mySocket.chatSocket.off('owner-granted');
-        mySocket.chatSocket.off('admin-granted');
-        mySocket.chatSocket.off('admin-revoked');
-        mySocket.chatSocket.off('user-banned');
-        mySocket.chatSocket.off('user-kicked');
-      };
+      mySocket.chatSocket.on('user-kicked', ({ roomName, user }) => {
+        if (user.intraid === myData?.intraid) {
+          setModalMessage('You have been kicked from the ' + roomName);
+          // 채널리스트에서 해당 채팅방을 삭제합니다.
+          setChannels(channels.filter((channel) => channel.name !== roomName));
+        } else {
+          // 다른 사용자가 추방된 경우, 해당 사용자만 채널리스트에서 삭제합니다.
+          setChannels(
+            channels.map((channel) => {
+              if (channel.name === roomName) {
+                return {
+                  ...channel,
+                  users: channel.users.filter((channelUser) => channelUser.intraId !== user.intraid),
+                };
+              }
+              return channel;
+            })
+          );
+        }
+      });
+
+      mySocket.chatSocket.on('chat', (response) => {
+        console.log(response);
+        // Find the index of the channel with the matching name
+        const channelIndex = channels.findIndex(channel => channel.name === response.roomName);
+
+        if (channelIndex !== -1) {
+          // Create a new channel object with the updated chatHistory
+          const chatMessage = `${response.user.nickname} : ${response.message}`;
+          const updatedChannel = {
+            ...channels[channelIndex],
+            chatHistory: [...channels[channelIndex].chatHistory, chatMessage]
+          };
+
+          // Create a new channels array with the updated channel object
+          const updatedChannels = [
+            ...channels.slice(0, channelIndex),
+            updatedChannel,
+            ...channels.slice(channelIndex + 1)
+          ];
+
+          // Update the channels state
+          setChannels(updatedChannels);
+        }
+      });
+
+      mySocket.chatSocket.on('user-dm', (response) => {
+        console.log('user-dm: ', response);
+        console.log('channels: ', channels);
+        const newChannels = [...channels, response];
+        console.log('newChannels: ', newChannels);
+        setChannels(newChannels);
+      });
+
+    return () => {
+      mySocket.chatSocket.off('owner-granted');
+      mySocket.chatSocket.off('admin-granted');
+      mySocket.chatSocket.off('admin-revoked');
+      mySocket.chatSocket.off('user-banned');
+      mySocket.chatSocket.off('user-kicked');
+      mySocket.chatSocket.off('chat');
+      mySocket.chatSocket.off('user-muted');
+      mySocket.chatSocket.off('user-dm');
+    };
     }
   }, [myData, initSocket, mySocket, channels, setChannels]);
-
-  
-
 
   const openModal = (channel: MyChannel) => {
     setChannelToLeave(channel);
@@ -185,8 +212,9 @@ const Navigation: FC = () => {
   };
 
   const confirmLeave = () => {
-    if (channelToLeave) {
+    if (channelToLeave && mySocket) {
       setChannels(channels.filter((channel) => channel.id !== channelToLeave.id));
+      mySocket.chatSocket.emit('leftChannel', { roomName: channelToLeave.name });
     }
     setIsModalOpen(false);
   };
@@ -211,6 +239,7 @@ const Navigation: FC = () => {
   const renderChannelList = () => {
     return (
       <ul className="channel-list">
+        {<span>채널수: {channels.length}</span>}
         {channels.map((channel) => (
           <li key={channel.id} className="channel">
             <div className="channel-info">
@@ -285,28 +314,22 @@ const Navigation: FC = () => {
     if (friends.length === 0) {
       return <div>No friends found</div>;
     }
-
+    
     const sortedFriends = friends.sort((a, b) => {
-      if (a.status === b.status) {
-        if (a.status === 'online') {
-          return a.nickname.localeCompare(b.nickname);
-        } else if (a.status === 'in-queue') {
-          if (b.status === 'online') return 1;
-          return -1;
-        } else if (a.status === 'in-game') {
-          if (b.status === 'online' || b.status === 'in-queue') return 1;
-          return -1;
-        } else {
-          return a.nickname.localeCompare(b.nickname);
-        }
-      } else {
-        if (a.status === 'online') return -1;
-        if (b.status === 'online') return 1;
-        if (a.status === 'in-queue') return -1;
-        if (b.status === 'in-queue') return 1;
-        if (a.status === 'in-game') return -1;
-        if (b.status === 'in-game') return 1;
+      // Treat undefined status as 'offline'
+      const statusA = a.status || 'offline';
+      const statusB = b.status || 'offline';
+
+      if (statusA === statusB) {
         return a.nickname.localeCompare(b.nickname);
+      } else {
+        if (statusA === 'online') return -1;
+        if (statusB === 'online') return 1;
+        if (statusA === 'in-queue') return -1;
+        if (statusB === 'in-queue') return 1;
+        if (statusA === 'in-game') return -1;
+        if (statusB === 'in-game') return 1;
+        return 1;
       }
     });
 
@@ -318,7 +341,7 @@ const Navigation: FC = () => {
           className="friend"
           onClick={() => handleFriendClick(friend)}
         >
-          <span>{friend.nickname} ({friend.status})</span>
+          <span>{friend.nickname} ({friend.status || 'offline'})</span>
         </li>
       ))}
     </ul>

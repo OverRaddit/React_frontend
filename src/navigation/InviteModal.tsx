@@ -3,10 +3,23 @@ import Modal from 'react-modal';
 import { useMyContext } from '../MyContext';
 
 const InviteModal: FC = () => {
-  const { myInvite, removeInvite } = useMyContext();
+  const { myInvite, setMyInvite, mySocket, myData, removeInvite } = useMyContext();
 
   const handleEvent = (type: number) => {
-    // Handle events based on the type
+    switch (type) {
+      case 0:
+
+        console.log("TEST",myInvite[0].user.intraId);
+        mySocket?.gameSocket.emit('Accept invitation',  {myIntraId: myData?.intraid, oppintraId: myInvite[0].user.intraId,  gameType:0} );
+        setMyInvite(myInvite.slice(1));
+        break;
+      case 1:
+        
+        break;
+    
+      default:
+        break;
+    }
   };
 
   return (
