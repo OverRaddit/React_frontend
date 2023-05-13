@@ -88,7 +88,7 @@ export const MyContextProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         userId: myData!.id.toString(),
       },
     });
-    
+
     ChatSocket.on('initChannels', (response: EventResponse) => {
       console.log(response);
       if (!response.success) console.log(response.message);
@@ -148,9 +148,23 @@ export const MyContextProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       });
     });
 
-
     ChatSocket.on('user-muted', ( response ) => {
       console.log(response);
+    });
+
+    GameSocket.on('invite message', (response) => {
+      const { user, gameType } = response;
+      console.log("USER", user);
+
+      const transformedUser = { ...user, intraId: user.intraid };
+    
+      setMyInvite((prevInvites) => [
+        ...prevInvites,
+        {
+          type: gameType,
+          user: transformedUser,
+        },
+      ]);
     });
 
     setMySocket({ chatSocket:ChatSocket, gameSocket:GameSocket });
