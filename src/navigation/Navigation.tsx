@@ -40,7 +40,7 @@ const Navigation: FC = () => {
           setFriends(response2.data);
         }
       } catch (error) {
-        console.error('Failed to fetch user data:', error);
+        console.error('Failed to fetOch user data:', error);
       }
     };
     fetchUserData();
@@ -239,7 +239,7 @@ const Navigation: FC = () => {
                     onClick={() => handleUserClick(user, channel)}
                   >
                       {user.nickname}
-                      {user.isOwner ? ' (O)' : user.isAdmin ? ' (A)' : ''}
+                      {user.isOwner ? ' (👑)' : user.isAdmin ? ' (⚔️)' : ''}
                     </li>
                   ))}
               </ul>
