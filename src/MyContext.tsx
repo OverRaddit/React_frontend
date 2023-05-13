@@ -80,6 +80,7 @@ export const MyContextProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         userId: myData!.id.toString(),
       },
     });
+
     const GameSocket = io("http://localhost:8000", {
       extraHeaders: {
         foo:'bar',
@@ -91,7 +92,7 @@ export const MyContextProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     });
 
     ChatSocket.on('initChannels', (response: EventResponse) => {
-      console.log(response);
+      console.log("chating 초기화", response);
       if (!response.success) console.log(response.message);
       else {
         response.data.forEach((channel: MyChannel) => {
@@ -105,6 +106,9 @@ export const MyContextProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         setChannels(X);
       }
     });
+
+    GameSocket.on('connect', () => {
+      console.log("Game socket Id", GameSocket.id);
 
     ChatSocket.on('auth_error', (response) => {
       console.log(response);
@@ -170,11 +174,10 @@ export const MyContextProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
     setMySocket({ chatSocket:ChatSocket, gameSocket:GameSocket });
   };
-
   const removeInvite = () => {
     setMyInvite(myInvite.slice(1));
   };
-
+  
   const value = {
     users,
     channels,
@@ -195,7 +198,6 @@ export const MyContextProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     removeInvite,
     initSocket,
   };
-
 
   return <MyContext.Provider value={value}>{children}</MyContext.Provider>;
 };

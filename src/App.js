@@ -15,7 +15,7 @@ import MainPage from 'main/MainPage';
 // import MainPage from 'main/test';
 
 function App() {
-  const [isNavigationVisible, setIsNavigationVisible] = useState(true);
+  const [isNavigationVisible, setIsNavigationVisible] = useState(false);
 
   const showNavigation = () => {
     setIsNavigationVisible(true);

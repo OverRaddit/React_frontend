@@ -14,7 +14,6 @@ interface Props {
 const MainPage: React.FC<Props> = ({ onShowNavigation }) => {
   const navigate = useNavigate();
   const [isInQueue, setIsInQueue] = useState<boolean>(false);
-  const [isExQueue, setIsExQueue] = useState<boolean>(false);
   const { myData, mySocket, channels } = useContext(MyContext);
 
 
@@ -35,50 +34,53 @@ const MainPage: React.FC<Props> = ({ onShowNavigation }) => {
   useEffect(() => {
     onShowNavigation();
     if (mySocket) {
-        const handleEnqueueComplete = (state: number) => {
-            if (state === 200) {
-              console.log("queue에 삽입되었습니다.");
-              // gameSocket.status = "in-queue";s
-              // gameSocket.emit('status', gameSocket.status);
-              setIsInQueue(true);
-            }
-          };
-          const handleMatchingComplete = (res: any) => {
-            console.log(res);
-            setIsInQueue(false);
-            navigate('/game', { state: { gameData: res } });
-          };
+      const handleEnqueueComplete = (state: number) => {
+        if (state === 200) {
+          console.log("queue에 삽입되었습니다.");
+          setIsInQueue(true);
+        }
+      };
+      const handleMatchingComplete = (res: any) => {
+        console.log("여긴가", res);
+        console.log(mySocket.gameSocket);
 
-          mySocket.gameSocket.on('enqueuecomplete', handleEnqueueComplete);
-          mySocket.gameSocket.on('matchingcomplete', handleMatchingComplete);
+        setIsInQueue(false);
+        navigate('/game', { state: { gameData: res } });
+      };
 
-          return () => {
-            mySocket.gameSocket.off('enqueuecomplete');
-            mySocket.gameSocket.off('matchingcomplete');
-          };
+      mySocket.gameSocket.on('enqueuecomplete', handleEnqueueComplete);
+      mySocket.gameSocket.on('matchingcomplete', handleMatchingComplete);
+
+      return () => {
+        mySocket.gameSocket.off('enqueuecomplete');
+        mySocket.gameSocket.off('matchingcomplete');
+      };
     }
   }, [mySocket]);
 
   const joinNormalQueue = () => {
-    console.log("Joining normal queue");
-    const nickName = myData?.intraid;
-    console.log(mySocket?.gameSocket);
-    mySocket?.gameSocket.emit('match', {gameType: 0, nickName});
-    setIsExQueue(false);
+    console.log("test", myData);
+    const intraId = myData?.intraid;
+    const userId = myData?.id;
+    mySocket?.gameSocket.emit('match', {gameType: 0, intraId:intraId, userId});
   };
 
   const joinExtendedQueue = () => {
-    console.log("Joining extended queue");
-    const nickName = myData?.intraid;
-    mySocket?.gameSocket.emit('match', {gameType: 1, nickName});
-    setIsExQueue(true);
+    const intraId = myData?.intraid;
+    const userId = myData?.id;
+    mySocket?.gameSocket.emit('match', {gameType: 1, intraId:intraId, userId});
   };
 
   const cancelQueue = () => {
     console.log("Cancelling queue");
-    const isExtendedQueue = isExQueue;
-    mySocket?.gameSocket.emit('cancel queue', isExtendedQueue);
-    setIsInQueue(false);
+    mySocket?.gameSocket.emit('cancel queue', (res:any) =>{
+      console.log(res);
+      if (res.state === 200) {
+        setIsInQueue(false);
+	      document.body.classList.remove('modal-open');
+      }
+      console.log(res.message);
+    });
   };
 
 	const onCreateChannel = (data: any): void => {
@@ -86,7 +88,6 @@ const MainPage: React.FC<Props> = ({ onShowNavigation }) => {
 		console.log('send onCreateChannel event');
 		mySocket?.chatSocket.emit('createChannel', data);
 	};
-
 
 	const handleChatChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setCurrentChat(e.target.value);
