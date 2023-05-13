@@ -109,6 +109,7 @@ export const MyContextProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
     GameSocket.on('connect', () => {
       console.log("Game socket Id", GameSocket.id);
+    });
 
     ChatSocket.on('auth_error', (response) => {
       console.log(response);
