@@ -63,8 +63,22 @@
   background-color: #0069d9;
 }
 
-.friend-modal button:not(:last-child) {
-  margin-right: 10px;
+.friend-modal .invite-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.friend-modal .invite-buttons {
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+}
+
+.friend-modal span {
+  align-self: center;
+  text-align: center;
   margin-bottom: 10px;
 }
 
@@ -72,6 +86,7 @@
   background-color: #6c757d;
   cursor: not-allowed;
 }
+
 .friend-modal button.disabled:hover {
   background-color: #6c757d;
 }

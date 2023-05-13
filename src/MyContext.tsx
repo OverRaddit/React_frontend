@@ -70,19 +70,25 @@ export const MyContextProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const [cookies, setCookie, removeCookie] = useCookies(['session_key']);
 
   const initSocket = () => {
-    console.log('initSocket in MyContext (intraId, userId): ', myData!.intraid, ',', myData!.id.toString());
+    console.log('@@@initSocket in MyContext (intraId, userId): ', myData!.intraid, ',', myData!.id.toString());
     const ChatSocket = io('http://localhost:4242/chat', {
       extraHeaders: {
+        foo:'bar',
+        Authorization: `Bearer ${cookies.session_key}`,
+        intraId: myData!.intraid,
+        userId: myData!.id.toString(),
+      },
+    });
+    const GameSocket = io("http://localhost:8000", {
+      extraHeaders: {
+        foo:'bar',
         Authorization: `Bearer ${cookies.session_key}`,
         session_key: cookies.session_key,
         intraId: myData!.intraid,
         userId: myData!.id.toString(),
       },
     });
-    const GameSocket = io("ws://localhost:8000");
-
-
-    console.log('ChatSocket: ', ChatSocket);
+    
     ChatSocket.on('initChannels', (response: EventResponse) => {
       console.log(response);
       if (!response.success) console.log(response.message);

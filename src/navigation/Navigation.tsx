@@ -33,18 +33,19 @@ const Navigation: FC = () => {
           );
           setMyData(response.data);
         }
-        if (!friends) {
+        if (friends.length === 0) {
           const response2 = await axios.get(
             `http://localhost:3000/friendlist`, { withCredentials: true }
           );
           setFriends(response2.data);
+          console.log(response2.data);
         }
       } catch (error) {
         console.error('Failed to fetch user data:', error);
       }
     };
     fetchUserData();
-  }, [setMyData, setFriends, initSocket, friends, myData]);
+  }, [setMyData, setFriends, myData]);
 
   useEffect(() => {
     if (myData && myData.intraid && myData.id && !mySocket) {
@@ -333,28 +334,22 @@ const Navigation: FC = () => {
     if (friends.length === 0) {
       return <div>No friends found</div>;
     }
-
+    
     const sortedFriends = friends.sort((a, b) => {
-      if (a.status === b.status) {
-        if (a.status === 'online') {
-          return a.nickname.localeCompare(b.nickname);
-        } else if (a.status === 'in-queue') {
-          if (b.status === 'online') return 1;
-          return -1;
-        } else if (a.status === 'in-game') {
-          if (b.status === 'online' || b.status === 'in-queue') return 1;
-          return -1;
-        } else {
-          return a.nickname.localeCompare(b.nickname);
-        }
-      } else {
-        if (a.status === 'online') return -1;
-        if (b.status === 'online') return 1;
-        if (a.status === 'in-queue') return -1;
-        if (b.status === 'in-queue') return 1;
-        if (a.status === 'in-game') return -1;
-        if (b.status === 'in-game') return 1;
+      // Treat undefined status as 'offline'
+      const statusA = a.status || 'offline';
+      const statusB = b.status || 'offline';
+
+      if (statusA === statusB) {
         return a.nickname.localeCompare(b.nickname);
+      } else {
+        if (statusA === 'online') return -1;
+        if (statusB === 'online') return 1;
+        if (statusA === 'in-queue') return -1;
+        if (statusB === 'in-queue') return 1;
+        if (statusA === 'in-game') return -1;
+        if (statusB === 'in-game') return 1;
+        return 1;
       }
     });
 
@@ -366,7 +361,7 @@ const Navigation: FC = () => {
           className="friend"
           onClick={() => handleFriendClick(friend)}
         >
-          <span>{friend.nickname} ({friend.status})</span>
+          <span>{friend.nickname} ({friend.status || 'offline'})</span>
         </li>
       ))}
     </ul>
