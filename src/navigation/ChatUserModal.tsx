@@ -74,7 +74,10 @@ const handleMute = () => {
       onRequestClose={onClose}
       contentLabel="Chat User Modal"
     >
-      <h2>{user.nickname}</h2>
+      <div className="profile-info">
+          <img src={user.avatar} alt={`${user.nickname}'s avatar`} />
+          <h2>{user.nickname}</h2>
+      </div>
       <Link to={`/profile/${user.intraId}`}>
         <button onClick={onClose}>프로필 보기</button>
       </Link>

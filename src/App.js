@@ -14,7 +14,7 @@ import LoginOK from 'login/LoginOK';
 import MainPage from 'main/MainPage';
 
 function App() {
-  const [isNavigationVisible, setIsNavigationVisible] = useState(true);
+  const [isNavigationVisible, setIsNavigationVisible] = useState(false);
 
   const showNavigation = () => {
     setIsNavigationVisible(true);

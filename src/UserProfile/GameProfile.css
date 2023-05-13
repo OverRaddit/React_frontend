@@ -1,0 +1,43 @@
+.game-profile {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.profile-container {
+  display: flex;
+  flex-direction: column;
+	align-items: center;
+}
+
+.image-nickname-container {
+  display: flex;
+  align-items: center;
+}
+
+.nickname {
+	margin-left: 20px;
+	grid-area: nickname;
+	background-color: lightgray;
+	padding: 10px;
+  }
+
+.profile-details {
+  display: flex;
+  flex-direction: column;
+  margin-top: 10px; /* rating과 history 사이의 간격을 조정 */
+}
+
+.rating {
+	margin-top: 10px;
+	margin-left: 10px;
+	background-color: lightgray;
+	padding: 10px;
+  }
+  
+  .history {
+	margin-top: 5px;
+	margin-left: 10px;
+	background-color: lightgray;
+	padding: 10px;
+  }
