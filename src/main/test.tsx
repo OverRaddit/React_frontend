@@ -5,7 +5,13 @@ import { ChannelLookup } from 'components/chat/ChannelLookUp';
 import { useMyContext } from 'MyContext';
 import { MyChannel } from 'navigation/interfaces/Channel.interface';
 
-const XPage = () => {
+
+interface Props {
+	onShowNavigation: () => void;
+  }
+
+
+const XPage: React.FC<Props> = ({ onShowNavigation }) => {
   const [currentChat, setCurrentChat] = useState('');
   const [chatRooms, setChatRooms] = useState<MyChannel[]>([]);
   const { myData, setMyData, friends, setFriends, channels, setChannels,
@@ -19,6 +25,7 @@ const XPage = () => {
   const chatHistoryRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+	onShowNavigation();
 	console.log('channels: ', channels);
 	if (channels.length === 0) return;
 

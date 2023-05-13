@@ -34,7 +34,7 @@ function App() {
 
             <Routes>
               <Route path="/" element={<MainPage onShowNavigation={showNavigation} />} />
-              <Route path="/a" element={<XPage/>} />
+              <Route path="/a" element={<XPage  onShowNavigation={showNavigation} />} />
               {/* <Route path="/game" element={<Game socket={socket} room={room} nickName={nickName} isExtension={isExQueue}/>} /> */}
               <Route path="/game" element={<Game onHideNavigation={hideNavigation}/>} />
               <Route path="/c" element={<ZPage />} />
