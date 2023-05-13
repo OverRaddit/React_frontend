@@ -81,21 +81,21 @@ const Navigation: FC = () => {
           setModalMessage('You have been granted admin of the ' + roomName);
         }
         setChannels(
-        channels.map((channel) => {
-          if (channel.name === roomName) {
-            return {
-              ...channel,
-              users: channel.users.map((channelUser) => {
-                if (channelUser.id === user.id) {
-                  return { ...channelUser, isAdmin: true };
-                }
-                return channelUser;
-              }),
-            };
-          }
-          return channel;
-        })
-      );
+          channels.map((channel) => {
+            if (channel.name === roomName) {
+              return {
+                ...channel,
+                users: channel.users.map((channelUser) => {
+                  if (channelUser.id === user.id) {
+                    return { ...channelUser, isAdmin: true };
+                  }
+                  return channelUser;
+                }),
+              };
+            }
+            return channel;
+          })
+        );
       });
 
       mySocket.chatSocket.on('admin-revoked', ({ roomName, user }) => {
@@ -184,27 +184,32 @@ const Navigation: FC = () => {
         }
       });
 
-      mySocket.chatSocket.on('user-muted', ( response ) => {
-        console.log(response);
+      mySocket.chatSocket.on('user-dm', (response) => {
+        console.log('user-dm: ', response);
+        console.log('channels: ', channels);
+        const newChannels = [...channels, response];
+        console.log('newChannels: ', newChannels);
+        setChannels(newChannels);
       });
 
-      mySocket.chatSocket.on('user-join', ( response: EventResponse ) => {
-        return; // 일단 사용금지.
-        // if (!response.success) return;
+      // mySocket.chatSocket.on('user-join', ( response: EventResponse ) => {
+      //   console.log('user-join from Nav');
+      //   return; // 일단 사용금지.
+      //   // if (!response.success) return;
 
-        // const newChannels = {
-        //   ...channels,
-        //   chatHistory: [...channels[channelIndex].chatHistory, 'You: ' + currentChat]
-        // };
+      //   // const newChannels = {
+      //   //   ...channels,
+      //   //   chatHistory: [...channels[channelIndex].chatHistory, 'You: ' + currentChat]
+      //   // };
 
-        // const updatedChannels = [
-        //   ...channels,
-        //   response.data
-        // ];
+      //   // const updatedChannels = [
+      //   //   ...channels,
+      //   //   response.data
+      //   // ];
 
-        // console.log('update complete');
-        // setChannels(updatedChannels);
-      });
+      //   // console.log('update complete');
+      //   // setChannels(updatedChannels);
+      // });
 
     return () => {
       mySocket.chatSocket.off('owner-granted');
@@ -214,7 +219,8 @@ const Navigation: FC = () => {
       mySocket.chatSocket.off('user-kicked');
       mySocket.chatSocket.off('chat');
       mySocket.chatSocket.off('user-muted');
-      mySocket.chatSocket.off('user-join');
+      mySocket.chatSocket.off('user-dm');
+      //mySocket.chatSocket.off('user-join');
     };
     }
   }, [myData, initSocket, mySocket, channels, setChannels]);

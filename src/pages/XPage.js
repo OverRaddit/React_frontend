@@ -4,94 +4,9 @@ import { CreateChannelForm } from 'components/chat/createChannelForm';
 import { ChannelLookup } from 'components/chat/ChannelLookUp';
 import { useMyContext } from 'MyContext';
 
-const sampleChannelData = [
-  {
-    kind: 0,
-    roomname: 'Public Room 1',
-    owner: 'Alice',
-    roompassword: '',
-  },
-  {
-    kind: 1,
-    roomname: 'Password Protected Room',
-    owner: 'Bob',
-    roompassword: 'password',
-  },
-  {
-    kind: 0,
-    roomname: 'Public Room 2',
-    owner: 'Charlie',
-    roompassword: '',
-  },
-];
-
-const sampleChannelData2 = new Map([
-  [
-    'Public Room 1',
-    {
-      kind: 0,
-      roomname: 'Public Room 1',
-      owner: 'Alice',
-      roompassword: '',
-    }
-  ],
-  [
-    'Password Protected Room',
-    {
-      kind: 1,
-      roomname: 'Password Protected Room',
-      owner: 'Bob',
-      roompassword: 'password',
-    },
-  ],
-  [
-    'Public Room 2',
-    {
-      kind: 0,
-      roomname: 'Public Room 2',
-      owner: 'Charlie',
-      roompassword: '',
-    }
-  ],
- ]);
-
-const userChannelList = new Map([]);
-
-const exampleChatHistory = [
-  'Hello, how are you?',
-  'I am doing well, thanks for asking.',
-  'What have you been up to lately?',
-  'Not much, just working on some coding projects.',
-];
-
-const parseCookie = (cookie) => {
-  const cookies = cookie.split(';');
-  const cookieData = {};
-
-  cookies.forEach((cookie) => {
-    const [key, value] = cookie.split('=');
-    if (key.trim() === 'userData')
-    {
-      const decodedString = decodeURIComponent(value);
-      const javascriptObject = JSON.parse(decodedString);
-      //console.log('key1: ', key);
-      cookieData[key.trim()] = javascriptObject;
-    }
-    else
-    {
-      //console.log('key2: ', key);
-      cookieData[key.trim()] = value;
-    }
-  });
-
-  return cookieData;
-}
-
 const XPage = () => {
-  //const [currentChatHistory, setCurrentChatHistory] = useState([]);
   const [currentChat, setCurrentChat] = useState('');
-  const [chatRooms, setChatRooms] = useState(sampleChannelData);
-  //const [currentChatRoom, setCurrentChatRoom] = useState('loading...');  // 현재 선택된 채널의 이름을 저장한다.
+  const [chatRooms, setChatRooms] = useState([]);
   const { myData, setMyData, friends, setFriends, channels, setChannels, mySocket, mapChannels, setMapChannels, currentChannel, setCurrentChannel } = useMyContext();
   const [userChatRooms, setUserChatRooms] = useState(channels);
 
@@ -112,63 +27,6 @@ const XPage = () => {
       setCurrentChannel(channels.find((channel) => channel.name === currentChannel?.name));
   }, [channels, currentChannel, setCurrentChannel]);
 
-  // useEffect(() => {
-
-	// 	// userChannelList.set('channelName',
-	// 	// {
-	// 	// kind: 0,
-	// 	// roomname: 'testRoom',
-	// 	// owner: 'yson',
-	// 	// chatHistory : [],
-	// 	// });
-  //   // const cookies = parseCookie(document.cookie);
-  //   // console.log('Xpage cookies: ', cookies);
-
-  //   // const newSocket = initSocket('http://localhost:4242/chat', cookies, setMyData);
-  //   // console.log('newSocket: ', newSocket);
-	// 	if (mySocket) {
-	// 		setSocket(mySocket.chatSocket);
-	// 	}
-  //   return () => {
-  //   };
-  // }, []);
-
-  // useEffect(() => {
-  //   if (!socket) return;
-  //   socket.on('getChannel', (channels) => {
-  //     console.log('getChannel: ', channels);
-  //     setChatRooms(channels);
-  //   });
-
-  //   socket.on('user-join', (data) => {
-  //     const { roomName, userId } = data;
-  //     console.log(`${userId} joined ${roomName} channel.`);
-  //     if (roomName === currentChatRoom)
-  //       setCurrentChatHistory([...currentChatHistory, `${userId} joined ${roomName} channel.`]);
-  //   });
-
-  //   socket.on('chat', (data) => {
-  //     const { message, roomName } = data;
-  //     console.log('detect chat event: ', data);
-
-  //     console.log('currentChatRoom: ', currentChatRoom);
-  //     console.log('roomName: ', roomName);
-
-  //     // 현재 켜놓고 있는 채널의 chat만 저장합니다.
-  //     if (currentChatRoom === roomName)
-  //       setCurrentChatHistory([...currentChatHistory, message]);
-  //     else
-  //       console.log('this room is not opened from my client!');
-  //   })
-
-  //   // 왜 여기는 이벤트를 해제하는 리턴 함수를 쓰지 않았지?
-  //   return (() => {
-  //     socket.off('getChannel');
-  //     socket.off('user-join');
-  //     //socket.off('welcome');
-  //     socket.off('chat');
-  // });
-  // }, [socket, currentChatHistory, currentChatRoom, currentChat]);
 
   useEffect(() => {
     const chatHistoryBox = chatHistoryRef.current;
@@ -178,22 +36,6 @@ const XPage = () => {
       chatHistoryBox.scrollTop = chatHistoryBox.scrollHeight;
   }, [currentChannel?.chatHistory]);
 
-	// useEffect(() => {
-	// 	// 현재 채널 백업
-	// 	const previousChannel = channels.find((channel) => channel.name === currentChatRoom);
-  //   console.log('previousChannel: ', previousChannel);
-	// 	if (previousChannel)
-	// 		previousChannel.chatHistory = currentChatHistory;
-
-  //   // 선택된 채널로 전환
-	// 	const selectedChannelData = channels.find((channel) => channel.name === selectedChannel);
-	// 	if (selectedChannelData) {
-	// 		console.log('selectedChannelData :', selectedChannelData);
-	// 		setCurrentChatRoom(selectedChannelData.roomname);
-	// 		setCurrentChatHistory(selectedChannelData.chatHistory);
-	// 	}
-	// }, [channels, currentChatHistory, currentChatRoom, selectedChannel]);
-
   const handleChatChange = (e) => {
     setCurrentChat(e.target.value);
   };
@@ -201,7 +43,9 @@ const XPage = () => {
   const handleChatSubmit = (e) => {
     e.preventDefault();
     if (currentChat.trim() !== '') {
-      mySocket.chatSocket.emit('chat', { roomName: currentChannel.name, message: currentChat});
+      const targetRoom = currentChannel?.kind === 3 ? currentChannel?.owner.id : currentChannel.name;
+      console.log('targetRoom: ', targetRoom);
+      mySocket.chatSocket.emit('chat', { roomName: targetRoom, message: currentChat});
 
     // 내 채팅을 채널의 채팅목록에 추가하는 코드===================
       const channelIndex = channels.findIndex(channel => channel.name === currentChannel.name);
@@ -267,9 +111,17 @@ const XPage = () => {
     console.log('---------------------------------------------');
   }
 
+  const handleDM = () => {
+    mySocket.chatSocket.emit('createDm', { userId: 2 }, (response) => {
+      console.log(response);
+      setChannels([...channels, response.data[0]]);
+    });
+  }
+
   return (
     <div className="x-page">
 			<button onClick={debugAllState}>debugAllState</button>
+			<button onClick={handleDM}>channels</button>
 			<button onClick={() => console.log('channels : ', channels)}>channels</button>
 			<button onClick={() => console.log('currentRoom : ', currentChannel)}>currentRoom</button>
 			<button onClick={() => console.log('selectedRoomHistory : ', channels.find((channel) => channel.name === selectedChannel))}>currentChannel ChatHistory</button>

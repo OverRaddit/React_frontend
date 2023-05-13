@@ -103,6 +103,31 @@ export const MyContextProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       console.log(response);
     });
 
+    ChatSocket.on('user-channel-invited', (response) => {
+      console.log('user-channel-invited res: ', response);
+    });
+
+    ChatSocket.on('user-join', (response) => {
+      console.log('user-join from MyContext');
+      console.log('user-join res: ', response);
+      const { roomName, clientUser } = response;
+      setChannels(
+        channels.map((channel) => {
+          if (channel.name === roomName) {
+            return {
+              ...channel,
+              users: [...channel.users, clientUser],
+            };
+          }
+          return channel;
+        })
+      );
+    });
+
+    ChatSocket.on('user-muted', ( response ) => {
+      console.log(response);
+    });
+
     setMySocket({ chatSocket:ChatSocket, gameSocket:GameSocket });
   };
 
