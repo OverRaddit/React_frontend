@@ -12,7 +12,7 @@ interface FriendModalProps {
 
 const FriendModal: React.FC<FriendModalProps> = ({ friend, onClose }) => {
   const [isModalOpen, setIsModalOpen] = useState(true);
-  const { myData, mySocket } = useMyContext();
+  const { myData, mySocket, channels, setChannels, setCurrentChannel } = useMyContext();
 
   const closeModal = () => {
     setIsModalOpen(false);
@@ -25,7 +25,7 @@ const FriendModal: React.FC<FriendModalProps> = ({ friend, onClose }) => {
   };
 
   const sendInvite0 = (e: React.MouseEvent<HTMLButtonElement>) => {
-    mySocket?.gameSocket.emit('Invite Game', { myIntraId: myData!.intraid, oppIntraId: friend.intraid, gameType: 0 }, 
+    mySocket?.gameSocket.emit('Invite Game', { myIntraId: myData!.intraid, oppIntraId: friend.intraid, gameType: 0 },
     (res:any) =>{
       if (res.state != 200) {
         window.alert('초대에 실패했습니다');
@@ -33,13 +33,24 @@ const FriendModal: React.FC<FriendModalProps> = ({ friend, onClose }) => {
     });
   };
   const sendInvite1 = (e: React.MouseEvent<HTMLButtonElement>) => {
-    mySocket?.gameSocket.emit('Invite Game', { myIntraId: myData!.intraid, oppIntraId: friend.intraid, gameType: 1 }, 
+    mySocket?.gameSocket.emit('Invite Game', { myIntraId: myData!.intraid, oppIntraId: friend.intraid, gameType: 1 },
     (res:any) =>{
       if (res.state != 200) {
         window.alert('초대에 실패했습니다');
       }
     });
   };
+
+  const handleDM = (data: any) => {
+    console.log('handleDM:', data);
+    console.log('target userid:', friend.id);
+    mySocket?.chatSocket.emit('createDm', { userId: friend.id }, (response: any) => {
+      console.log(response);
+      setChannels([...channels, response.data[0]]);
+      setCurrentChannel(response.data[0]);
+    });
+    onClose();
+    };
 
   const isDMEnabled = friend.status === 'online' || friend.status === 'in-queue';
   const isInviteEnabled = friend.status === 'online';
@@ -60,7 +71,11 @@ const FriendModal: React.FC<FriendModalProps> = ({ friend, onClose }) => {
         <Link to={`/profile/${friend.intraid}`}>
           <button onClick={closeModal}>프로필 보기</button>
         </Link>
-        <button className={isDMEnabled ? '' : 'disabled'} disabled={!isDMEnabled}>
+        <button
+        onClick={handleDM}
+        // className={isDMEnabled ? '' : 'disabled'}
+        // disabled={!isDMEnabled}
+        >
             DM 보내기
           </button>
         <div className="invite-buttons">

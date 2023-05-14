@@ -119,19 +119,10 @@ const XPage: React.FC<Props> = ({ onShowNavigation }) => {
 		console.log('---------------------------------------------');
   };
 
-  const handleDM = () => {
-	// Todo. 헤나의 userId를 하드코딩했는데, DM하고 싶은 사람의 userId로 바꿔 넣어야 한다.
-	mySocket?.chatSocket.emit('createDm', { userId: 2 }, (response: any) => {
-	  console.log(response);
-	  setChannels([...channels, response.data[0]]);
-	});
-  };
-
   return (
 	<div className="x-page">
     <h1>Test.tsx</h1>
 	  <button onClick={debugAllState}>debugAllState</button>
-	  <button onClick={handleDM}>Make DM Room to Hena</button>
 	  <button onClick={() => console.log('channels : ', channels)}>channels</button>
 	  <button onClick={() => console.log('currentRoom : ', currentChannel)}>currentRoom</button>
 	  <button
