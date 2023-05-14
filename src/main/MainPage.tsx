@@ -59,7 +59,9 @@ const MainPage: React.FC<Props> = ({ onShowNavigation }) => {
 
   const cancelQueue = () => {
     console.log("Cancelling queue");
-    mySocket?.gameSocket.emit('cancel queue', (res:any) =>{
+    const intraId = myData?.intraid;
+    const userId = myData?.id;
+    mySocket?.gameSocket.emit('cancel queue', userId, (res:any) =>{
       console.log(res);
       if (res.state === 200) {
         setIsInQueue(false);
