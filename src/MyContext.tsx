@@ -203,18 +203,14 @@ export const MyContextProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
     GameSocket.on('invite message', (response) => {
       const { user, gameType } = response;
-      console.log("USER", user);
-
       const transformedUser = { ...user, intraId: user.intraid };
-      
-
       setMyInvite((prevInvites) => {
         // 이미 동일한 type과 user를 가진 요소가 있는지 확인
         if (prevInvites.some(invite => invite.type === gameType && invite.user.intraId === transformedUser.intraId)) {
           console.log('The invite already exists!');
           return prevInvites;
         }
-    
+        
         // 중복이 없을 경우 새로운 요소를 추가
         return [
           ...prevInvites,
@@ -224,9 +220,8 @@ export const MyContextProvider: React.FC<{ children: React.ReactNode }> = ({ chi
           },
         ];
       });
-
-    setMySocket({ chatSocket:ChatSocket, gameSocket:GameSocket });
-  });
+    }); 
+  }; 
 
   const removeInvite = () => {
     setMyInvite(myInvite.slice(1));
