@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import Modal from 'react-modal';
 import './ChannelSearch.css';
+import { ChannelLookup } from 'components/chat/ChannelLookUp';
+import { CreateChannelForm } from 'components/chat/createChannelForm';
+import { MyChannel } from 'navigation/interfaces/Channel.interface';
 
 type ChannelType = 'public' | 'protected' | 'private';
 
@@ -18,6 +21,7 @@ const ChannelSearch = () => {
   const [newChannelName, setNewChannelName] = useState('');
   const [newChannelType, setNewChannelType] = useState<ChannelType>('public');
   const [newChannelPassword, setNewChannelPassword] = useState('');
+	const [chatRooms, setChatRooms] = useState<MyChannel[]>([]);
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -55,47 +59,11 @@ const ChannelSearch = () => {
         contentLabel="Channel Search Modal"
         className="channel-search-modal"
         overlayClassName="channel-search-overlay"
-      >
-        <h2>Search Channels</h2>
-        <ul>
-          {channels.length > 0 ? (
-            channels.map((channel) => (
-              <li key={channel.id}>
-                {channel.type === 'protected' ? '🔒' : ''}
-                {channel.name} (owner: {channel.owner})
-                <button>Join</button>
-              </li>
-            ))
-          ) : (
-            <p>현재 입장할 수 있는 방이 없습니다.</p>
-          )}
-        </ul>
-        <div>
-          <h3>Create Channel</h3>
-          <input
-            type="text"
-            placeholder="Channel name"
-            value={newChannelName}
-            onChange={(e) => setNewChannelName(e.target.value)}
-          />
-          <select
-            value={newChannelType}
-            onChange={(e) => setNewChannelType(e.target.value as ChannelType)}
-          >
-            <option value="public">Public</option>
-            <option value="protected">Protected</option>
-            <option value="private">Private</option>
-          </select>
-          {newChannelType === 'protected' && (
-            <input
-              type="password"
-              placeholder="Password"
-              value={newChannelPassword}
-              onChange={(e) => setNewChannelPassword(e.target.value)}
-            />
-          )}
-          <button onClick={handleChannelCreation}>Create Channel</button>
-        </div>
+      >	
+			<ChannelLookup chatRooms={chatRooms}></ChannelLookup>
+			<div className='create-channel-form'>
+				<CreateChannelForm></CreateChannelForm>
+			</div>
       </Modal>
     </div>
   );

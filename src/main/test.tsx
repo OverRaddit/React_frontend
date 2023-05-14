@@ -198,7 +198,7 @@ const XPage: React.FC<Props> = ({ onShowNavigation }) => {
 			<button type="submit">Send</button>
 		  </form>
 
-		  {true ? (
+		  {/* {true ? (
 			<>
 			  <h3>Make your own</h3>
 			  <CreateChannelForm />
@@ -206,7 +206,7 @@ const XPage: React.FC<Props> = ({ onShowNavigation }) => {
 		  ) : (
 			<h3>you can't make room now!</h3>
 		  )}
-			<ChannelLookup chatRooms={chatRooms} setSelectedChannel={setSelectedChannel}/>
+			<ChannelLookup chatRooms={chatRooms}/> */}
 		</div>
 	  </div>
 	);

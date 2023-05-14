@@ -11,10 +11,8 @@ interface EventResponse {
 
 export function ChannelLookup({
   chatRooms,
-  setSelectedChannel,
 }: {
   chatRooms: MyChannel[];
-  setSelectedChannel: Function;
 }) {
   const [filterKind, setFilterKind] = useState('');
 	const { myData, channels, setChannels, mySocket, setCurrentChannel } = useMyContext();
@@ -62,9 +60,6 @@ export function ChannelLookup({
         return;
       }
 
-      // 이게 정확히 무슨 state지?
-      setSelectedChannel(channelName);
-
       // 이거 왜 추가가 안되냐;;
       const newChannel = response.data[0];
       newChannel.setChatHistory = [];
@@ -74,7 +69,7 @@ export function ChannelLookup({
       console.log('next Channels: ', [...channels, newChannel]);
       setChannels([...channels, newChannel]);
 			setCurrentChannel(newChannel);
-			setSelectedChannel('');
+			setSelectedChannelName('');
     });
   };
 
@@ -100,9 +95,7 @@ export function ChannelLookup({
           <option value          ={2}>Private</option>
         </select>
       </label>
-      <button type="button" onClick={handleLookupClick}>
-        Lookup
-      </button>
+      <button type="button" onClick={handleLookupClick}>↻</button>
       <table>
         <thead>
           <tr>
