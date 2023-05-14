@@ -46,6 +46,10 @@ const FriendModal: React.FC<FriendModalProps> = ({ friend, onClose }) => {
     console.log('target userid:', friend.id);
     mySocket?.chatSocket.emit('createDm', { userId: friend.id }, (response: any) => {
       console.log(response);
+      if (channels.some(channel => channel.name === response.data[0].name)) {
+        console.log('The channel already exists!');
+        return;
+      }
       setChannels([...channels, response.data[0]]);
       setCurrentChannel(response.data[0]);
     });

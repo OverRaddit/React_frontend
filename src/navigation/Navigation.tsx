@@ -4,12 +4,11 @@ import { Link, useNavigate } from 'react-router-dom';
 import Modal from 'react-modal';
 import { MyChannel, MyFriend } from './interfaces/interfaces';
 import './Navigation.css';
-import { EventResponse, useMyContext } from '../MyContext';
+import { useMyContext } from '../MyContext';
 import axios from 'axios';
 import ChannelSearch from './ChannelSearch';
 import FriendModal from './FriendModal';
 import ChatUserModal from './ChatUserModal';
-import { resolve } from 'path';
 import InviteModal from './InviteModal';
 
 type ListName = 'friends' | 'channels';
@@ -189,6 +188,10 @@ const Navigation: FC = () => {
       mySocket.chatSocket.on('user-dm', (response) => {
         console.log('user-dm: ', response);
         console.log('channels: ', channels);
+        if (channels.some(channel => channel.name === response.name)) {
+          console.log('The channel already exists!');
+          return;
+        }
         const newChannels = [...channels, response];
         console.log('newChannels: ', newChannels);
         setChannels(newChannels);
@@ -263,11 +266,13 @@ const Navigation: FC = () => {
               >
                 ❌
               </button>
-              <button
-                onClick={() => handleChatInvite(channel)}
-              >
-                📧
-              </button>
+              {channel.kind !== 3 && (
+                <button
+                  onClick={() => handleChatInvite(channel)}
+                >
+                  📧
+                </button>
+              )}
             </div>
             {channel.showUserList && (
               <ul className="user-list">
@@ -303,6 +308,7 @@ const Navigation: FC = () => {
   };
 
   const handleUserClick = (user: any, channel: any) => {
+    if(channel.kind === 3) { return; }
     setSelectedUser(user);
     setSelectedUserChannel(channel);
   };
@@ -420,7 +426,7 @@ const Navigation: FC = () => {
           myChannelData={findMyChannelData(selectedUserChannel)}
           onClose={() => setSelectedUser(null)}
           isOpen={selectedUser !== null}
-          channelId={selectedUserChannel.name} // TODO: 이름 잘못됨
+          channelId={selectedUserChannel.name}
         />
       )}
       <Modal
