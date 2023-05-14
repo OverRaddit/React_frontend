@@ -6,6 +6,7 @@ import { Socket } from 'socket.io-client';
 import { CreateChannelForm } from 'components/chat/createChannelForm';
 import { ChannelLookup } from 'components/chat/ChannelLookUp';
 import { MyChannel } from '../navigation/interfaces/interfaces';
+import XPage from './test';
 
 interface Props {
     onShowNavigation: () => void;
