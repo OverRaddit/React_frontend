@@ -33,6 +33,7 @@ function Game({ onHideNavigation }: Props) {
   const [keyDown, setKeyDown] = useState(false);
   const [gameMode, setGameMode] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
+	const [modalMessage, setModalMessage] = useState('');
 
   const location = useLocation();
   const { mySocket } = useMyContext();
@@ -84,7 +85,7 @@ function Game({ onHideNavigation }: Props) {
   }
 
   const backToMain = () => {
-    navigate('/');
+    navigate('/', { replace: true });
   };
 
   function getCurrentUsername(player: number): string {
@@ -103,7 +104,7 @@ function Game({ onHideNavigation }: Props) {
   useEffect(() => {
     onHideNavigation();
     if (!mySocket) {
-      window.alert('잘못된 접근입니다.');
+      // window.alert('잘못된 접근입니다.');
       navigate('/', { replace: true });
       return;
     }
@@ -115,21 +116,23 @@ function Game({ onHideNavigation }: Props) {
       setPlayerId(42);
     setGameMode(gameData.gameType); // TODO: (gshim)님한테 체크 받아야 할 부분. 게임 모드 설정.
 
+		mySocket?.gameSocket.on('gameover', (data) => {
+			console.log('gameover event received : ', data);
+      const { state, message, dataObject } = data;
+      const { player } = dataObject;
+      if (state == 200) {
+        console.log('game over! ', player, ' wins.');
+        setIsModalOpen(true);
+				console.log(player, pos1.score, pos2.score);
+				const msg = player + ' wins!';
+				setModalMessage(msg);
+      }
+    });
 
     mySocket?.gameSocket.on('render', (pos1: any, pos2: any, ball: any) => {
       setPos1(pos1);
       setPos2(pos2);
       setBall(ball);
-    });
-
-    mySocket.gameSocket.on('gameover', (data) => {
-      const { state, message, dataObject } = data;
-      const { player } = dataObject;
-      if (state == 200) {
-        console.log('game over! ', player, 'p wins.');
-        setIsModalOpen(true);
-        // setGameOver(true);
-      }
     });
 
     window.onpopstate = (event: PopStateEvent) => {
@@ -148,7 +151,7 @@ function Game({ onHideNavigation }: Props) {
 
     return () => {
       mySocket?.gameSocket.off('render');
-      mySocket?.gameSocket.off('gameover');
+			mySocket?.gameSocket.off('gameover');
     };
   }, []);
 
@@ -192,7 +195,7 @@ function Game({ onHideNavigation }: Props) {
         <div className='canvas-container'>
           <canvas ref={canvasRef} width={canvasMaxWidth} height={canvasMaxHeight} />
           <button onClick={turnOnState}>pop up modal</button>
-          <GameModal isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} firstScore={pos1.score} secondScore={pos2.score} navigate={navigate}></GameModal>
+          <GameModal isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} navigate={navigate} firstScore={pos1.score} secondScore={pos2.score} modalMessage={modalMessage}></GameModal>
         </div>
         <div className='game-window-container'>
           <GameWindow leftUser={gameData.leftUser} rightUser={gameData.rightUser}></GameWindow>
