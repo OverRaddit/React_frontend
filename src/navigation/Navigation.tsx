@@ -9,7 +9,6 @@ import axios from 'axios';
 import ChannelSearch from './ChannelSearch';
 import FriendModal from './FriendModal';
 import ChatUserModal from './ChatUserModal';
-import { resolve } from 'path';
 import InviteModal from './InviteModal';
 
 type ListName = 'friends' | 'channels';
@@ -184,6 +183,10 @@ const Navigation: FC = () => {
           // Update the channels state
           setChannels(updatedChannels);
         }
+      });
+
+      mySocket.chatSocket.on('user-muted', ({ roomName, muteEndTimestamp }) => {
+        setModalMessage('You have been muted from the Room <' + roomName + '> until <' + muteEndTimestamp + '>');
       });
 
       mySocket.chatSocket.on('user-dm', (response) => {

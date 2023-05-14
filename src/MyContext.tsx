@@ -165,10 +165,6 @@ export const MyContextProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       });
     });
 
-    ChatSocket.on('user-muted', ( response ) => {
-      console.log(response);
-    });
-
     ChatSocket.on('dm', (response) => {
       const { roomName, user, message } = response;
       console.log('dm response:', response);
