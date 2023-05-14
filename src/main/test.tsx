@@ -46,7 +46,7 @@ const XPage: React.FC<Props> = ({ onShowNavigation }) => {
 			if (gap < 230)
 				chatHistoryBox.scrollTop = chatHistoryBox.scrollHeight;
 	}
-	}, [currentChannel?.chatHistory]); 
+	}, [currentChannel?.chatHistory]);
 
   const handleChatChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setCurrentChat(e.target.value);
@@ -55,9 +55,12 @@ const XPage: React.FC<Props> = ({ onShowNavigation }) => {
   const handleChatSubmit = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 		if (currentChat.trim() !== '') {
-			const targetRoom = currentChannel?.kind === 3 ? currentChannel?.owner : currentChannel?.name;
-			console.log('targetRoom: ', targetRoom);
-			mySocket?.chatSocket.emit('chat', { roomName: targetRoom, message: currentChat });
+      if (currentChannel?.kind === 3) {
+        console.log('emit dm: user, message=', currentChannel?.owner, currentChat);
+        mySocket?.chatSocket.emit('dm', { user: currentChannel?.owner, message: currentChat });
+      } else {
+        mySocket?.chatSocket.emit('chat', { roomName: currentChannel?.name, message: currentChat });
+      }
 
 			const channelIndex = channels.findIndex((channel) => channel.name === currentChannel?.name);
 			console.log('channelIndex: ', channelIndex);
@@ -117,6 +120,7 @@ const XPage: React.FC<Props> = ({ onShowNavigation }) => {
   };
 
   const handleDM = () => {
+	// Todo. 헤나의 userId를 하드코딩했는데, DM하고 싶은 사람의 userId로 바꿔 넣어야 한다.
 	mySocket?.chatSocket.emit('createDm', { userId: 2 }, (response: any) => {
 	  console.log(response);
 	  setChannels([...channels, response.data[0]]);
@@ -125,8 +129,9 @@ const XPage: React.FC<Props> = ({ onShowNavigation }) => {
 
   return (
 	<div className="x-page">
+    <h1>Test.tsx</h1>
 	  <button onClick={debugAllState}>debugAllState</button>
-	  <button onClick={handleDM}>channels</button>
+	  <button onClick={handleDM}>Make DM Room to Hena</button>
 	  <button onClick={() => console.log('channels : ', channels)}>channels</button>
 	  <button onClick={() => console.log('currentRoom : ', currentChannel)}>currentRoom</button>
 	  <button
@@ -192,7 +197,7 @@ const XPage: React.FC<Props> = ({ onShowNavigation }) => {
 			/>
 			<button type="submit">Send</button>
 		  </form>
-  
+
 		  {true ? (
 			<>
 			  <h3>Make your own</h3>
@@ -206,7 +211,7 @@ const XPage: React.FC<Props> = ({ onShowNavigation }) => {
 	  </div>
 	);
   };
-  
+
   export default XPage;
-  
+
 

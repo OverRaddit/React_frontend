@@ -169,6 +169,31 @@ export const MyContextProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       console.log(response);
     });
 
+    ChatSocket.on('dm', (response) => {
+      const { roomName, user, message } = response;
+      console.log('dm response:', response);
+
+      setChannels((prevChannels) => {
+        const channelIndex = prevChannels.findIndex(channel => channel.name === roomName);
+        if (channelIndex !== -1) {
+          const chatMessage = `${user.nickname} : ${message}`;
+          const updatedChannel = {
+            ...prevChannels[channelIndex],
+            chatHistory: [...prevChannels[channelIndex].chatHistory, chatMessage]
+          };
+
+          return [
+            ...prevChannels.slice(0, channelIndex),
+            updatedChannel,
+            ...prevChannels.slice(channelIndex + 1)
+          ];
+        }
+
+        return prevChannels;
+      });
+    });
+
+
     GameSocket.on('invite message', (response) => {
       const { user, gameType } = response;
       console.log("USER", user);
