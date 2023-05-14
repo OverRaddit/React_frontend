@@ -45,7 +45,7 @@ const Navigation: FC = () => {
       userId: friendId,
       roomName: channelName,
     };
-    
+
     mySocket?.chatSocket.emit('channel-invite', data, (response:any) => {
       console.log('invite response:', response);
       setInvitedFriends(prev => ({
@@ -97,8 +97,8 @@ const Navigation: FC = () => {
                 if (channelUser.id === user.id) {
                   return { ...channelUser, isOwner: true };
                 }
-                if (channelUser.isOwner) {
-                  return { ...channelUser, isOwner: false, isAdmin: false };
+                if (channelUser.isowner) {
+                  return { ...channelUser, isowner: false, isadmin: false };
                 }
                 return channelUser;
               }),
@@ -120,7 +120,7 @@ const Navigation: FC = () => {
                 ...channel,
                 users: channel.users.map((channelUser) => {
                   if (channelUser.id === user.id) {
-                    return { ...channelUser, isAdmin: true };
+                    return { ...channelUser, isadmin: true };
                   }
                   return channelUser;
                 }),
@@ -142,7 +142,7 @@ const Navigation: FC = () => {
               ...channel,
               users: channel.users.map((channelUser) => {
                 if (channelUser.id === user.id) {
-                  return { ...channelUser, isAdmin: false };
+                  return { ...channelUser, isadmin: false };
                 }
                 return channelUser;
               }),
@@ -310,10 +310,10 @@ const Navigation: FC = () => {
               <ul className="user-list">
                 {channel.users
                   .sort((a, b) => {
-                    if (a.isOwner && !b.isOwner) return -1;
-                    if (!a.isOwner && b.isOwner) return 1;
-                    if (a.isAdmin && !b.isAdmin) return -1;
-                    if (!a.isAdmin && b.isAdmin) return 1;
+                    if (a.isowner && !b.isowner) return -1;
+                    if (!a.isowner && b.isowner) return 1;
+                    if (a.isadmin && !b.isadmin) return -1;
+                    if (!a.isadmin && b.isadmin) return 1;
                     return a.nickname.localeCompare(b.nickname);
                   })
                   .map((user: any) => (
@@ -322,7 +322,7 @@ const Navigation: FC = () => {
                     onClick={() => handleUserClick(user, channel)}
                   >
                       {user.nickname}
-                      {user.isOwner ? ' (👑)' : user.isAdmin ? ' (⚔️)' : ''}
+                      {user.isowner ? ' (👑)' : user.isadmin ? ' (⚔️)' : ''}
                     </li>
                   ))}
               </ul>
