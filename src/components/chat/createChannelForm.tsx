@@ -8,7 +8,7 @@ export function CreateChannelForm(props: CreateChannelFormProps) {
   const [channelName, setChannelName] = useState('');
   const [channelKind, setChannelKind] = useState<number>(0);
   const [channelPassword, setChannelPassword] = useState('');
-  const { setChannels, mySocket } = useMyContext();
+  const { setChannels, mySocket, channels } = useMyContext();
 
   const handleNameChange = (event: ChangeEvent<HTMLInputElement>) => {
     setChannelName(event.target.value);
@@ -34,8 +34,9 @@ export function CreateChannelForm(props: CreateChannelFormProps) {
 
       const newChannel: MyChannel = response.data[0];
       console.log('created Channel: ', newChannel);
+			//TODO : prevChannels를 사용하는 구조로 변경 필요, 현재는 임시로
+			setChannels([...channels, newChannel]);
 
-      // Update channels with new channel
 			// setChannels((prevChannels: MyChannel[]) => {
 			// 	return [...prevChannels, newChannel];
 			// });
