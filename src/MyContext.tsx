@@ -221,6 +221,8 @@ export const MyContextProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         ];
       });
     }); 
+
+    setMySocket({ chatSocket:ChatSocket, gameSocket:GameSocket });
   }; 
 
   const removeInvite = () => {
