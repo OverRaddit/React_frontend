@@ -7,6 +7,6 @@ export interface MyUser {
 	socketId: string;
     avatar: string;
 	status: UserStatus;
-	isOwner: boolean;
-	isAdmin: boolean;
+	isowner: boolean;
+	isadmin: boolean;
 }
