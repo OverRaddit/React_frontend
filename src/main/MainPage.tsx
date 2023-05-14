@@ -16,21 +16,6 @@ const MainPage: React.FC<Props> = ({ onShowNavigation }) => {
   const [isInQueue, setIsInQueue] = useState<boolean>(false);
   const { myData, mySocket, channels } = useContext(MyContext);
 
-
-	// type chatHistory = {
-	// 	myArray: string[];
-	// };
-
-	const [currentChatHistory, setCurrentChatHistory] = useState<string[]>([]);
-  const [currentChat, setCurrentChat] = useState('');
-  const [chatRooms, setChatRooms] = useState<MyChannel[]>([]);
-  const [userChatRooms, setUserChatRooms] = useState(channels);
-  const [currentChatRoom, setCurrentChatRoom] = useState('gshimRoom');  // 현재 선택된 채널의 이름을 저장한다.
-	const [isModalOpen, setIsModalOpen] = useState(false);
-	const [modalMessage, setModalMessage] = useState('');
-	const [selectedChannel, setSelectedChannel] = useState('');
-	const chatHistoryRef = useRef(null); // new2
-
   useEffect(() => {
     onShowNavigation();
     if (mySocket) {
@@ -89,72 +74,6 @@ const MainPage: React.FC<Props> = ({ onShowNavigation }) => {
 		mySocket?.chatSocket.emit('createChannel', data);
 	};
 
-	const handleChatChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		setCurrentChat(e.target.value);
-	};
-
-	function findChannelByName(channels: MyChannel[], channelName: string): MyChannel | undefined {
-		return channels.find((channel: MyChannel) => channel.name === channelName);
-	}
-
-	const handleChatSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-		e.preventDefault();
-		if (currentChat.trim() !== '') {
-			// setCurrentChatHistory((prevState) => ({
-			// 	myArray: [...prevState.myArray, 'You: ' + currentChat],
-			// }));
-			setCurrentChatHistory([...currentChatHistory, 'You : ' + currentChat]);
-			mySocket?.chatSocket.emit('chat', { roomName: currentChatRoom, message: currentChat });
-			setCurrentChat('');
-		}
-	};
-
-	const switchRoom = (event: React.ChangeEvent<HTMLSelectElement>): void => {
-		// userChatRooms.get(currentChatRoom).chatHistory = currentChatHistory; // 방을 바꾸기 전 현재 채팅방의 채팅내역을 백업.
-		const foundChannel = findChannelByName(channels, currentChatRoom);
-		if (foundChannel)
-		{
-			foundChannel.chatHistory = currentChatHistory;
-		}
-		const selectedRoomName: string = event.target.value;
-
-		setCurrentChatRoom(selectedRoomName);
-		const newChannel = findChannelByName(channels, selectedRoomName);
-		if (newChannel)
-		{
-			setCurrentChatHistory(newChannel.chatHistory);
-		}
-	};
-
-
-	const leftChannel = (): void => {
-		console.log('방나가기 이벤트');
-		const data = {
-			roomName: currentChatRoom,
-			userId: myData?.id,
-		};
-		//console.log('data: ', data);
-		mySocket?.chatSocket.emit('leftChannel', data, (message: string) => {
-			console.log('leftChannel: ', message);
-			setModalMessage(message);
-			setIsModalOpen(true);
-
-			const isError: boolean = true;
-
-			// ㅇㅔ러가 발생한 경우
-			if (isError) {
-				return;
-			}
-
-			// 성공한 경우
-
-			// 1. chatRooms에서 나간 채널을 삭제합니다.
-
-			// 2. currentChatRoom을 chatRooms의 첫번째 방으로 재설정합니다.
-		});
-	};
-
-
   return (
 		<div className="main-page">
       <div className="button-container">
@@ -171,76 +90,6 @@ const MainPage: React.FC<Props> = ({ onShowNavigation }) => {
           </div>
         </>
       )}
-
-<button onClick={() => console.log('currentRoom : ', userChatRooms)}>currentRoom</button>
-			<button onClick={() => console.log('currentChatHistory : ', currentChatHistory)}>currentChatHistory</button>
-      <button onClick={() => console.log(myData)}>myData확인버튼</button>
-      <h1>{userChatRooms.length === 0 ? "You are not join any room!" : currentChatRoom}</h1>
-      <div className="x-page-top">
-        <button>Normal Button</button>
-        <button>Expand Button</button>
-      </div>
-      <hr></hr>
-      <div className="x-page-bottom">
-        <div
-          className="chat-history-box"
-          ref={chatHistoryRef}
-        >
-          {isModalOpen && (
-            <div className="popup">
-            <button className="close-button" onClick={() => setIsModalOpen(false)}>X</button>
-            <h1>🚀 Modal 🚀</h1>
-            <p className="scoreboard">{modalMessage}</p>
-            {/* <Link to="/a">
-              <button className="go-main" onClick={()=>{console.log('click!')}}>메인 화면으로 돌아가기</button>
-            </Link> */}
-            </div>
-          )}
-          <label>
-            Channel Kind:
-            <select value={currentChatRoom} onChange={switchRoom}>
-						{
-						// userChatRooms.map(([key, chatRoom]: [string, { roomname: string }]) => {
-						// 	console.log('foreach chatRoom: ', chatRoom, key);
-						// 	console.log('roomname: ', chatRoom.roomname);
-						// 	return (
-						// 		<option key={key} value={chatRoom.roomname}>
-						// 			{chatRoom.roomname}
-						// 		</option>
-						// 	);
-						// })
-						}
-            </select>
-            {/* <button onClick={leftChannel}>방나가기</button> */}
-          </label>
-          <ul>
-            {/* {currentChatHistory.map((chat, index) => (
-              <li key={index}>{chat}</li>
-            ))} */}
-          </ul>
-        </div>
-        <form onSubmit={handleChatSubmit}>
-          <input
-            className='chat-input-box'
-            type="text"
-            value={currentChat}
-            onChange={handleChatChange}
-            placeholder="Type your chat here"
-          />
-          <button type="submit">Send</button>
-        </form>
-
-        {/* { true ?
-          <>
-            <h3>Make your own</h3>
-            <CreateChannelForm setChatHistory={setCurrentChatHistory} setCurrentChatRoom={setCurrentChatRoom} onCreateChannel={onCreateChannel}/>
-          </>
-          : <h3>you can't make room now!</h3>
-        } */}
-
-        {/* <ChannelLookup setChatHistory={setCurrentChatHistory} setCurrentChatRoom={setCurrentChatRoom} chatRooms={chatRooms} setSelectedChannel={setSelectedChannel}/> */}
-      </div>
-
     </div>
   );
 };
