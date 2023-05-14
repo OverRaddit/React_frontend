@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useMyContext } from 'MyContext';
 import { MyChannel } from 'navigation/interfaces/Channel.interface';
+import './ChannelLookUp.css'
 
 interface EventResponse {
   success: boolean;
@@ -18,6 +19,9 @@ export function ChannelLookup({
   const [filterKind, setFilterKind] = useState('');
 	const { myData, channels, setChannels, mySocket, setCurrentChannel } = useMyContext();
   const [channelList, setChannelList] = useState<MyChannel[]>([]);
+	const [passwordInput, setPasswordInput] = useState('');
+	const [passwordModal, setPasswordModal] = useState(false);
+	const [selectedChannelName, setSelectedChannelName] = useState('');
 
   useEffect(() => {
     mySocket?.chatSocket.on('getChannel', (response: MyChannel[]) => {
@@ -44,9 +48,14 @@ export function ChannelLookup({
     });
   };
 
-  const handleJoinClick = (channelName: string) => {
+  const handleJoinClick = (channelKind: number, channelName: string) => {
+		if (channelKind === 1) {
+			setPasswordModal(true);
+			setSelectedChannelName(channelName);
+			return ;
+		}
     console.log(`Tried to join channel: ${channelName}`);
-    mySocket?.chatSocket?.emit('joinChannel', { userId: myData?.id, roomName: channelName }, (response: EventResponse) => {
+    mySocket?.chatSocket?.emit('joinChannel', { userId: myData?.id, roomName: channelName, roomPassword: passwordInput }, (response: EventResponse) => {
       console.log('joinChannel Response: ', response);
       if (!response.success) {
         console.log('An error occurred.');
@@ -65,10 +74,21 @@ export function ChannelLookup({
       console.log('next Channels: ', [...channels, newChannel]);
       setChannels([...channels, newChannel]);
 			setCurrentChannel(newChannel);
+			setSelectedChannel('');
     });
   };
 
+	const confirmPassword = () => {
+		setPasswordModal(false);
+		handleJoinClick(0, selectedChannelName);
+	}
+
+	const handlePasswordInput = (event: React.ChangeEvent<HTMLInputElement>) => {
+		setPasswordInput(event.target.value);
+	};
+
   return (
+		<>
     <div>
       <h2>Gshim's Channel Lookup</h2>
       <label>
@@ -89,7 +109,6 @@ export function ChannelLookup({
             <th>Kind</th>
             <th>Room_Name</th>
             <th>Owner</th>
-            <th>Room_Password</th>
             <th>Join</th>
           </tr>
         </thead>
@@ -99,11 +118,10 @@ export function ChannelLookup({
               <td>{channel.kind}</td>
               <td>{channel.name}</td>
               <td>{channel.owner}</td>
-              <td>{channel.roompassword || '-'}</td>
               <td>
                 <button
                   type="button"
-                  onClick={() => handleJoinClick(channel.name)}
+                  onClick={() => handleJoinClick(channel.kind, channel.name)}
                 >
                   Join
                 </button>
@@ -113,6 +131,17 @@ export function ChannelLookup({
         </tbody>
       </table>
     </div>
+		{passwordModal && (
+			<div className="popup">
+			  <label>Room Password: </label>
+        <input type="password" value={passwordInput} onChange={handlePasswordInput}></input>
+				<div className='buttons'>
+					<button onClick={() => confirmPassword()}>확인</button>
+					<button className='closeButton' onClick={() => setPasswordModal(false)}>X</button>
+				</div>
+			</div>
+		  )}
+	</>
   );
 }
 

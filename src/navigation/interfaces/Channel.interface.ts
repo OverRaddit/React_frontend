@@ -9,5 +9,4 @@ export interface MyChannel
 	users: MyUser[];
 	showUserList: boolean;
 	chatHistory: string[];
-	roompassword : string;
 }
