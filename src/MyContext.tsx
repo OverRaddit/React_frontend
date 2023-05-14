@@ -120,14 +120,21 @@ export const MyContextProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       const { channel, clientUser } = response;
       const channelType = 2;
       const transformedUser = { ...clientUser, intraId: clientUser.intraid };
-      setMyInvite((prevInvites) => [
-        ...prevInvites,
-        {
-          type: channelType,
-          user: transformedUser,
-          channel,
-        },
-      ]);
+      setMyInvite((prevInvites) => {
+        // 이미 동일한 type과 user를 가진 요소가 있는지 확인
+        if (prevInvites.some(invite => invite.type === channelType && invite.user.intraId === transformedUser.intraId)) {
+          console.log('The invite already exists!');
+          return prevInvites;
+        }
+        return [
+          ...prevInvites,
+          {
+            type: channelType,
+            user: transformedUser,
+            channel,
+          },
+        ];
+      });
     });
 
     ChatSocket.on('user-join', (response) => {
@@ -199,18 +206,28 @@ export const MyContextProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       console.log("USER", user);
 
       const transformedUser = { ...user, intraId: user.intraid };
+      
 
-      setMyInvite((prevInvites) => [
-        ...prevInvites,
-        {
-          type: gameType,
-          user: transformedUser,
-        },
-      ]);
-    });
+      setMyInvite((prevInvites) => {
+        // 이미 동일한 type과 user를 가진 요소가 있는지 확인
+        if (prevInvites.some(invite => invite.type === gameType && invite.user.intraId === transformedUser.intraId)) {
+          console.log('The invite already exists!');
+          return prevInvites;
+        }
+    
+        // 중복이 없을 경우 새로운 요소를 추가
+        return [
+          ...prevInvites,
+          {
+            type: gameType,
+            user: transformedUser,
+          },
+        ];
+      });
 
     setMySocket({ chatSocket:ChatSocket, gameSocket:GameSocket });
-  };
+  });
+
   const removeInvite = () => {
     setMyInvite(myInvite.slice(1));
   };
