@@ -27,7 +27,7 @@ const OtpPage: React.FC<Props> = ({ onHideNavigation }) => {
     try {
       const response = await axios.post('http://localhost:3000/otp', { otp_key: otp }, { withCredentials: true});
       if (response.status >= 200 && response.status < 300) {
-        navigate('/loginok');
+        navigate('/');
       }      
     } catch (error: any) {
       if (error.response && typeof error.response.status === 'number') {

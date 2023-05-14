@@ -8,15 +8,13 @@ const InviteModal: FC = () => {
   const handleEvent = (type: number) => {
     switch (type) {
       case 0:
-
-        console.log("TEST",myInvite[0]);
         mySocket?.gameSocket.emit('Accept invitation',  {myIntraId: myData?.intraid, oppintraId: myInvite[0].user.intraId,  gameType:0} );
         setMyInvite(myInvite.slice(1));
         break;
       case 1:
-
+        mySocket?.gameSocket.emit('Accept invitation',  {myIntraId: myData?.intraid, oppintraId: myInvite[0].user.intraId,  gameType:1} );
+        setMyInvite(myInvite.slice(1));
         break;
-
       case 2:
         const data: any = myInvite[0];
         mySocket?.chatSocket?.emit('invitedChannel', { userId: myData?.id, roomName: data?.channel?.roomname }, (response: EventResponse) => {
