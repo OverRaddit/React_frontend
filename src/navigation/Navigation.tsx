@@ -23,6 +23,38 @@ const Navigation: FC = () => {
   const { myData, setMyData, friends, setFriends, channels, setChannels, initSocket, mySocket } = useMyContext();
   const [modalMessage, setModalMessage] = useState<string | null>(null);
   const navigate = useNavigate();
+  const [inviteModalOpen, setInviteModalOpen] = useState(false);
+  const [invitedFriends, setInvitedFriends] = useState<{ [key: number]: boolean }>({});
+  const [channelName, setChannelName] = useState<String>('');
+
+  const openInviteModal = (channelName:String) => {
+    setChannelName(channelName);
+    setInviteModalOpen(true);
+  };
+
+  const closeInviteModal = () => {
+    setInviteModalOpen(false);
+  };
+
+  const handleChatInvite = (channel:MyChannel) => {
+    openInviteModal(channel.name);
+  };
+
+  const inviteFriend = (friendId:number) => {
+    const data = {
+      userId: friendId,
+      roomName: channelName,
+    };
+    
+    mySocket?.chatSocket.emit('channel-invite', data, (response:any) => {
+      console.log('invite response:', response);
+      setInvitedFriends(prev => ({
+        ...prev,
+        [friendId]: true,
+      }));
+    });
+  };
+
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -240,16 +272,16 @@ const Navigation: FC = () => {
     );
   };
 
-  const handleChatInvite = (channel: any) => {
-    console.log(channel);
-    const data = {
-      userId: '2',
-      roomName: channel.name,
-    };
-    mySocket?.chatSocket.emit('channel-invite', data, (response : any) => {
-      console.log('invite response:', response);
-    })
-  };
+  // const handleChatInvite = (channel: any) => {
+  //   console.log(channel);
+  //   const data = {
+  //     userId: '2',
+  //     roomName: channel.name,
+  //   };
+  //   mySocket?.chatSocket.emit('channel-invite', data, (response : any) => {
+  //     console.log('invite response:', response);
+  //   })
+  // };
 
   const renderChannelList = () => {
     return (
@@ -267,11 +299,7 @@ const Navigation: FC = () => {
                 ❌
               </button>
               {channel.kind !== 3 && (
-                <button
-                  onClick={() => handleChatInvite(channel)}
-                >
-                  📧
-                </button>
+                <button onClick={() => handleChatInvite(channel)}>📧</button>
               )}
             </div>
             {channel.showUserList && (
@@ -436,6 +464,20 @@ const Navigation: FC = () => {
       >
         <h2>{modalMessage}</h2>
         <button onClick={() => setModalMessage(null)}>OK</button>
+      </Modal>
+
+      <Modal isOpen={inviteModalOpen} onRequestClose={closeInviteModal}>
+        <ul>
+          {friends.map(friend => (
+            <li key={friend.id}>
+              <span>{friend.nickname} - {friend.status}</span>
+              {invitedFriends[friend.id]
+                ? <span>초대됨</span>
+                : <button onClick={() => inviteFriend(friend.id)}>초대</button>
+              }
+            </li>
+          ))}
+        </ul>
       </Modal>
 
       <InviteModal />
