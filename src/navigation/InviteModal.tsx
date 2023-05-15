@@ -23,8 +23,8 @@ const InviteModal: FC = () => {
             return;
           }
 
-          // 이거 왜 추가가 안되냐;;
           const newChannel = response.data[0];
+          console.log(newChannel);
           newChannel.setChatHistory = [];
           newChannel.showUserList = false;
 
