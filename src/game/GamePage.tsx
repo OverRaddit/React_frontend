@@ -146,7 +146,7 @@ function Game({ onHideNavigation }: Props) {
 
       else
         player = 2;
-      mySocket?.gameSocket.emit('playerBackspace', { roomName: gameData.roomName, intraId: getCurrentUsername(player) });
+      mySocket?.gameSocket.emit('playerBackspace', { roomName: gameData.roomName, nickName: getCurrentUsername(player) });
       //유저의 status를 수정해주어야 함.
       console.log("Your back or forward has been detected.");
       backToMain();
