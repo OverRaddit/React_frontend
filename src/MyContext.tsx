@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState } from 'react';
 import { MyUser, MyChannel, MyFriend, MyData, MyInvite } from './navigation/interfaces/interfaces';
 import io, { Socket } from 'socket.io-client';
 import { useCookies } from 'react-cookie';
+import { Navigate, useNavigate } from 'react-router-dom';
 
 interface MySocket {
   chatSocket: Socket;
@@ -68,12 +69,12 @@ export const MyContextProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const [mySocket, setMySocket] = useState<MySocket | null>(null);
   const [myInvite, setMyInvite] = useState<MyInvite[]>([]);
   const [cookies, setCookie, removeCookie] = useCookies(['session_key']);
+  const navigate = useNavigate();
 
   const initSocket = () => {
     console.log('@@@initSocket in MyContext (intraId, userId): ', myData!.intraid, ',', myData!.id.toString());
     const ChatSocket = io('http://localhost:4242/chat', {
       extraHeaders: {
-        foo:'bar',
         Authorization: `Bearer ${cookies.session_key}`,
 				session_key: cookies.session_key,
         intraId: myData!.intraid,
@@ -83,7 +84,6 @@ export const MyContextProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
     const GameSocket = io("http://localhost:8000", {
       extraHeaders: {
-        foo:'bar',
         Authorization: `Bearer ${cookies.session_key}`,
         session_key: cookies.session_key,
         intraId: myData!.intraid,
@@ -91,6 +91,15 @@ export const MyContextProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       },
     });
 
+    ChatSocket.on('disconnect', () => {
+      console.log('Disconnected');
+      navigate('/login');
+
+    });
+    GameSocket.on('disconnect', () => {
+      console.log('Disconnected');
+      navigate('/login');
+    });
     ChatSocket.on('initChannels', (response: EventResponse) => {
       console.log("chating 초기화", response);
       if (!response.success) console.log(response.message);
