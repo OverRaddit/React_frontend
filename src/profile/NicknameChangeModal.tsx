@@ -18,7 +18,7 @@ const NicknameChangeModal: React.FC<NicknameChangeModalProps> = ({
   const [nickname, setNickname] = useState('');
   const [isDuplicate, setIsDuplicate] = useState(false);
   const [isAnonymous, setIsAnonymous] = useState(false);
-  const [isEmpty, setIsEmpty] = useState(false);
+  const [isEmpty, setIsEmpty] = useState(true);
 
   useEffect(() => {
     if (isOpen) {
@@ -46,7 +46,7 @@ const NicknameChangeModal: React.FC<NicknameChangeModalProps> = ({
   };
 
   const handleSubmit = async () => {
-    if (!isAnonymous && !isEmpty) {
+    if (!isAnonymous && nickname !== '') {
       try {
         const response = await axios.post('http://localhost:3000/user/join', { nickname: nickname }, { withCredentials: true });
         if (response.status >= 200 && response.status < 300) {
@@ -63,6 +63,9 @@ const NicknameChangeModal: React.FC<NicknameChangeModalProps> = ({
           console.error('An unexpected error occurred:', error);
         }
       }
+    }
+    if (nickname === ''){
+      setIsEmpty(true);
     }
   };
   

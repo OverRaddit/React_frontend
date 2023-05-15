@@ -75,6 +75,11 @@ export function ChannelLookup({
 
 	const confirmPassword = () => {
 		setPasswordModal(false);
+		if (passwordInput == '')
+		{
+			console.log('You should input password!');
+			return ;
+		}
 		handleJoinClick(0, selectedChannelName);
 	}
 
@@ -85,17 +90,7 @@ export function ChannelLookup({
   return (
 		<>
     <div>
-      <h2>Gshim's Channel Lookup</h2>
-      <label>
-        Filter by Kind:
-        <select value={filterKind} onChange={handleKindFilterChange}>
-          <option value="">All</option>
-          <option value="0">Public</option>
-          <option value="1">Password Protected</option>
-          <option value          ={2}>Private</option>
-        </select>
-      </label>
-      <button type="button" onClick={handleLookupClick}>↻</button>
+      <h2>Channel Lookup</h2>
       <table>
         <thead>
           <tr>
@@ -103,6 +98,7 @@ export function ChannelLookup({
             <th>Room_Name</th>
             <th>Owner</th>
             <th>Join</th>
+						<button type="button" onClick={handleLookupClick}>↻</button>
           </tr>
         </thead>
         <tbody>
