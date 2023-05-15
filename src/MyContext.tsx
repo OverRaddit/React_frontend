@@ -68,17 +68,21 @@ export const MyContextProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const [myData, setMyData] = useState<MyData | null>(null);
   const [mySocket, setMySocket] = useState<MySocket | null>(null);
   const [myInvite, setMyInvite] = useState<MyInvite[]>([]);
-  const [cookies, setCookie, removeCookie] = useCookies(['session_key']);
+  const [cookies, setCookie, removeCookie] = useCookies(['session_key', 'userData', 'id']);
   const navigate = useNavigate();
 
   const initSocket = () => {
     console.log('@@@initSocket in MyContext (intraId, userId): ', myData!.intraid, ',', myData!.id.toString());
+    console.log(':)cookies:',cookies);
+    console.log(':)cookies userdata:',cookies.userData);
+    console.log(':)cookies intraid:',cookies.userData.intraid);
+    console.log(':)cookies id:',cookies.userData.id.toString());
     const ChatSocket = io('http://localhost:4242/chat', {
       extraHeaders: {
         Authorization: `Bearer ${cookies.session_key}`,
 				session_key: cookies.session_key,
-        intraId: myData!.intraid,
-        userId: myData!.id.toString(),
+        intraId: cookies?.userData.intraid,
+        userId: cookies?.userData.id.toString(),
       },
     });
 
@@ -86,8 +90,8 @@ export const MyContextProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       extraHeaders: {
         Authorization: `Bearer ${cookies.session_key}`,
         session_key: cookies.session_key,
-        intraId: myData!.intraid,
-        userId: myData!.id.toString(),
+        intraId: cookies.userData.intraid,
+        userId: cookies.userData.id,
       },
     });
 

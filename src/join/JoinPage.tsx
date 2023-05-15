@@ -37,7 +37,7 @@ const JoinPage: React.FC<Props> = ({ onHideNavigation }) => {
       }
     };
     fetchUserData();
-  }, [onHideNavigation, userData]);
+  }, [onHideNavigation]);
 
   const [cookies, setCookie, removeCookie] = useCookies(['nickname']);
   const [nickname, setNickname] = useState(cookies.nickname);
