@@ -20,7 +20,7 @@ const Navigation: FC = () => {
   const [channelToLeave, setChannelToLeave] = useState<MyChannel | null>(null);
   const [selectedUser, setSelectedUser] = useState<any | null>(null);
   const [selectedUserChannel, setSelectedUserChannel] = useState<any | null>(null);
-  const { myData, setMyData, friends, setFriends, channels, setChannels, initSocket, mySocket } = useMyContext();
+  const { myData, setMyData, friends, setFriends, channels, setChannels, initSocket, mySocket, setCurrentChannel } = useMyContext();
   const [modalMessage, setModalMessage] = useState<string | null>(null);
   const navigate = useNavigate();
   const [inviteModalOpen, setInviteModalOpen] = useState(false);
@@ -287,6 +287,11 @@ const Navigation: FC = () => {
   //   })
   // };
 
+  const onClickChannelName = (channel:MyChannel) => {
+    setCurrentChannel(channel);
+    navigate('/');
+  }
+
   const renderChannelList = () => {
     return (
       <ul className="channel-list">
@@ -294,7 +299,9 @@ const Navigation: FC = () => {
         {channels.map((channel) => (
           <li key={channel.id} className="channel">
             <div className="channel-info">
-              <span>{channel.name}</span>
+            <span onClick={() => onClickChannelName(channel)}>
+              {channel.name}
+            </span>
               <button onClick={() => toggleUserList(channel.id)}>+</button>
               <button
                 className="leave-channel-btn"
