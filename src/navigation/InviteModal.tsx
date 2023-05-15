@@ -48,8 +48,8 @@ const InviteModal: FC = () => {
       <h2>Invitation</h2>
       {myInvite[0] && (
         <>
-          {myInvite[0].type === 0 && <p>Content for type 0</p>}
-          {myInvite[0].type === 1 && <p>Content for type 1</p>}
+          {myInvite[0].type === 0 && <p>Normal Game invitation has arrived.</p>}
+          {myInvite[0].type === 1 && <p>Extension Game invitation has arrived.</p>}
           {myInvite[0].type === 2 && <p>Content for type 2</p>}
           {myInvite[0].type === 3 && <p>Content for type 3</p>}
         </>
