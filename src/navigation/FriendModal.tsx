@@ -13,12 +13,15 @@ interface FriendModalProps {
 const FriendModal: React.FC<FriendModalProps> = ({ friend, onClose }) => {
   const [isModalOpen, setIsModalOpen] = useState(true);
   const { myData, mySocket, channels, setChannels, setCurrentChannel } = useMyContext();
+  const [inviteMessage, setInviteMessage] = useState('');  
 
   const closeModal = () => {
     setIsModalOpen(false);
     onClose();
   };
-
+  const closeInviteModal = () => {
+    setInviteMessage('');  // 초대 메시지 초기화
+  };
   // TODO: invite 모달 만들면 이동
   const acceptInvite = (e: React.MouseEvent<HTMLButtonElement>) => {
     mySocket?.gameSocket.emit('Accept invitation', { myIntraId: myData!.intraid, oppIntraId: friend.intraid, enqueueFlag: false, gameType: 0 }); // TODO
@@ -27,17 +30,13 @@ const FriendModal: React.FC<FriendModalProps> = ({ friend, onClose }) => {
   const sendInvite0 = (e: React.MouseEvent<HTMLButtonElement>) => {
     mySocket?.gameSocket.emit('Invite Game', { myIntraId: myData!.intraid, oppIntraId: friend.intraid, gameType: 0 },
     (res:any) =>{
-      if (res.state != 200) {
-        window.alert('초대에 실패했습니다');
-      }
+      setInviteMessage(res.message);
     });
   };
   const sendInvite1 = (e: React.MouseEvent<HTMLButtonElement>) => {
     mySocket?.gameSocket.emit('Invite Game', { myIntraId: myData!.intraid, oppIntraId: friend.intraid, gameType: 1 },
     (res:any) =>{
-      if (res.state != 200) {
-        window.alert('초대에 실패했습니다');
-      }
+      setInviteMessage(res.message);
     });
   };
 
@@ -65,6 +64,7 @@ const FriendModal: React.FC<FriendModalProps> = ({ friend, onClose }) => {
   const isInviteEnabled = friend.status === 'online';
 
   return (
+    <>
     <Modal
       isOpen={isModalOpen}
       onRequestClose={closeModal}
@@ -109,6 +109,16 @@ const FriendModal: React.FC<FriendModalProps> = ({ friend, onClose }) => {
         </div>
       </div>
     </Modal>
+        {inviteMessage && (
+          <Modal
+            isOpen={true}
+            onRequestClose={closeInviteModal}
+            contentLabel="Invite Success Modal"
+          >
+            <p>{inviteMessage}</p>
+            <button onClick={closeInviteModal}>닫기</button>
+          </Modal>)}
+          </>
   );
 };
 
