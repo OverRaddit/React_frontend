@@ -2,7 +2,7 @@ import { FC, useEffect } from 'react';
 import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Modal from 'react-modal';
-import { MyChannel, MyFriend } from './interfaces/interfaces';
+import { MyChannel, MyFriend, MyUser } from './interfaces/interfaces';
 import './Navigation.css';
 import { useMyContext } from '../MyContext';
 import axios from 'axios';
@@ -91,24 +91,25 @@ const Navigation: FC = () => {
           setModalMessage('You have been granted ownership of the ' + roomName);
         }
         setChannels(
-        channels.map((channel) => {
-          if (channel.name === roomName) {
-            return {
-              ...channel,
-              users: channel.users.map((channelUser) => {
-                if (channelUser.id === user.id) {
-                  return { ...channelUser, isowner: true };
-                }
-                if (channelUser.isowner) {
-                  return { ...channelUser, isowner: false, isadmin: false };
-                }
-                return channelUser;
-              }),
-            };
-          }
-          return channel;
-        })
-      );
+          channels.map((channel) => {
+            if (channel.name === roomName) {
+              return {
+                ...channel,
+                users: channel.users.map((channelUser) => {
+                  if (channelUser.id === user.id) {
+                    return { ...channelUser, isowner: true };
+                  }
+                  if (channelUser.isowner) {
+                    return { ...channelUser, isowner: false, isadmin: false };
+                  }
+                  return channelUser;
+                }),
+                owner: user.nickname,
+              };
+            }
+            return channel;
+          })
+        );
       });
 
       mySocket.chatSocket.on('admin-granted', ({ roomName, user }) => {
@@ -275,7 +276,7 @@ const Navigation: FC = () => {
         console.log('leftChannel: ', response);
         setModalMessage(response.message);
         setIsModalOpen(false);
-        
+
         if (!response.success) {
         return;
       }
@@ -314,7 +315,7 @@ const Navigation: FC = () => {
   const location = useLocation();
   const onClickChannelName = (channel:MyChannel) => {
     const newPath = `/main/${channel.name}`;
-    
+
     if (location.pathname !== newPath) {
       navigate(newPath);
     }
