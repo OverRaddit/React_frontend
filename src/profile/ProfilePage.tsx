@@ -16,16 +16,16 @@ interface Props {
 }
 
 const ProfilePage: React.FC<Props> = ({ onShowNavigation }) => {
-  const { myData, setMyData, friends, setFriends } = useMyContext(); // Access the context
+  const { myData, setMyData, friends, setFriends, userBlackList, setUserBlackList } = useMyContext(); // Access the context
   let { userId } = useParams<{ userId?: string }>();
   const isMyProfile = !userId || (myData && myData.intraid === userId) || false;
-  const [blacklist, setBlacklist] = useState<string[]>([]);
+  //const [blacklist, setBlacklist] = useState<string[]>([]);
 
   // userId가 없을 경우 myData의 intraid를 사용
   if (!userId && myData) {
     userId = myData.intraid;
   }
-  
+
   const [userData, setUserData] = useState({
     id: 0,
     intraid: '',
@@ -36,7 +36,7 @@ const ProfilePage: React.FC<Props> = ({ onShowNavigation }) => {
     losecount: null,
     email: '',
     isotp: false,
-  });  
+  });
 
   const [isOtpModalOpen, setIsOtpModalOpen] = useState(false);
   const [isNicknameModalOpen, setIsNicknameModalOpen] = useState(false);
@@ -64,9 +64,9 @@ const ProfilePage: React.FC<Props> = ({ onShowNavigation }) => {
         console.error('Failed to fetch recent matches:', error);
       }
     };
-  
-    // TODO: 없는 사람일때에(404 받으면?) 예외처리 필요 
-    
+
+    // TODO: 없는 사람일때에(404 받으면?) 예외처리 필요
+
     fetchUserData();
     fetchRecentMatches();
   }, [userId, onShowNavigation]);
@@ -75,17 +75,17 @@ const ProfilePage: React.FC<Props> = ({ onShowNavigation }) => {
     const fetchBlacklist = async () => {
       try {
         const response = await axios.get('http://localhost:3000/userblacklist', { withCredentials: true });
-        setBlacklist(response.data);
+        setUserBlackList(response.data);
       } catch (error) {
         console.error('Failed to fetch blacklist:', error);
       }
     };
-  
+
     fetchBlacklist();
   }, [userId]);
-  
+
   const isFriend = friends.some((friend) => friend.id === userData.id);
-  const isBlocked = blacklist.some(user => user === userData.intraid);
+  const isBlocked = userBlackList.some(user => user.intraid === userData.intraid);
   const displayProfilePicture = userData.avatar || defaultProfilePicture;
 
   const onBlockUser = async () => {
@@ -95,21 +95,27 @@ const ProfilePage: React.FC<Props> = ({ onShowNavigation }) => {
         { blacklist: userData.intraid },
         { withCredentials: true }
       );
-  
-      setBlacklist([...blacklist, userData.intraid]);
+
+      const newFriend: MyFriend = {
+        ...userData,
+        socketid: '',
+        status: 'offline',
+      };
+
+      setUserBlackList([...userBlackList, newFriend]);
     } catch (error) {
       console.error('Failed to block user:', error);
     }
   };
-  
+
   const onUnblockUser = async () => {
     try {
       await axios.delete(
         `http://localhost:3000/userblacklist/${userData.intraid}`,
         { withCredentials: true }
       );
-  
-      setBlacklist(blacklist.filter(user => user !== userData.intraid));
+
+      setUserBlackList(userBlackList.filter(user => user.intraid !== userData.intraid));
     } catch (error) {
       console.error('Failed to unblock user:', error);
     }
@@ -161,13 +167,13 @@ const ProfilePage: React.FC<Props> = ({ onShowNavigation }) => {
         { friend: userData.intraid },
         { withCredentials: true }
       );
-  
+
       const newFriend: MyFriend = {
         ...userData,
         socketid: '',
         status: 'offline',
       };
-  
+
       setFriends([...friends, newFriend]);
     } catch (error) {
       console.error('Failed to add friend:', error);
@@ -180,7 +186,7 @@ const ProfilePage: React.FC<Props> = ({ onShowNavigation }) => {
         `http://localhost:3000/friendlist/${userData.intraid}`,
         { withCredentials: true }
       );
-  
+
       // 친구 목록에서 삭제된 친구를 제거
       setFriends(friends.filter((friend) => friend.intraid !== userData.intraid));
     } catch (error) {
@@ -229,7 +235,7 @@ const ProfilePage: React.FC<Props> = ({ onShowNavigation }) => {
           <div className="profile-recent-record">
             {recentMatchCards}
           </div>
-      
+
         <NicknameChangeModal
           isOpen={isNicknameModalOpen}
           onRequestClose={closeNicknameModal}
@@ -249,7 +255,7 @@ const ProfilePage: React.FC<Props> = ({ onShowNavigation }) => {
           }}
         />
 
-      
+
         <ProfilePictureModal
           isOpen={isProfilePictureModalOpen}
           onRequestClose={closeProfilePictureModal}
@@ -266,7 +272,7 @@ const ProfilePage: React.FC<Props> = ({ onShowNavigation }) => {
             closeProfilePictureModal();
           }}
         />
-      
+
         <Modal
           isOpen={isOtpModalOpen}
           onRequestClose={closeOtpModal}
@@ -281,5 +287,5 @@ const ProfilePage: React.FC<Props> = ({ onShowNavigation }) => {
       </div>
       );
     };
-    
+
     export default ProfilePage;

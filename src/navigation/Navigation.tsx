@@ -20,7 +20,7 @@ const Navigation: FC = () => {
   const [channelToLeave, setChannelToLeave] = useState<MyChannel | null>(null);
   const [selectedUser, setSelectedUser] = useState<any | null>(null);
   const [selectedUserChannel, setSelectedUserChannel] = useState<any | null>(null);
-  const { myData, setMyData, friends, setFriends, channels, setChannels, initSocket, mySocket, setCurrentChannel } = useMyContext();
+  const { myData, setMyData, friends, setFriends, channels, setChannels, initSocket, mySocket, setCurrentChannel, userBlackList, setUserBlackList } = useMyContext();
   const [modalMessage, setModalMessage] = useState<string | null>(null);
   const navigate = useNavigate();
   const [inviteModalOpen, setInviteModalOpen] = useState(false);
@@ -196,7 +196,16 @@ const Navigation: FC = () => {
       });
 
       mySocket.chatSocket.on('chat', (response) => {
-        console.log(response);
+        console.log('chat:', response);
+
+        // response.user가 userBlackList에 존재하는지 검색한다.
+        const blackedUser = userBlackList.find(user => user.id === response.user.id);
+        console.log('blackedUser: ',blackedUser);
+        if (blackedUser !== undefined) {
+          console.log('이 메시지는 무시됩니다.')
+          return ;
+        }
+
         // Find the index of the channel with the matching name
         const channelIndex = channels.findIndex(channel => channel.name === response.roomName);
 
