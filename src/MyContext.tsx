@@ -11,6 +11,7 @@ interface MySocket {
 
 type MyContextProps = {
   users: MyUser[];
+  userBlackList: MyFriend[];
   channels: MyChannel[];
   currentChannel: MyChannel | null;
   mapChannels: Map<string, MyChannel>;
@@ -19,6 +20,7 @@ type MyContextProps = {
   mySocket: MySocket | null;
   myInvite: MyInvite[];
   setUsers: (users: MyUser[]) => void;
+  setUserBlackList: (users: MyFriend[]) => void;
   setChannels: (channels: MyChannel[]) => void;
   setCurrentChannel: (channel: MyChannel | null) => void;
   setMapChannels: (mapChannels: Map<string, MyChannel>) => void;
@@ -38,6 +40,7 @@ export interface EventResponse {
 
 const defaultMyContext = {
   users: [],
+  userBlackList: [],
   channels: [],
   currentChannel: null,
   mapChannels: new Map<string, MyChannel>(),
@@ -46,6 +49,7 @@ const defaultMyContext = {
   mySocket: null,
   myInvite: [],
   setUsers: () => {},
+  setUserBlackList: () => {},
   setChannels: () => {},
   setCurrentChannel: () => {},
   setMapChannels: () => {},
@@ -61,6 +65,7 @@ export const MyContext = createContext<MyContextProps>(defaultMyContext);
 
 export const MyContextProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [users, setUsers] = useState<MyUser[]>([]);
+  const [userBlackList, setUserBlackList] = useState<MyFriend[]>([]);
   const [channels, setChannels] = useState<MyChannel[]>([]);
   const [currentChannel, setCurrentChannel] = useState<MyChannel | null>(null);
   const [mapChannels, setMapChannels] = useState<Map<string, MyChannel>>(new Map<string, MyChannel>());
@@ -114,6 +119,18 @@ export const MyContextProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
         setChannels(X);
       }
+    });
+
+    ChatSocket.on('getBlacklist', (response: EventResponse) => {
+      console.log("getBlacklist", response);
+      if (!response.success) console.log(response.message);
+
+      // setUserBlackList(response.data);
+      const userBlackList = response.data.map((user) => {
+        return user.userId3;
+      });
+      setUserBlackList(userBlackList);
+      console.log('userBlackList:', userBlackList);
     });
 
     GameSocket.on('connect', () => {
@@ -262,6 +279,7 @@ export const MyContextProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
   const value = {
     users,
+    userBlackList,
     channels,
     currentChannel,
     mapChannels,
@@ -270,6 +288,7 @@ export const MyContextProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     mySocket,
     myInvite,
     setUsers,
+    setUserBlackList,
     setChannels,
     setCurrentChannel,
     setMapChannels,
