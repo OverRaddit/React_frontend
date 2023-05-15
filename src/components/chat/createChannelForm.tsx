@@ -29,6 +29,11 @@ export function CreateChannelForm(props: CreateChannelFormProps) {
       roomName: channelName,
       roomPassword: channelPassword,
     };
+		if (data.kind == 1 && data.roomPassword == '')
+		{
+			console.log('You can\'t put void Password');
+			return ;
+		}
     mySocket?.chatSocket.emit('createChannel', data, (response: { success: boolean; data: any[] }) => {
       if (!response.success) return;
 
@@ -46,6 +51,7 @@ export function CreateChannelForm(props: CreateChannelFormProps) {
 
   return (
     <form onSubmit={handleSubmit}>
+			<h2>Search Channel</h2>
       <label>
         Channel Name:
         <input type="text" value={channelName} onChange={handleNameChange} />
