@@ -8,8 +8,8 @@ import FriendButton from './FriendButton';
 import ProfilePictureModal from './ProfilePictureModal';
 import { useParams } from 'react-router-dom';
 import { useMyContext } from '../MyContext'; // Import the context
-import { MyFriend } from 'navigation/interfaces/Friend.interface';
 import RecentMatchCard, { RecentMatch } from './RecentMatchCard';
+import { MyFriend } from 'navigation/interfaces/interfaces';
 
 interface Props {
   onShowNavigation: () => void;
@@ -19,6 +19,7 @@ const ProfilePage: React.FC<Props> = ({ onShowNavigation }) => {
   const { myData, setMyData, friends, setFriends } = useMyContext(); // Access the context
   let { userId } = useParams<{ userId?: string }>();
   const isMyProfile = !userId || (myData && myData.intraid === userId) || false;
+  const [blacklist, setBlacklist] = useState<string[]>([]);
 
   // userId가 없을 경우 myData의 intraid를 사용
   if (!userId && myData) {
@@ -70,10 +71,50 @@ const ProfilePage: React.FC<Props> = ({ onShowNavigation }) => {
     fetchRecentMatches();
   }, [userId, onShowNavigation]);
 
+  useEffect(() => {
+    const fetchBlacklist = async () => {
+      try {
+        const response = await axios.get('http://localhost:3000/userblacklist', { withCredentials: true });
+        setBlacklist(response.data);
+      } catch (error) {
+        console.error('Failed to fetch blacklist:', error);
+      }
+    };
+  
+    fetchBlacklist();
+  }, [userId]);
+  
   const isFriend = friends.some((friend) => friend.id === userData.id);
+  const isBlocked = blacklist.some(user => user === userData.intraid);
   const displayProfilePicture = userData.avatar || defaultProfilePicture;
 
-  const openOtpModal = () => {
+  const onBlockUser = async () => {
+    try {
+      await axios.post(
+        'http://localhost:3000/userblacklist',
+        { blacklist: userData.intraid },
+        { withCredentials: true }
+      );
+  
+      setBlacklist([...blacklist, userData.intraid]);
+    } catch (error) {
+      console.error('Failed to block user:', error);
+    }
+  };
+  
+  const onUnblockUser = async () => {
+    try {
+      await axios.delete(
+        `http://localhost:3000/userblacklist/${userData.intraid}`,
+        { withCredentials: true }
+      );
+  
+      setBlacklist(blacklist.filter(user => user !== userData.intraid));
+    } catch (error) {
+      console.error('Failed to unblock user:', error);
+    }
+  };
+    const openOtpModal = () => {
     setIsOtpModalOpen(true);
   };
 
@@ -177,6 +218,10 @@ const ProfilePage: React.FC<Props> = ({ onShowNavigation }) => {
               onOpenOtpModal={openOtpModal}
             />
           </div>
+          <button onClick={isBlocked ? onUnblockUser : onBlockUser}>
+            {isBlocked ? '차단 해제' : '차단'}
+          </button>
+
         </div>
           <div className="profile-recent-record">
             {recentMatchCards}
