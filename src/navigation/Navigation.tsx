@@ -66,6 +66,8 @@ const Navigation: FC = () => {
             `http://localhost:3000/user`, { withCredentials: true }
           );
           setMyData(response.data);
+          const response3 = await axios.get('http://localhost:3000/userblacklist', { withCredentials: true });
+          setUserBlackList(response3.data);
         }
         if (friends.length === 0) {
           const response2 = await axios.get(
