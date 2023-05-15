@@ -3,15 +3,41 @@ import './JoinPage.css';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useCookies } from 'react-cookie';
+import defaultProfilePicture from '../profile/defaultProfilePicture.jpg';
+import ProfilePictureModal from 'profile/ProfilePictureModal';
 
 interface Props {
   onHideNavigation: () => void;
 }
 
 const JoinPage: React.FC<Props> = ({ onHideNavigation }) => {
+  
+  const [userData, setUserData] = useState({
+    id: 0,
+    intraid: '',
+    avatar: '',
+    nickname: '',
+    rating: null,
+    wincount: null,
+    losecount: null,
+    email: '',
+    isotp: false,
+  });  
+
   useEffect(() => {
     onHideNavigation();
-  }, [onHideNavigation]);
+    const fetchUserData = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:3000/user${nickname ? `/${nickname}` : ''}`, { withCredentials: true }
+        );
+        setUserData(response.data);
+      } catch (error) {
+        console.error('Failed to fetch user data:', error);
+      }
+    };
+    fetchUserData();
+  }, [onHideNavigation, userData]);
 
   const [cookies, setCookie, removeCookie] = useCookies(['nickname']);
   const [nickname, setNickname] = useState(cookies.nickname);
@@ -54,9 +80,26 @@ const JoinPage: React.FC<Props> = ({ onHideNavigation }) => {
     }
   }
 };
+const displayProfilePicture = userData.avatar || defaultProfilePicture;
+const [isProfilePictureModalOpen, setIsProfilePictureModalOpen] = useState(false);
 
+const openProfilePictureModal = () => {
+  setIsProfilePictureModalOpen(true);
+};
+
+const closeProfilePictureModal = () => {
+  setIsProfilePictureModalOpen(false);
+};
   return (
     <div className="join-page">
+      <div className="profile-picture-wrapper">
+        <img
+          className="profile-picture"
+          src={displayProfilePicture}
+          alt="프로필 사진"
+          onClick={openProfilePictureModal}
+          />
+      </div>
       <h3>닉네임을 입력해주세요.</h3>
       <input
         type="text"
@@ -80,6 +123,15 @@ const JoinPage: React.FC<Props> = ({ onHideNavigation }) => {
       <button className="join-button" onClick={handleJoinButtonClick}>
         Join
       </button>
+
+      <ProfilePictureModal
+          isOpen={isProfilePictureModalOpen}
+          onRequestClose={closeProfilePictureModal}
+          onUpload={(url: string) => {
+            setUserData({ ...userData, avatar: url });
+            closeProfilePictureModal();
+          }}
+        />
     </div>
   );
 };
