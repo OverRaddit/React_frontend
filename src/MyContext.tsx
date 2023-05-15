@@ -205,6 +205,14 @@ export const MyContextProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       const { roomName, user, message } = response;
       console.log('dm response:', response);
 
+      // response.user가 userBlackList에 존재하는지 검색한다.
+      const blackedUser = userBlackList.find(user => user.id === response.user.id);
+      console.log('blackedUser: ',blackedUser);
+      if (blackedUser !== undefined) {
+        console.log('이 메시지는 무시됩니다.')
+        return ;
+      }
+
       setChannels((prevChannels) => {
         const channelIndex = prevChannels.findIndex(channel => channel.name === roomName);
         if (channelIndex !== -1) {
