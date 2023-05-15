@@ -71,19 +71,6 @@ const ProfilePage: React.FC<Props> = ({ onShowNavigation }) => {
     fetchRecentMatches();
   }, [userId, onShowNavigation]);
 
-  useEffect(() => {
-    const fetchBlacklist = async () => {
-      try {
-        const response = await axios.get('http://localhost:3000/userblacklist', { withCredentials: true });
-        setUserBlackList(response.data);
-      } catch (error) {
-        console.error('Failed to fetch blacklist:', error);
-      }
-    };
-
-    fetchBlacklist();
-  }, [userId]);
-
   const isFriend = friends.some((friend) => friend.id === userData.id);
   const isBlocked = userBlackList.some(user => user.intraid === userData.intraid);
   const displayProfilePicture = userData.avatar || defaultProfilePicture;
