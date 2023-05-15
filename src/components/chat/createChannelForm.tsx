@@ -40,6 +40,7 @@ export function CreateChannelForm(props: CreateChannelFormProps) {
 			// setChannels((prevChannels: MyChannel[]) => {
 			// 	return [...prevChannels, newChannel];
 			// });
+			setChannelName('');
     });
   };
 

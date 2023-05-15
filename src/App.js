@@ -34,6 +34,7 @@ function App() {
 
             <Routes>
               <Route path="/" element={<MainPage onShowNavigation={showNavigation} />} />
+              <Route path="/main/:roomname?" element={<MainPage onShowNavigation={showNavigation} />} />
               <Route path="/game" element={<Game onHideNavigation={hideNavigation}/>} />
               <Route path="/profile/:userId?" element={<ProfilePage onShowNavigation={showNavigation}/>} />
               <Route path="/login" element={<LoginPage onHideNavigation={hideNavigation}/>} />

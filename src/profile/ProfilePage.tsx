@@ -218,9 +218,12 @@ const ProfilePage: React.FC<Props> = ({ onShowNavigation }) => {
               onOpenOtpModal={openOtpModal}
             />
           </div>
-          <button onClick={isBlocked ? onUnblockUser : onBlockUser}>
-            {isBlocked ? '차단 해제' : '차단'}
-          </button>
+
+          {!isMyProfile && (
+            <button onClick={isBlocked ? onUnblockUser : onBlockUser}>
+              {isBlocked ? '차단 해제' : '차단'}
+            </button>
+          )}
 
         </div>
           <div className="profile-recent-record">

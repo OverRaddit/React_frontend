@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState } from 'react';
 import { MyUser, MyChannel, MyFriend, MyData, MyInvite } from './navigation/interfaces/interfaces';
 import io, { Socket } from 'socket.io-client';
 import { useCookies } from 'react-cookie';
+import { Navigate, useNavigate } from 'react-router-dom';
 
 interface MySocket {
   chatSocket: Socket;
@@ -68,12 +69,12 @@ export const MyContextProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const [mySocket, setMySocket] = useState<MySocket | null>(null);
   const [myInvite, setMyInvite] = useState<MyInvite[]>([]);
   const [cookies, setCookie, removeCookie] = useCookies(['session_key']);
+  const navigate = useNavigate();
 
   const initSocket = () => {
     console.log('@@@initSocket in MyContext (intraId, userId): ', myData!.intraid, ',', myData!.id.toString());
     const ChatSocket = io('http://localhost:4242/chat', {
       extraHeaders: {
-        foo:'bar',
         Authorization: `Bearer ${cookies.session_key}`,
 				session_key: cookies.session_key,
         intraId: myData!.intraid,
@@ -83,7 +84,6 @@ export const MyContextProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
     const GameSocket = io("http://localhost:8000", {
       extraHeaders: {
-        foo:'bar',
         Authorization: `Bearer ${cookies.session_key}`,
         session_key: cookies.session_key,
         intraId: myData!.intraid,
@@ -91,6 +91,15 @@ export const MyContextProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       },
     });
 
+    ChatSocket.on('disconnect', () => {
+      console.log('Disconnected');
+      navigate('/login');
+
+    });
+    GameSocket.on('disconnect', () => {
+      console.log('Disconnected');
+      navigate('/login');
+    });
     ChatSocket.on('initChannels', (response: EventResponse) => {
       console.log("chating 초기화", response);
       if (!response.success) console.log(response.message);
@@ -119,10 +128,9 @@ export const MyContextProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       console.log('user-channel-invited res: ', response);
       const { channel, clientUser } = response;
       const channelType = 2;
-      const transformedUser = { ...clientUser, intraId: clientUser.intraid };
       setMyInvite((prevInvites) => {
         // 이미 동일한 type과 user를 가진 요소가 있는지 확인
-        if (prevInvites.some(invite => invite.type === channelType && invite.user.intraid === transformedUser.intraId)) {
+        if (prevInvites.some(invite => invite.type === channelType && invite.user.intraid === clientUser.intraid)) {
           console.log('The invite already exists!');
           return prevInvites;
         }
@@ -130,7 +138,7 @@ export const MyContextProvider: React.FC<{ children: React.ReactNode }> = ({ chi
           ...prevInvites,
           {
             type: channelType,
-            user: transformedUser,
+            user: clientUser,
             channel,
           },
         ];
@@ -227,10 +235,9 @@ export const MyContextProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
     GameSocket.on('invite message', (response) => {
       const { user, gameType } = response;
-      const transformedUser = { ...user, intraId: user.intraid };
       setMyInvite((prevInvites) => {
         // 이미 동일한 type과 user를 가진 요소가 있는지 확인
-        if (prevInvites.some(invite => invite.type === gameType && invite.user.intraid === transformedUser.intraId)) {
+        if (prevInvites.some(invite => invite.type === gameType && invite.user.intraid === user.intraid)) {
           console.log('The invite already exists!');
           return prevInvites;
         }
@@ -240,7 +247,7 @@ export const MyContextProvider: React.FC<{ children: React.ReactNode }> = ({ chi
           ...prevInvites,
           {
             type: gameType,
-            user: transformedUser,
+            user: user,
           },
         ];
       });
@@ -250,7 +257,7 @@ export const MyContextProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   };
 
   const removeInvite = () => {
-    setMyInvite(myInvite.slice(1));
+    setMyInvite(myInvite.filter(invite => !(invite.user === myInvite[0]?.user && invite.type === myInvite[0]?.type)));
   };
 
   const value = {
