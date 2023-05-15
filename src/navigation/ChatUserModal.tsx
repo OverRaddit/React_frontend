@@ -83,9 +83,9 @@ const handleMute = () => {
       </Link>
       {!isMe && (
         <>
-          {myChannelData.isOwner && (
+          {myChannelData.isowner && (
             <>
-              {user.isAdmin ? (
+              {user.isadmin ? (
                 <button onClick={handleRevoke}>관리자 박탈</button>
               ) : (
                 <button onClick={handlePermission}>관리자 임명</button>
@@ -93,7 +93,7 @@ const handleMute = () => {
               <button onClick={handleDelegate}>방장 임명</button>
             </>
           )}
-          {myChannelData.isAdmin && (
+          {myChannelData.isadmin && (
             <>
               <button onClick={handleKick}>킥</button>
               <button onClick={handleBan}>밴</button>
