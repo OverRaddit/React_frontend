@@ -233,6 +233,13 @@ const Navigation: FC = () => {
         setChannels(newChannels);
       });
 
+      mySocket.chatSocket.on('channel-deleted', ({ roomName, owner }) => {
+        console.log('roomName, owner : ', roomName, owner);
+        setModalMessage(`Channel ${roomName}의 방장 ${owner.nickname}이/가 채널을 삭제했습니다.`);
+        // 채널리스트에서 해당 채팅방을 삭제합니다.
+        setChannels(channels.filter((channel) => channel.name !== roomName));
+      });
+
     return () => {
       mySocket.chatSocket.off('owner-granted');
       mySocket.chatSocket.off('admin-granted');
@@ -242,6 +249,7 @@ const Navigation: FC = () => {
       mySocket.chatSocket.off('chat');
       mySocket.chatSocket.off('user-muted');
       mySocket.chatSocket.off('user-dm');
+      mySocket.chatSocket.off('channel-deleted');
     };
     }
   }, [myData, initSocket, mySocket, channels, setChannels]);
