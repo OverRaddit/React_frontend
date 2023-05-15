@@ -119,10 +119,9 @@ export const MyContextProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       console.log('user-channel-invited res: ', response);
       const { channel, clientUser } = response;
       const channelType = 2;
-      const transformedUser = { ...clientUser, intraId: clientUser.intraid };
       setMyInvite((prevInvites) => {
         // 이미 동일한 type과 user를 가진 요소가 있는지 확인
-        if (prevInvites.some(invite => invite.type === channelType && invite.user.intraid === transformedUser.intraId)) {
+        if (prevInvites.some(invite => invite.type === channelType && invite.user.intraid === clientUser.intraid)) {
           console.log('The invite already exists!');
           return prevInvites;
         }
@@ -130,7 +129,7 @@ export const MyContextProvider: React.FC<{ children: React.ReactNode }> = ({ chi
           ...prevInvites,
           {
             type: channelType,
-            user: transformedUser,
+            user: clientUser,
             channel,
           },
         ];
@@ -227,10 +226,9 @@ export const MyContextProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
     GameSocket.on('invite message', (response) => {
       const { user, gameType } = response;
-      const transformedUser = { ...user, intraId: user.intraid };
       setMyInvite((prevInvites) => {
         // 이미 동일한 type과 user를 가진 요소가 있는지 확인
-        if (prevInvites.some(invite => invite.type === gameType && invite.user.intraid === transformedUser.intraId)) {
+        if (prevInvites.some(invite => invite.type === gameType && invite.user.intraid === user.intraid)) {
           console.log('The invite already exists!');
           return prevInvites;
         }
@@ -240,7 +238,7 @@ export const MyContextProvider: React.FC<{ children: React.ReactNode }> = ({ chi
           ...prevInvites,
           {
             type: gameType,
-            user: transformedUser,
+            user: user,
           },
         ];
       });

@@ -4,6 +4,7 @@ import { CreateChannelForm } from 'components/chat/createChannelForm';
 import { ChannelLookup } from 'components/chat/ChannelLookUp';
 import { useMyContext } from 'MyContext';
 import { MyChannel } from 'navigation/interfaces/Channel.interface';
+import { useParams } from 'react-router-dom';
 
 
 interface Props {
@@ -11,19 +12,27 @@ interface Props {
 
 
 const XPage: React.FC<Props> = () => {
-  const [currentChat, setCurrentChat] = useState('');
-  const [chatRooms, setChatRooms] = useState<MyChannel[]>([]);
-  const { myData, setMyData, friends, setFriends, channels, setChannels,
-	 mySocket, mapChannels, setMapChannels, currentChannel, setCurrentChannel, } = useMyContext();
-  const [userChatRooms, setUserChatRooms] = useState<MyChannel[]>(channels);
-
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalMessage, setModalMessage] = useState('');
-  const [selectedChannel, setSelectedChannel] = useState('');
-
-  const chatHistoryRef = useRef<HTMLDivElement>(null);
+	const [currentChat, setCurrentChat] = useState('');
+	const [chatRooms, setChatRooms] = useState<MyChannel[]>([]);
+	const { myData, setMyData, friends, setFriends, channels, setChannels,
+		mySocket, mapChannels, setMapChannels, currentChannel, setCurrentChannel, } = useMyContext();
+	const [userChatRooms, setUserChatRooms] = useState<MyChannel[]>(channels);
+	
+	const [isModalOpen, setIsModalOpen] = useState(false);
+	const [modalMessage, setModalMessage] = useState('');
+	const [selectedChannel, setSelectedChannel] = useState('');
+	const chatHistoryRef = useRef<HTMLDivElement>(null);
+	let { roomname } = useParams<{ roomname?: string }>();
 
   useEffect(() => {
+	if (!roomname) {
+		setCurrentChannel(null);
+	}
+	else
+	{
+		const updatedChannel = channels.find((channel) => channel.name === roomname);
+		setCurrentChannel(updatedChannel || null);
+	}
 	console.log('channels: ', channels);
 	if (channels.length === 0) return;
 
@@ -159,7 +168,7 @@ const XPage: React.FC<Props> = () => {
 			  </Link> */}
 			</div>
 		  )}
-		  <label>
+		  {/* <label>
 			채팅방 목록:
 			<select value={currentChannel?.name} onChange={switchRoom}>
 			  {channels.map((channel) => {
@@ -171,7 +180,7 @@ const XPage: React.FC<Props> = () => {
 			  })}
 			</select>
 			<button onClick={leftChannel}>방나가기</button>
-		  </label>
+		  </label> */}
 		  <ul>
 			{currentChannel?.chatHistory?.map((chat, index) => (
 			  <li key={index}>{chat}</li>

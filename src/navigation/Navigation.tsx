@@ -1,6 +1,6 @@
 import { FC, useEffect } from 'react';
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Modal from 'react-modal';
 import { MyChannel, MyFriend } from './interfaces/interfaces';
 import './Navigation.css';
@@ -34,9 +34,11 @@ const Navigation: FC = () => {
 
   const closeInviteModal = () => {
     setInviteModalOpen(false);
+    setInvitedFriends({});
   };
 
   const handleChatInvite = (channel:MyChannel) => {
+    console.log(channel);
     openInviteModal(channel.name);
   };
 
@@ -45,7 +47,7 @@ const Navigation: FC = () => {
       userId: friendId,
       roomName: channelName,
     };
-
+    console.log(data);
     mySocket?.chatSocket.emit('channel-invite', data, (response:any) => {
       console.log('invite response:', response);
       setInvitedFriends(prev => ({
@@ -95,7 +97,7 @@ const Navigation: FC = () => {
               ...channel,
               users: channel.users.map((channelUser) => {
                 if (channelUser.id === user.id) {
-                  return { ...channelUser, isOwner: true };
+                  return { ...channelUser, isowner: true };
                 }
                 if (channelUser.isowner) {
                   return { ...channelUser, isowner: false, isadmin: false };
@@ -244,7 +246,7 @@ const Navigation: FC = () => {
       mySocket.chatSocket.off('user-dm');
     };
     }
-  }, [myData, initSocket, mySocket, channels, setChannels]);
+  }, [myData, initSocket, mySocket, channels, setChannels, setCurrentChannel]);
 
   const openModal = (channel: MyChannel) => {
     setChannelToLeave(channel);
@@ -253,10 +255,24 @@ const Navigation: FC = () => {
 
   const confirmLeave = () => {
     if (channelToLeave && mySocket) {
-      setChannels(channels.filter((channel) => channel.id !== channelToLeave.id));
-      mySocket.chatSocket.emit('leftChannel', { roomName: channelToLeave.name });
-    }
-    setIsModalOpen(false);
+      const data = {
+        roomName: channelToLeave?.name,
+      };
+      if (channelToLeave.kind === 3) {
+        setChannels(channels.filter((channel) => channel.id !== channelToLeave.id));
+        setIsModalOpen(false);
+        return;
+      }
+      mySocket?.chatSocket.emit('leftChannel', data, (response: any) => {
+        console.log('leftChannel: ', response);
+        setModalMessage(response.message);
+        setIsModalOpen(false);
+        
+        if (!response.success) {
+        return;
+      }
+        setChannels(channels.filter((channel) => channel.id !== channelToLeave.id));
+      });}
   };
 
   const handleLeaveChannel = (channelId: any) => {
@@ -287,9 +303,13 @@ const Navigation: FC = () => {
   //   })
   // };
 
+  const location = useLocation();
   const onClickChannelName = (channel:MyChannel) => {
-    setCurrentChannel(channel);
-    navigate('/');
+    const newPath = `/main/${channel.name}`;
+    
+    if (location.pathname !== newPath) {
+      navigate(newPath);
+    }
   }
 
   const renderChannelList = () => {
