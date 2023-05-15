@@ -122,7 +122,7 @@ export const MyContextProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       const transformedUser = { ...clientUser, intraId: clientUser.intraid };
       setMyInvite((prevInvites) => {
         // 이미 동일한 type과 user를 가진 요소가 있는지 확인
-        if (prevInvites.some(invite => invite.type === channelType && invite.user.intraId === transformedUser.intraId)) {
+        if (prevInvites.some(invite => invite.type === channelType && invite.user.intraid === transformedUser.intraId)) {
           console.log('The invite already exists!');
           return prevInvites;
         }
@@ -196,17 +196,33 @@ export const MyContextProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       });
     });
 
+    ChatSocket.on('user-state', (response) => {
+      const { userId, status } = response;
+      console.log('user-state res: ', response);
+
+      // setChannels((prevChannels) => {
+      //   return prevChannels.map((channel) => {
+      //     if (channel.name === roomName) {
+      //       return {
+      //         ...channel,
+      //         users: channel.users.filter(user => user.id !== clientUser.id),
+      //       };
+      //     }
+      //     return channel;
+      //   });
+      // });
+    });
 
     GameSocket.on('invite message', (response) => {
       const { user, gameType } = response;
       const transformedUser = { ...user, intraId: user.intraid };
       setMyInvite((prevInvites) => {
         // 이미 동일한 type과 user를 가진 요소가 있는지 확인
-        if (prevInvites.some(invite => invite.type === gameType && invite.user.intraId === transformedUser.intraId)) {
+        if (prevInvites.some(invite => invite.type === gameType && invite.user.intraid === transformedUser.intraId)) {
           console.log('The invite already exists!');
           return prevInvites;
         }
-        
+
         // 중복이 없을 경우 새로운 요소를 추가
         return [
           ...prevInvites,
@@ -216,10 +232,10 @@ export const MyContextProvider: React.FC<{ children: React.ReactNode }> = ({ chi
           },
         ];
       });
-    }); 
+    });
 
     setMySocket({ chatSocket:ChatSocket, gameSocket:GameSocket });
-  }; 
+  };
 
   const removeInvite = () => {
     setMyInvite(myInvite.slice(1));
