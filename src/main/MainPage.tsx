@@ -83,7 +83,7 @@ const MainPage: React.FC<Props> = ({ onShowNavigation }) => {
         <button className="queue-button" onClick={joinNormalQueue}>기본</button>
         <button className="queue-button" onClick={joinExtendedQueue}>확장</button>
       </div>
-
+      <XPage />
       {isInQueue && (
         <>
           <div className="overlay"></div>
