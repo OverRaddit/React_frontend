@@ -335,7 +335,7 @@ const Navigation: FC = () => {
 
   const findMyChannelData = (channel: any) => {
     return channel.users.find(
-      (user: any) => user.intraId === myData?.intraid
+      (user: any) => user.intraid === myData?.intraid
     );
   };
 
