@@ -159,21 +159,24 @@ const Navigation: FC = () => {
       });
 
       mySocket.chatSocket.on('user-banned', ({ roomName, user }) => {
-      if (user.intraid === myData?.intraid) {
-        setModalMessage('You have been banned of the ' + roomName);
-        setChannels(channels.filter((channel) => channel.name !== roomName));
-      }
-      setChannels(
-        channels.map((channel) => {
-          if (channel.name === roomName) {
-            return {
-              ...channel,
-              users: channel.users.filter((channelUser) => channelUser.intraid !== user.intraid),
-            };
-          }
-          return channel;
-        })
-      );
+        if (user.intraid === myData?.intraid) {
+          setModalMessage('You have been banned from the ' + roomName);
+          // 채널리스트에서 해당 채팅방을 삭제합니다.
+          setChannels(channels.filter((channel) => channel.name !== roomName));
+        } else {
+          // 다른 사용자가 추방된 경우, 해당 사용자만 채널리스트에서 삭제합니다.
+          setChannels(
+            channels.map((channel) => {
+              if (channel.name === roomName) {
+                return {
+                  ...channel,
+                  users: channel.users.filter((channelUser) => channelUser.intraid !== user.intraid),
+                };
+              }
+              return channel;
+            })
+          );
+        }
       });
 
       mySocket.chatSocket.on('user-kicked', ({ roomName, user }) => {
