@@ -3,7 +3,7 @@ type UserStatus = 'online' | 'in-game' | 'in-queue' | 'offline';
 export interface MyUser {
 	id: number;
 	nickname: string;
-	intraId: string;
+	intraid: string;
 	socketId: string;
     avatar: string;
 	status: UserStatus;

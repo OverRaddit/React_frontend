@@ -20,7 +20,7 @@ const ChatUserModal: FC<ChatUserModalProps> = ({
   isOpen,
   channelId,
 }) => {
-  const isMe = myChannelData.intraId === user.intraId;
+  const isMe = myChannelData.intraid === user.intraid;
   const { mySocket } = useContext(MyContext);
 
   const handleDelegate = () => {
@@ -78,7 +78,7 @@ const handleMute = () => {
           <img src={user.avatar} alt={`${user.nickname}'s avatar`} />
           <h2>{user.nickname}</h2>
       </div>
-      <Link to={`/profile/${user.intraId}`}>
+      <Link to={`/profile/${user.intraid}`}>
         <button onClick={onClose}>프로필 보기</button>
       </Link>
       {!isMe && (

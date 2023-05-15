@@ -7,11 +7,10 @@ import { MyChannel } from 'navigation/interfaces/Channel.interface';
 
 
 interface Props {
-	onShowNavigation: () => void;
   }
 
 
-const XPage: React.FC<Props> = ({ onShowNavigation }) => {
+const XPage: React.FC<Props> = () => {
   const [currentChat, setCurrentChat] = useState('');
   const [chatRooms, setChatRooms] = useState<MyChannel[]>([]);
   const { myData, setMyData, friends, setFriends, channels, setChannels,
@@ -25,7 +24,6 @@ const XPage: React.FC<Props> = ({ onShowNavigation }) => {
   const chatHistoryRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-	onShowNavigation();
 	console.log('channels: ', channels);
 	if (channels.length === 0) return;
 
@@ -121,7 +119,12 @@ const XPage: React.FC<Props> = ({ onShowNavigation }) => {
 
   return (
 	<div className="x-page">
+	<br></br>
+	<br></br>
+	<br></br>
+	<br></br>
     <h1>Test.tsx</h1>
+	{/* DEBUG PANNEL */}
 	  <button onClick={debugAllState}>debugAllState</button>
 	  <button onClick={() => console.log('channels : ', channels)}>channels</button>
 	  <button onClick={() => console.log('currentRoom : ', currentChannel)}>currentRoom</button>
@@ -140,10 +143,7 @@ const XPage: React.FC<Props> = ({ onShowNavigation }) => {
 	  </button>
 	  <button onClick={() => console.log(myData)}>myData확인버튼</button>
 	  <h1>{channels.length === 0 ? 'You are not join any room!' : currentChannel?.name}</h1>
-	  <div className="x-page-top">
-		<button>Normal Button</button>
-		<button>Expand Button</button>
-	  </div>
+
 	  <hr></hr>
 	  <div className="x-page-bottom">
 		<div className="chat-history-box" ref={chatHistoryRef}>

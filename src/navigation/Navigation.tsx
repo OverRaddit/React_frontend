@@ -163,7 +163,7 @@ const Navigation: FC = () => {
           if (channel.name === roomName) {
             return {
               ...channel,
-              users: channel.users.filter((channelUser) => channelUser.intraId !== user.intraid),
+              users: channel.users.filter((channelUser) => channelUser.intraid !== user.intraid),
             };
           }
           return channel;
@@ -183,7 +183,7 @@ const Navigation: FC = () => {
               if (channel.name === roomName) {
                 return {
                   ...channel,
-                  users: channel.users.filter((channelUser) => channelUser.intraId !== user.intraid),
+                  users: channel.users.filter((channelUser) => channelUser.intraid !== user.intraid),
                 };
               }
               return channel;
