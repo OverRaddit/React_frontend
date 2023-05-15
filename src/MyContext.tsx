@@ -282,6 +282,12 @@ export const MyContextProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       });
     });
 
+    GameSocket.on('clickbackspace', (response) => {
+      ChatSocket.emit('state', { userId: myData?.id, status: 'online' }, (response: EventResponse) => {
+        console.log('state: ', response);
+      })
+    });
+
     setMySocket({ chatSocket:ChatSocket, gameSocket:GameSocket });
   };
 
