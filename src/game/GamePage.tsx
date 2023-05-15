@@ -199,7 +199,7 @@ function Game({ onHideNavigation }: Props) {
           <canvas ref={canvasRef} width={canvasMaxWidth} height={canvasMaxHeight} />
           {/* <button onClick={turnOnState}>pop up modal</button> */}
           <GameModal isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} navigate={navigate} firstScore={pos1.score} secondScore={pos2.score} modalMessage={modalMessage}></GameModal>
-					<p>패들을 이동해서 공을 상대에게 보내세요. 상대가 공을 받지 못하게 해서 점수를 얻을 수 있습니다<div className=""></div> 5점을 먼저 얻으면 승리합니다!</p>
+					<p>패들을 이동해서 공을 상대에게 보내세요. 상대가 공을 받지 못하게 해서 점수를 얻을 수 있습니다. 5점을 먼저 얻으면 승리합니다!</p>
         </div>
         <div className='game-window-container'>
           <GameWindow leftUser={gameData.leftUser} rightUser={gameData.rightUser}></GameWindow>
