@@ -9,11 +9,11 @@ const InviteModal: FC = () => {
     switch (type) {
       case 0:
         mySocket?.gameSocket.emit('Accept invitation',  {myIntraId: myData?.intraid, oppintraId: myInvite[0].user.intraid,  gameType:0} );
-        setMyInvite(myInvite.slice(1));
+        removeInvite();
         break;
       case 1:
         mySocket?.gameSocket.emit('Accept invitation',  {myIntraId: myData?.intraid, oppintraId: myInvite[0].user.intraid,  gameType:1} );
-        setMyInvite(myInvite.slice(1));
+        removeInvite()
         break;
       case 2:
         const data: any = myInvite[0];
@@ -31,8 +31,8 @@ const InviteModal: FC = () => {
           setChannels([...channels, newChannel]);
           setCurrentChannel(newChannel);
         });
-        setMyInvite(myInvite.slice(1));
-      break;
+        removeInvite();
+        break;
 
       default:
         break;
@@ -48,10 +48,9 @@ const InviteModal: FC = () => {
       <h2>Invitation</h2>
       {myInvite[0] && (
         <>
-          {myInvite[0].type === 0 && <p>Normal Game invitation has arrived.</p>}
-          {myInvite[0].type === 1 && <p>Extension Game invitation has arrived.</p>}
-          {myInvite[0].type === 2 && <p>Content for type 2</p>}
-          {myInvite[0].type === 3 && <p>Content for type 3</p>}
+          {myInvite[0].type === 0 && <p>{myInvite[0].user.nickname}'s Normal Game invitation has arrived.</p>}
+          {myInvite[0].type === 1 && <p>{myInvite[0].user.nickname}'s Extension Game invitation has arrived.</p>}
+          {myInvite[0].type === 2 && <p>Chat room invitation sent by {myInvite[0].user.nickname} has arrived.</p>}
         </>
       )}
       <button onClick={() => handleEvent(myInvite[0].type)}>Accept</button>

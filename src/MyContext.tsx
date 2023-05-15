@@ -257,7 +257,7 @@ export const MyContextProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   };
 
   const removeInvite = () => {
-    setMyInvite(myInvite.slice(1));
+    setMyInvite(myInvite.filter(invite => !(invite.user === myInvite[0]?.user && invite.type === myInvite[0]?.type)));
   };
 
   const value = {
