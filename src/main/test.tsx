@@ -24,15 +24,18 @@ const XPage: React.FC<Props> = () => {
 	const chatHistoryRef = useRef<HTMLDivElement>(null);
 	let { roomname } = useParams<{ roomname?: string }>();
 
+	useEffect(() => {
+		if (!roomname) {
+			setCurrentChannel(null);
+		}
+		else
+		{
+			const updatedChannel = channels.find((channel) => channel.name === roomname);
+			setCurrentChannel(updatedChannel || null);
+		}
+	}, [roomname]);
+
   useEffect(() => {
-	if (!roomname) {
-		setCurrentChannel(null);
-	}
-	else
-	{
-		const updatedChannel = channels.find((channel) => channel.name === roomname);
-		setCurrentChannel(updatedChannel || null);
-	}
 	console.log('channels: ', channels);
 	if (channels.length === 0) return;
 
