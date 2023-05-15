@@ -200,6 +200,18 @@ export const MyContextProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       const { userId, status } = response;
       console.log('user-state res: ', response);
 
+      setFriends((prevFriends) => {
+        return prevFriends.map((friend) => {
+          if (friend.id === userId) {
+            return {
+              ...friend,
+              status
+            };
+          }
+          return friend;
+        })
+      })
+
       // setChannels((prevChannels) => {
       //   return prevChannels.map((channel) => {
       //     if (channel.name === roomName) {

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext, useRef } from 'react';
-import { MyContext } from '../MyContext';
+import { EventResponse, MyContext } from '../MyContext';
 import './MainPage.css';
 import { useNavigate } from 'react-router-dom';
 import { Socket } from 'socket.io-client';
@@ -24,6 +24,9 @@ const MainPage: React.FC<Props> = ({ onShowNavigation }) => {
         if (state === 200) {
           console.log("queue에 삽입되었습니다.");
           setIsInQueue(true);
+          mySocket.chatSocket.emit('state', { userId: myData?.id, status: 'in-queue' }, (response: EventResponse) => {
+            console.log('state: ', response);
+          })
         }
       };
       const handleMatchingComplete = (res: any) => {
@@ -31,6 +34,9 @@ const MainPage: React.FC<Props> = ({ onShowNavigation }) => {
         console.log(mySocket.gameSocket);
 
         setIsInQueue(false);
+        mySocket.chatSocket.emit('state', { userId: myData?.id, status: 'in-game' }, (response: EventResponse) => {
+          console.log('state: ', response);
+        })
         navigate('/game', { state: { gameData: res } });
       };
 
@@ -66,6 +72,9 @@ const MainPage: React.FC<Props> = ({ onShowNavigation }) => {
       if (res.state === 200) {
         setIsInQueue(false);
 	      document.body.classList.remove('modal-open');
+        mySocket.chatSocket.emit('state', { userId: myData?.id, status: 'online' }, (response: EventResponse) => {
+          console.log('state: ', response);
+        })
       }
       console.log(res.message);
     });

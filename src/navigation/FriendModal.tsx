@@ -45,6 +45,11 @@ const FriendModal: React.FC<FriendModalProps> = ({ friend, onClose }) => {
     console.log('handleDM:', data);
     console.log('target userid:', friend.id);
     mySocket?.chatSocket.emit('createDm', { userId: friend.id }, (response: any) => {
+      if (!response.success) {
+        console.log(response.message);
+        return;
+      }
+
       console.log(response);
       if (channels.some(channel => channel.name === response.data[0].name)) {
         console.log('The channel already exists!');
@@ -77,16 +82,16 @@ const FriendModal: React.FC<FriendModalProps> = ({ friend, onClose }) => {
         </Link>
         <button
         onClick={handleDM}
-        // className={isDMEnabled ? '' : 'disabled'}
-        // disabled={!isDMEnabled}
+        className={isDMEnabled ? '' : 'disabled'}
+        disabled={!isDMEnabled}
         >
             DM 보내기
           </button>
         <div className="invite-buttons">
           <div>
             <button
-              // className={isInviteEnabled ? '' : 'disabled'}
-              // disabled={!isInviteEnabled}
+              className={isInviteEnabled ? '' : 'disabled'}
+              disabled={!isInviteEnabled}
               onClick={sendInvite0}
             >
               기본
@@ -94,8 +99,8 @@ const FriendModal: React.FC<FriendModalProps> = ({ friend, onClose }) => {
           </div>
           <div>
             <button
-              // className={isInviteEnabled ? '' : 'disabled'}
-              // disabled={!isInviteEnabled}
+              className={isInviteEnabled ? '' : 'disabled'}
+              disabled={!isInviteEnabled}
               onClick={sendInvite1}
             >
               확장

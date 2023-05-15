@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import './GamePage.css';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useMyContext } from 'MyContext';
+import { EventResponse, useMyContext } from 'MyContext';
 import { drawRect, drawCircle, drawText, drawCircleBall } from './painting';
 import { GameWindow } from 'UserProfile/GameWidow';
 import { GameModal } from 'UserProfile/GameModal';
@@ -36,7 +36,7 @@ function Game({ onHideNavigation }: Props) {
 	const [modalMessage, setModalMessage] = useState('');
 
   const location = useLocation();
-  const { mySocket } = useMyContext();
+  const { mySocket, myData } = useMyContext();
   const gameData = location.state?.gameData.dataObject;
   // console.log('gameData : ', gameData);
   const windowKeyDownHandler = (e: KeyboardEvent) => {
@@ -123,6 +123,9 @@ function Game({ onHideNavigation }: Props) {
       if (state == 200) {
         console.log('game over! ', player, ' wins.');
         setIsModalOpen(true);
+        mySocket.chatSocket.emit('state', { userId: myData?.id, status: 'online' }, (response: EventResponse) => {
+          console.log('state: ', response);
+        })
 				console.log(player, pos1.score, pos2.score);
 				const msg = player + ' wins!';
 				setModalMessage(msg);
@@ -204,6 +207,5 @@ function Game({ onHideNavigation }: Props) {
     )
   );
 }
-  
+
 export default Game;
-  
