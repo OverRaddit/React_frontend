@@ -38,7 +38,6 @@ function Game({ onHideNavigation }: Props) {
   const location = useLocation();
   const { mySocket, myData } = useMyContext();
   const gameData = location.state?.gameData.dataObject;
-  // console.log('gameData : ', gameData);
   const windowKeyDownHandler = (e: KeyboardEvent) => {
     handleKeyDown(e as unknown as React.KeyboardEvent<HTMLDivElement>);
   };
@@ -48,10 +47,10 @@ function Game({ onHideNavigation }: Props) {
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (!keyDown) {
       if (e.key === 'ArrowUp') {
-        console.log('Player: ', gameData.roomName, playerId, "press up");
+        // console.log('Player: ', gameData.roomName, playerId, "press up");
         mySocket?.gameSocket.emit('handleKeyPressUp', { roomName: gameData.roomName, id: playerId });
       } else if (e.key === 'ArrowDown') {
-        console.log('Player: ', gameData.roomName, playerId, "press down");
+        // console.log('Player: ', gameData.roomName, playerId, "press down");
         mySocket?.gameSocket.emit('handleKeyPressDown', { roomName: gameData.roomName, id: playerId });
       }
       setKeyDown(true);
@@ -59,10 +58,10 @@ function Game({ onHideNavigation }: Props) {
   };
   const handleKeyUp = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (e.key === 'ArrowUp') {
-      console.log('Player: ', gameData.roomName, playerId, "relese up");
+      // console.log('Player: ', gameData.roomName, playerId, "relese up");
       mySocket?.gameSocket.emit('handleKeyRelUp', { roomName: gameData.roomName, id: playerId });
     } else if (e.key === 'ArrowDown') {
-      console.log('Player: ', gameData.roomName, playerId, "relese down");
+      // console.log('Player: ', gameData.roomName, playerId, "relese down");
       mySocket?.gameSocket.emit('handleKeyRelDown', { roomName: gameData.roomName, id: playerId });
     }
     setKeyDown(false);
@@ -117,16 +116,13 @@ function Game({ onHideNavigation }: Props) {
     setGameMode(gameData.gameType); // TODO: (gshim)님한테 체크 받아야 할 부분. 게임 모드 설정.
 
 		mySocket?.gameSocket.on('gameover', (data) => {
-			console.log('gameover event received : ', data);
       const { state, message, dataObject } = data;
       const { player } = dataObject;
       if (state == 200) {
-        console.log('game over! ', player, ' wins.');
         setIsModalOpen(true);
         mySocket.chatSocket.emit('state', { userId: myData?.id, status: 'online' }, (response: EventResponse) => {
-          console.log('state: ', response);
+          // console.log('state: ', response);
         })
-				console.log(player, pos1.score, pos2.score);
 				const msg = player + ' wins!';
 				setModalMessage(msg);
       }
@@ -147,8 +143,6 @@ function Game({ onHideNavigation }: Props) {
       else
         player = 2;
       mySocket?.gameSocket.emit('playerBackspace', { roomName: gameData.roomName, nickName: getCurrentUsername(player) });
-      //유저의 status를 수정해주어야 함.
-      console.log("Your back or forward has been detected.");
       backToMain();
     };
 
@@ -174,30 +168,11 @@ function Game({ onHideNavigation }: Props) {
     };
   }, [pos1, pos2, ball, onHideNavigation]);
 
-  // useLayoutEffect(() => {
-  // if (mySocket?.gameSocket == null)
-  // {
-  // 	console.log('MySocket', mySocket);
-  // 	console.log('GameSocket', mySocket?.gameSocket);
-  // 	// window.alert('잘못된 접근입니다.');
-  // }
-  // else
-  // {
-  // 	console.log('정상 접근입니다.')
-  // }
-  // return () => {};
-  // }, []);
-  const turnOnState = () => {
-    setIsModalOpen(true);
-    console.log('turnOnState :', turnOnState);
-  };
-
   return (
     (mySocket?.gameSocket &&
       <div className='game-ui'>
         <div className='canvas-container'>
           <canvas ref={canvasRef} width={canvasMaxWidth} height={canvasMaxHeight} />
-          {/* <button onClick={turnOnState}>pop up modal</button> */}
           <GameModal isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} navigate={navigate} firstScore={pos1.score} secondScore={pos2.score} modalMessage={modalMessage}></GameModal>
 					<p>패들을 이동해서 공을 상대에게 보내세요. 상대가 공을 받지 못하게 해서 점수를 얻을 수 있습니다. 5점을 먼저 얻으면 승리합니다!</p>
         </div>
