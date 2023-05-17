@@ -149,19 +149,13 @@ const ProfilePage: React.FC<Props> = ({ onShowNavigation }) => {
 
   const onAddFriend = async () => {
     try {
-      await axios.post(
+      const response = await axios.post(
         'http://localhost:3000/friendlist',
         { friend: userData.intraid },
         { withCredentials: true }
       );
-
-      const newFriend: MyFriend = {
-        ...userData,
-        socketid: '',
-        status: 'offline',
-      };
-
-      setFriends([...friends, newFriend]);
+      console.log('onAddFriend:', response.data);
+      setFriends([...friends, response.data]);
     } catch (error) {
       console.error('Failed to add friend:', error);
     }
