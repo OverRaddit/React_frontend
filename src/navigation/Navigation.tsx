@@ -38,7 +38,7 @@ const Navigation: FC = () => {
   };
 
   const handleChatInvite = (channel:MyChannel) => {
-    console.log(channel);
+    //console.log(channel);
     openInviteModal(channel.name);
   };
 
@@ -47,9 +47,9 @@ const Navigation: FC = () => {
       userId: friendId,
       roomName: channelName,
     };
-    console.log(data);
+    //console.log(data);
     mySocket?.chatSocket.emit('channel-invite', data, (response:any) => {
-      console.log('invite response:', response);
+      //console.log('invite response:', response);
       setInvitedFriends(prev => ({
         ...prev,
         [friendId]: true,
@@ -201,13 +201,13 @@ const Navigation: FC = () => {
       });
 
       mySocket.chatSocket.on('chat', (response) => {
-        console.log('chat:', response);
+        //console.log('chat:', response);
 
         // response.user가 userBlackList에 존재하는지 검색한다.
         const blackedUser = userBlackList.find(user => user.id === response.user.id);
-        console.log('blackedUser: ',blackedUser);
+        //console.log('blackedUser: ',blackedUser);
         if (blackedUser !== undefined) {
-          console.log('이 메시지는 무시됩니다.')
+          //console.log('이 메시지는 무시됩니다.')
           return ;
         }
 
@@ -239,19 +239,19 @@ const Navigation: FC = () => {
       });
 
       mySocket.chatSocket.on('user-dm', (response) => {
-        console.log('user-dm: ', response);
-        console.log('channels: ', channels);
+        //console.log('user-dm: ', response);
+        //console.log('channels: ', channels);
         if (channels.some(channel => channel.name === response.name)) {
-          console.log('The channel already exists!');
+          //console.log('The channel already exists!');
           return;
         }
         const newChannels = [...channels, response];
-        console.log('newChannels: ', newChannels);
+        //console.log('newChannels: ', newChannels);
         setChannels(newChannels);
       });
 
       mySocket.chatSocket.on('channel-deleted', ({ roomName, owner }) => {
-        console.log('roomName, owner : ', roomName, owner);
+        //console.log('roomName, owner : ', roomName, owner);
         setModalMessage(`Channel ${roomName}의 방장 ${owner.nickname}이/가 채널을 삭제했습니다.`);
         // 채널리스트에서 해당 채팅방을 삭제합니다.
         setChannels(channels.filter((channel) => channel.name !== roomName));
@@ -287,7 +287,7 @@ const Navigation: FC = () => {
         return;
       }
       mySocket?.chatSocket.emit('leftChannel', data, (response: any) => {
-        console.log('leftChannel: ', response);
+        //console.log('leftChannel: ', response);
         setModalMessage(response.message);
         setIsModalOpen(false);
 
@@ -316,13 +316,13 @@ const Navigation: FC = () => {
   };
 
   // const handleChatInvite = (channel: any) => {
-  //   console.log(channel);
+  //   //console.log(channel);
   //   const data = {
   //     userId: '2',
   //     roomName: channel.name,
   //   };
   //   mySocket?.chatSocket.emit('channel-invite', data, (response : any) => {
-  //     console.log('invite response:', response);
+  //     //console.log('invite response:', response);
   //   })
   // };
 

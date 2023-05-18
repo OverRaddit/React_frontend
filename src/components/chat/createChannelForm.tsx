@@ -31,14 +31,14 @@ export function CreateChannelForm(props: CreateChannelFormProps) {
     };
 		if (data.kind == 1 && data.roomPassword == '')
 		{
-			console.log('You can\'t put void Password');
+			//console.log('You can\'t put void Password');
 			return ;
 		}
     mySocket?.chatSocket.emit('createChannel', data, (response: { success: boolean; data: any[] }) => {
       if (!response.success) return;
 
       const newChannel: MyChannel = response.data[0];
-      console.log('created Channel: ', newChannel);
+      //console.log('created Channel: ', newChannel);
 			//TODO : prevChannels를 사용하는 구조로 변경 필요, 현재는 임시로
 			setChannels([...channels, newChannel]);
 

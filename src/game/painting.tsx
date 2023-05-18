@@ -32,6 +32,6 @@ export function drawCircleBall(gameMode: number, ball: any, ctx: CanvasRendering
             drawCircle(ball.x, ball.y, ball.radius, "BLACK", ctx);
         }
     } else {                      // Error Detected!!!
-        console.log("drawCircle_extension function Error value Detected");
+        //console.log("drawCircle_extension function Error value Detected");
     }
 }

@@ -77,11 +77,11 @@ export const MyContextProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const navigate = useNavigate();
 
   const initSocket = () => {
-    console.log('@@@initSocket in MyContext (intraId, userId): ', myData!.intraid, ',', myData!.id.toString());
-    console.log(':)cookies:',cookies);
-    console.log(':)cookies userdata:',cookies.userData);
-    console.log(':)cookies intraid:',cookies.userData.intraid);
-    console.log(':)cookies id:',cookies.userData.id.toString());
+    //console.log('@@@initSocket in MyContext (intraId, userId): ', myData!.intraid, ',', myData!.id.toString());
+    //console.log(':)cookies:',cookies);
+    //console.log(':)cookies userdata:',cookies.userData);
+    //console.log(':)cookies intraid:',cookies.userData.intraid);
+    //console.log(':)cookies id:',cookies.userData.id.toString());
     const ChatSocket = io('http://localhost:4242/chat', {
       extraHeaders: {
         Authorization: `Bearer ${cookies.session_key}`,
@@ -101,22 +101,23 @@ export const MyContextProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     });
 
     ChatSocket.on('disconnect', () => {
-      console.log('Disconnected');
+      //console.log('Disconnected');
       navigate('/login');
 
     });
     GameSocket.on('disconnect', () => {
-      console.log('Disconnected');
+      //console.log('Disconnected');
       navigate('/login');
     });
     ChatSocket.on('initChannels', (response: EventResponse) => {
-      console.log("chating 초기화", response);
-      if (!response.success) console.log(response.message);
-      else {
+      //console.log("chating 초기화", response);
+      // if (!response.success) //console.log(response.message);
+      // else {
+      if (response.success){
         response.data.forEach((channel: MyChannel) => {
           mapChannels.set(channel.name, channel);
         })
-        //console.log('mapChannels: ', mapChannels);
+        ////console.log('mapChannels: ', mapChannels);
         const X = response.data.map((channel) => {
           return { ...channel, chatHistory: [] }
         });
@@ -126,33 +127,33 @@ export const MyContextProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     });
 
     ChatSocket.on('getBlacklist', (response: EventResponse) => {
-      console.log("getBlacklist", response);
-      if (!response.success) console.log(response.message);
+      //console.log("getBlacklist", response);
+      // if (!response.success) //console.log(response.message);
 
       // setUserBlackList(response.data);
       const userBlackList = response.data.map((user) => {
         return user.userId3;
       });
       setUserBlackList(userBlackList);
-      console.log('userBlackList:', userBlackList);
+      //console.log('userBlackList:', userBlackList);
     });
 
     GameSocket.on('connect', () => {
-      console.log("Game socket Id", GameSocket.id);
+      //console.log("Game socket Id", GameSocket.id);
     });
 
     ChatSocket.on('auth_error', (response) => {
-      console.log(response);
+      //console.log(response);
     });
 
     ChatSocket.on('user-channel-invited', (response) => {
-      console.log('user-channel-invited res: ', response);
+      //console.log('user-channel-invited res: ', response);
       const { channel, clientUser } = response;
       const channelType = 2;
       setMyInvite((prevInvites) => {
         // 이미 동일한 type과 user를 가진 요소가 있는지 확인
         if (prevInvites.some(invite => invite.type === channelType && invite.user.intraid === clientUser.intraid)) {
-          console.log('The invite already exists!');
+          //console.log('The invite already exists!');
           return prevInvites;
         }
         return [
@@ -167,9 +168,9 @@ export const MyContextProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     });
 
     ChatSocket.on('user-join', (response) => {
-      console.log('user-join from MyContext');
+      //console.log('user-join from MyContext');
       const { roomName, clientUser } = response;
-      console.log('user-join res: ', response);
+      //console.log('user-join res: ', response);
 
       setChannels((prevChannels) => {
         return prevChannels.map((channel) => {
@@ -186,7 +187,7 @@ export const MyContextProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
     ChatSocket.on('user-left', (response) => {
       const { roomName, clientUser } = response;
-      console.log('user-left res: ', response);
+      //console.log('user-left res: ', response);
 
       setChannels((prevChannels) => {
         return prevChannels.map((channel) => {
@@ -203,13 +204,13 @@ export const MyContextProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
     ChatSocket.on('dm', (response) => {
       const { roomName, user, message } = response;
-      console.log('dm response:', response);
+      //console.log('dm response:', response);
 
       // response.user가 userBlackList에 존재하는지 검색한다.
       const blackedUser = userBlackList.find(user => user.id === response.user.id);
-      console.log('blackedUser: ',blackedUser);
+      //console.log('blackedUser: ',blackedUser);
       if (blackedUser !== undefined) {
-        console.log('이 메시지는 무시됩니다.')
+        //console.log('이 메시지는 무시됩니다.')
         return ;
       }
 
@@ -235,7 +236,7 @@ export const MyContextProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
     ChatSocket.on('user-state', (response) => {
       const { userId, status } = response;
-      console.log('user-state res: ', response);
+      //console.log('user-state res: ', response);
 
       setFriends((prevFriends) => {
         return prevFriends.map((friend) => {
@@ -267,7 +268,7 @@ export const MyContextProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       setMyInvite((prevInvites) => {
         // 이미 동일한 type과 user를 가진 요소가 있는지 확인
         if (prevInvites.some(invite => invite.type === gameType && invite.user.intraid === user.intraid)) {
-          console.log('The invite already exists!');
+          //console.log('The invite already exists!');
           return prevInvites;
         }
 
@@ -284,7 +285,7 @@ export const MyContextProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
     GameSocket.on('clickbackspace', (response) => {
       ChatSocket.emit('state', { userId: myData?.id, status: 'online' }, (response: EventResponse) => {
-        console.log('state: ', response);
+        //console.log('state: ', response);
       })
     });
 

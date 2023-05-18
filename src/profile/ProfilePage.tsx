@@ -59,7 +59,7 @@ const ProfilePage: React.FC<Props> = ({ onShowNavigation }) => {
       try {
         const response = await axios.get(`http://localhost:3000/matchhistory/${userId}`);
         setRecentMatches(response.data.slice(0, 5));
-        console.log(recentMatches[0]);
+        //console.log(recentMatches[0]);
       } catch (error) {
         console.error('Failed to fetch recent matches:', error);
       }
@@ -154,7 +154,7 @@ const ProfilePage: React.FC<Props> = ({ onShowNavigation }) => {
         { friend: userData.intraid },
         { withCredentials: true }
       );
-      console.log('onAddFriend:', response.data);
+      //console.log('onAddFriend:', response.data);
       setFriends([...friends, response.data]);
     } catch (error) {
       console.error('Failed to add friend:', error);

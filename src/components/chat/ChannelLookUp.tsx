@@ -23,7 +23,7 @@ export function ChannelLookup({
 
   useEffect(() => {
     mySocket?.chatSocket.on('getChannel', (response: MyChannel[]) => {
-      console.log('getChannel: ', response);
+      //console.log('getChannel: ', response);
       setChannelList(response);
     });
   }, [mySocket?.chatSocket]);
@@ -40,9 +40,9 @@ export function ChannelLookup({
 
   const handleLookupClick = () => {
     const kind = filterKind !== '' ? parseInt(filterKind) : null;
-    console.log('handleLookupClick!~');
+    //console.log('handleLookupClick!~');
     mySocket?.chatSocket.emit('getChannel', (response: Response) => {
-      console.log('getChannel Response: ', response);
+      //console.log('getChannel Response: ', response);
     });
   };
 
@@ -52,11 +52,11 @@ export function ChannelLookup({
 			setSelectedChannelName(channelName);
 			return ;
 		}
-    console.log(`Tried to join channel: ${channelName}`);
+    //console.log(`Tried to join channel: ${channelName}`);
     mySocket?.chatSocket?.emit('joinChannel', { userId: myData?.id, roomName: channelName, roomPassword: passwordInput }, (response: EventResponse) => {
-      console.log('joinChannel Response: ', response);
+      //console.log('joinChannel Response: ', response);
       if (!response.success) {
-        console.log('An error occurred.');
+        //console.log('An error occurred.');
         return;
       }
 
@@ -66,7 +66,7 @@ export function ChannelLookup({
       newChannel.showUserList = false;
 
       //setChannels([newChannel]);
-      console.log('next Channels: ', [...channels, newChannel]);
+      //console.log('next Channels: ', [...channels, newChannel]);
       setChannels([...channels, newChannel]);
 			setCurrentChannel(newChannel);
 			setSelectedChannelName('');
@@ -77,7 +77,7 @@ export function ChannelLookup({
 		setPasswordModal(false);
 		if (passwordInput == '')
 		{
-			console.log('You should input password!');
+			//console.log('You should input password!');
 			return ;
 		}
 		handleJoinClick(0, selectedChannelName);

@@ -25,42 +25,42 @@ const ChatUserModal: FC<ChatUserModalProps> = ({
 
   const handleDelegate = () => {
     mySocket?.chatSocket.emit('delegateChannel', { userId: user.id, roomName: channelId }, (response:any) => {
-      console.log(response);
+      //console.log(response);
     });
     onClose();
   };
 
 const handlePermission = () => {
   mySocket?.chatSocket.emit('permissionChannel', { userId: user.id, roomName: channelId }, (response:any) => {
-    console.log(response);
+    //console.log(response);
   });
   onClose();
 };
 
 const handleRevoke = () => {
   mySocket?.chatSocket.emit('revokeChannel', { userId: user.id, roomName: channelId }, (response:any) => {
-    console.log(response);
+    //console.log(response);
   });
   onClose();
 };
 
 const handleKick = () => {
   mySocket?.chatSocket.emit('kick', { userId: user.id, roomName: channelId }, (response:any) => {
-    console.log(response);
+    //console.log(response);
   });
   onClose();
 };
 
 const handleBan = () => {
   mySocket?.chatSocket.emit('ban', { userId: user.id, roomName: channelId }, (response:any) => {
-    console.log(response);
+    //console.log(response);
   });
   onClose();
 };
 
 const handleMute = () => {
   mySocket?.chatSocket.emit('mute', { userId: user.id, roomName: channelId }, (response:any) => {
-    console.log(response);
+    //console.log(response);
   });
   onClose();
 };

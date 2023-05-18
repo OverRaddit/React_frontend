@@ -36,7 +36,7 @@ const XPage: React.FC<Props> = () => {
 	}, [roomname]);
 
   useEffect(() => {
-	console.log('channels: ', channels);
+	//console.log('channels: ', channels);
 	if (channels.length === 0) return;
 
 	if (!currentChannel) {
@@ -52,7 +52,7 @@ const XPage: React.FC<Props> = () => {
 		const chatHistoryBox = chatHistoryRef.current;
 		if (chatHistoryBox){
 			const gap = chatHistoryBox.scrollHeight - chatHistoryBox.scrollTop;
-			console.log('gap: ', gap);
+			//console.log('gap: ', gap);
 			if (gap < 230)
 				chatHistoryBox.scrollTop = chatHistoryBox.scrollHeight;
 	}
@@ -66,14 +66,14 @@ const XPage: React.FC<Props> = () => {
 		e.preventDefault();
 		if (currentChat.trim() !== '') {
       if (currentChannel?.kind === 3) {
-        console.log('emit dm: user, message=', currentChannel?.owner, currentChat);
+        //console.log('emit dm: user, message=', currentChannel?.owner, currentChat);
         mySocket?.chatSocket.emit('dm', { user: currentChannel?.owner, message: currentChat });
       } else {
         mySocket?.chatSocket.emit('chat', { roomName: currentChannel?.name, message: currentChat });
       }
 
 			const channelIndex = channels.findIndex((channel) => channel.name === currentChannel?.name);
-			console.log('channelIndex: ', channelIndex);
+			//console.log('channelIndex: ', channelIndex);
 
 			if (channelIndex !== -1) {
 				const updatedChannel: MyChannel = {
@@ -87,7 +87,7 @@ const XPage: React.FC<Props> = () => {
 					...channels.slice(channelIndex + 1),
 				];
 
-				console.log('updatedChannels: ', updatedChannels);
+				//console.log('updatedChannels: ', updatedChannels);
 				setChannels(updatedChannels);
 			}
 
@@ -96,12 +96,12 @@ const XPage: React.FC<Props> = () => {
   };
 
   const leftChannel = () => {
-		console.log('방나가기 이벤트');
+		//console.log('방나가기 이벤트');
 		const data = {
 			roomName: currentChannel?.name,
 		};
 		mySocket?.chatSocket.emit('leftChannel', data, (response: any) => {
-			console.log('leftChannel: ', response);
+			//console.log('leftChannel: ', response);
 			setModalMessage(response.message);
 			setIsModalOpen(true);
 
@@ -112,8 +112,8 @@ const XPage: React.FC<Props> = () => {
   };
 
   const switchRoom = (event: React.ChangeEvent<HTMLSelectElement>) => {
-		console.log('switchRoom] chathistory: ');
-		console.log('switchRoom] channels:', channels);
+		//console.log('switchRoom] chathistory: ');
+		//console.log('switchRoom] channels:', channels);
 
 		const selectedRoomName = event.target.value;
 		const selectedChannel = channels.find((channel) => channel.name === selectedRoomName);
@@ -121,12 +121,12 @@ const XPage: React.FC<Props> = () => {
   };
 
   const debugAllState = () => {
-		console.log('---------------------------------------------');
-		console.log('currentChatHistory: ', currentChannel?.chatHistory);
-		console.log('currentChannel: ', currentChannel);
-		console.log('channels: ', channels);
-		console.log('selectedChannel: ', selectedChannel);
-		console.log('---------------------------------------------');
+		//console.log('---------------------------------------------');
+		//console.log('currentChatHistory: ', currentChannel?.chatHistory);
+		//console.log('currentChannel: ', currentChannel);
+		//console.log('channels: ', channels);
+		//console.log('selectedChannel: ', selectedChannel);
+		//console.log('---------------------------------------------');
   };
 
   return (
@@ -135,14 +135,13 @@ const XPage: React.FC<Props> = () => {
 	<br></br>
 	<br></br>
 	<br></br>
-    <h1>Test.tsx</h1>
-	{/* DEBUG PANNEL */}
+    {/* <h1>Test.tsx</h1>
 	  <button onClick={debugAllState}>debugAllState</button>
-	  <button onClick={() => console.log('channels : ', channels)}>channels</button>
-	  <button onClick={() => console.log('currentRoom : ', currentChannel)}>currentRoom</button>
+	  <button onClick={() => //console.log('channels : ', channels)}>channels</button>
+	  <button onClick={() => //console.log('currentRoom : ', currentChannel)}>currentRoom</button>
 	  <button
 		onClick={() =>
-		  console.log(
+		  //console.log(
 			'selectedRoomHistory : ',
 			channels.find((channel) => channel.name === selectedChannel)
 		  )
@@ -150,10 +149,10 @@ const XPage: React.FC<Props> = () => {
 	  >
 		currentChannel ChatHistory
 	  </button>
-	  <button onClick={() => console.log('currentChatHistory : ', currentChannel?.chatHistory)}>
+	  <button onClick={() => //console.log('currentChatHistory : ', currentChannel?.chatHistory)}>
 		currentChatHistory
 	  </button>
-	  <button onClick={() => console.log(myData)}>myData확인버튼</button>
+	  <button onClick={() => //console.log(myData)}>myData확인버튼</button> */}
 	  <h1>{channels.length === 0 ? 'You are not join any room!' : currentChannel?.name}</h1>
 
 	  <hr></hr>
@@ -167,7 +166,7 @@ const XPage: React.FC<Props> = () => {
 			  <h1>🚀 Modal 🚀</h1>
 			  <p className="scoreboard">{modalMessage}</p>
 			  {/* <Link to="/a">
-				<button className="go-main" onClick={()=>{console.log('click!')}}>메인 화면으로 돌아가기</button>
+				<button className="go-main" onClick={()=>{//console.log('click!')}}>메인 화면으로 돌아가기</button>
 			  </Link> */}
 			</div>
 		  )}

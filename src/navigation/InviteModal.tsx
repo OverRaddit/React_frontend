@@ -19,12 +19,12 @@ const InviteModal: FC = () => {
         const data: any = myInvite[0];
         mySocket?.chatSocket?.emit('invitedChannel', { userId: myData?.id, roomName: data?.channel?.roomname }, (response: EventResponse) => {
           if (!response.success) {
-            console.log('An error occurred.');
+            //console.log('An error occurred.');
             return;
           }
 
           const newChannel = response.data[0];
-          console.log(newChannel);
+          //console.log(newChannel);
           newChannel.setChatHistory = [];
           newChannel.showUserList = false;
 

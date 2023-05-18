@@ -47,10 +47,10 @@ function Game({ onHideNavigation }: Props) {
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (!keyDown) {
       if (e.key === 'ArrowUp') {
-        // console.log('Player: ', gameData.roomName, playerId, "press up");
+        // //console.log('Player: ', gameData.roomName, playerId, "press up");
         mySocket?.gameSocket.emit('handleKeyPressUp', { roomName: gameData.roomName, id: playerId });
       } else if (e.key === 'ArrowDown') {
-        // console.log('Player: ', gameData.roomName, playerId, "press down");
+        // //console.log('Player: ', gameData.roomName, playerId, "press down");
         mySocket?.gameSocket.emit('handleKeyPressDown', { roomName: gameData.roomName, id: playerId });
       }
       setKeyDown(true);
@@ -58,10 +58,10 @@ function Game({ onHideNavigation }: Props) {
   };
   const handleKeyUp = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (e.key === 'ArrowUp') {
-      // console.log('Player: ', gameData.roomName, playerId, "relese up");
+      // //console.log('Player: ', gameData.roomName, playerId, "relese up");
       mySocket?.gameSocket.emit('handleKeyRelUp', { roomName: gameData.roomName, id: playerId });
     } else if (e.key === 'ArrowDown') {
-      // console.log('Player: ', gameData.roomName, playerId, "relese down");
+      // //console.log('Player: ', gameData.roomName, playerId, "relese down");
       mySocket?.gameSocket.emit('handleKeyRelDown', { roomName: gameData.roomName, id: playerId });
     }
     setKeyDown(false);
@@ -121,7 +121,7 @@ function Game({ onHideNavigation }: Props) {
       if (state == 200) {
         setIsModalOpen(true);
         mySocket.chatSocket.emit('state', { userId: myData?.id, status: 'online' }, (response: EventResponse) => {
-          // console.log('state: ', response);
+          // //console.log('state: ', response);
         })
 				const msg = player + ' wins!';
 				setModalMessage(msg);

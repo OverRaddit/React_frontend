@@ -22,20 +22,20 @@ const MainPage: React.FC<Props> = ({ onShowNavigation }) => {
     if (mySocket) {
       const handleEnqueueComplete = (state: number) => {
         if (state === 200) {
-          console.log("queue에 삽입되었습니다.");
+          //console.log("queue에 삽입되었습니다.");
           setIsInQueue(true);
           mySocket.chatSocket.emit('state', { userId: myData?.id, status: 'in-queue' }, (response: EventResponse) => {
-            console.log('state: ', response);
+            //console.log('state: ', response);
           })
         }
       };
       const handleMatchingComplete = (res: any) => {
-        console.log("여긴가", res);
-        console.log(mySocket.gameSocket);
+        //console.log("여긴가", res);
+        //console.log(mySocket.gameSocket);
 
         setIsInQueue(false);
         mySocket.chatSocket.emit('state', { userId: myData?.id, status: 'in-game' }, (response: EventResponse) => {
-          console.log('state: ', response);
+          //console.log('state: ', response);
         })
         navigate('/game', { state: { gameData: res } });
       };
@@ -51,7 +51,7 @@ const MainPage: React.FC<Props> = ({ onShowNavigation }) => {
   }, [mySocket]);
 
   const joinNormalQueue = () => {
-    console.log("test", myData);
+    //console.log("test", myData);
     const intraId = myData?.intraid;
     const userId = myData?.id;
     mySocket?.gameSocket.emit('match', {gameType: 0, intraId:intraId, userId});
@@ -64,25 +64,25 @@ const MainPage: React.FC<Props> = ({ onShowNavigation }) => {
   };
 
   const cancelQueue = () => {
-    console.log("Cancelling queue");
+    //console.log("Cancelling queue");
     const intraId = myData?.intraid;
     const userId = myData?.id;
     mySocket?.gameSocket.emit('cancel queue', userId, (res:any) =>{
-      console.log(res);
+      //console.log(res);
       if (res.state === 200) {
         setIsInQueue(false);
 	      document.body.classList.remove('modal-open');
         mySocket.chatSocket.emit('state', { userId: myData?.id, status: 'online' }, (response: EventResponse) => {
-          console.log('state: ', response);
+          //console.log('state: ', response);
         })
       }
-      console.log(res.message);
+      //console.log(res.message);
     });
   };
 
 	const onCreateChannel = (data: any): void => {
-		console.log('data: ', data);
-		console.log('send onCreateChannel event');
+		//console.log('data: ', data);
+		//console.log('send onCreateChannel event');
 		mySocket?.chatSocket.emit('createChannel', data);
 	};
 
