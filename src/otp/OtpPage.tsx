@@ -3,6 +3,7 @@ import './OtpPage.css';
 import axios from 'axios';
 import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom';
+import { ConfigService } from '@nestjs/config';
 
 interface Props {
   onHideNavigation: () => void;
@@ -18,6 +19,7 @@ const OtpPage: React.FC<Props> = ({ onHideNavigation }) => {
   const [otp, setOtp] = useState('');
   const [isOtpIncorrect, setIsOtpIncorrect] = useState(false);
   const navigate = useNavigate();
+  const configService = new ConfigService();
 
   const handleOtpChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setOtp(e.target.value);
@@ -25,7 +27,8 @@ const OtpPage: React.FC<Props> = ({ onHideNavigation }) => {
 
   const handleVerifyButtonClick = async () => {
     try {
-      const response = await axios.post('http://localhost:3000/otp', { otp_key: otp }, { withCredentials: true});
+      // const response = await axios.post('http://localhost:3000/otp', { otp_key: otp }, { withCredentials: true});
+      const response = await axios.post(`${configService.get<string>('IP_ADDRESS')}:3000/otp`, { otp_key: otp }, { withCredentials: true});
       if (response.status >= 200 && response.status < 300) {
         navigate('/');
       }      

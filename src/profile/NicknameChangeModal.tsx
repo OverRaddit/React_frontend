@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
 import axios from 'axios';
+import { ConfigService } from '@nestjs/config';
 
 interface NicknameChangeModalProps {
   isOpen: boolean;
@@ -44,11 +45,12 @@ const NicknameChangeModal: React.FC<NicknameChangeModalProps> = ({
       setIsAnonymous(false);
     }
   };
-
+  const configService = new ConfigService();
   const handleSubmit = async () => {
     if (!isAnonymous && nickname !== '') {
       try {
-        const response = await axios.post('http://localhost:3000/user/join', { nickname: nickname }, { withCredentials: true });
+        // const response = await axios.post('http://localhost:3000/user/join', { nickname: nickname }, { withCredentials: true });
+        const response = await axios.post(`${configService.get<string>('IP_ADDRESS')}:3000/user/join`, { nickname: nickname }, { withCredentials: true });
         if (response.status >= 200 && response.status < 300) {
           onRequestClose();
           // Call the onNicknameChange callback

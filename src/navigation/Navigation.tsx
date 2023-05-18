@@ -10,6 +10,7 @@ import ChannelSearch from './ChannelSearch';
 import FriendModal from './FriendModal';
 import ChatUserModal from './ChatUserModal';
 import InviteModal from './InviteModal';
+import { ConfigService } from '@nestjs/config';
 
 type ListName = 'friends' | 'channels';
 
@@ -26,6 +27,7 @@ const Navigation: FC = () => {
   const [inviteModalOpen, setInviteModalOpen] = useState(false);
   const [invitedFriends, setInvitedFriends] = useState<{ [key: number]: boolean }>({});
   const [channelName, setChannelName] = useState<String>('');
+  const configService = new ConfigService();
 
   const openInviteModal = (channelName:String) => {
     setChannelName(channelName);
@@ -63,15 +65,18 @@ const Navigation: FC = () => {
       try {
         if (!myData) {
           const response = await axios.get(
-            `http://localhost:3000/user`, { withCredentials: true }
+            // `http://localhost:3000/user`, { withCredentials: true }
+            `${configService.get<string>('IP_ADDRESS')}:3000/user`, { withCredentials: true }
           );
           setMyData(response.data);
-          const response3 = await axios.get('http://localhost:3000/userblacklist', { withCredentials: true });
+          // const response3 = await axios.get('http://localhost:3000/userblacklist', { withCredentials: true });
+          const response3 = await axios.get(`${configService.get<string>('IP_ADDRESS')}:3000/userblacklist`, { withCredentials: true });
           setUserBlackList(response3.data);
         }
         if (friends.length === 0) {
           const response2 = await axios.get(
-            `http://localhost:3000/friendlist`, { withCredentials: true }
+            // `http://localhost:3000/friendlist`, { withCredentials: true }
+            `${configService.get<string>('IP_ADDRESS')}:3000/friendlist`, { withCredentials: true }
             );
             setFriends(response2.data);
         }

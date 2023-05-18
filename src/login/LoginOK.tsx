@@ -2,6 +2,7 @@ import { useMyContext } from '../MyContext';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
+import { ConfigService } from '@nestjs/config';
 
 interface Props {
   onShowNavigation: () => void;
@@ -10,19 +11,22 @@ interface Props {
 const LoginOK: React.FC<Props> = ({ onShowNavigation }) => {
   const navigate = useNavigate();
   const { myData, setMyData, friends, setFriends } = useMyContext();
+  const configService = new ConfigService();
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
         if (!myData) {
           const response = await axios.get(
-            `http://localhost:3000/user`, { withCredentials: true }
+            // `http://localhost:3000/user`, { withCredentials: true }
+            `${configService.get<string>('IP_ADDRESS')}:3000/user`, { withCredentials: true }
           );
           setMyData(response.data);
         }
         if (!friends) {
           const response2 = await axios.get(
-            `http://localhost:3000/friendlist`, { withCredentials: true }
+            // `http://localhost:3000/friendlist`, { withCredentials: true }
+            `${configService.get<string>('IP_ADDRESS')}:3000/friendlist`, { withCredentials: true }
           );
           setFriends(response2.data);
         }

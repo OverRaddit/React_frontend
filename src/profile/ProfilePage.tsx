@@ -10,6 +10,7 @@ import { useParams } from 'react-router-dom';
 import { useMyContext } from '../MyContext'; // Import the context
 import RecentMatchCard, { RecentMatch } from './RecentMatchCard';
 import { MyFriend } from 'navigation/interfaces/interfaces';
+import { ConfigService } from '@nestjs/config';
 
 interface Props {
   onShowNavigation: () => void;
@@ -42,13 +43,15 @@ const ProfilePage: React.FC<Props> = ({ onShowNavigation }) => {
   const [isNicknameModalOpen, setIsNicknameModalOpen] = useState(false);
   const [isProfilePictureModalOpen, setIsProfilePictureModalOpen] = useState(false);
   const [recentMatches, setRecentMatches] = useState<RecentMatch[]>([]);
+  const configService = new ConfigService();
 
   useEffect(() => {
     onShowNavigation();
     const fetchUserData = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:3000/user${userId ? `/${userId}` : ''}`, { withCredentials: true }
+          // `http://localhost:3000/user${userId ? `/${userId}` : ''}`, { withCredentials: true }
+          `${configService.get<string>('IP_ADDRESS')}:3000/user${userId ? `/${userId}` : ''}`, { withCredentials: true }
         );
         setUserData(response.data);
       } catch (error) {
@@ -57,7 +60,8 @@ const ProfilePage: React.FC<Props> = ({ onShowNavigation }) => {
     };
     const fetchRecentMatches = async () => {
       try {
-        const response = await axios.get(`http://localhost:3000/matchhistory/${userId}`);
+        // const response = await axios.get(`http://localhost:3000/matchhistory/${userId}`);
+        const response = await axios.get(`${configService.get<string>('IP_ADDRESS')}:3000/matchhistory/${userId}`);
         setRecentMatches(response.data.slice(0, 5));
         //console.log(recentMatches[0]);
       } catch (error) {
@@ -78,7 +82,8 @@ const ProfilePage: React.FC<Props> = ({ onShowNavigation }) => {
   const onBlockUser = async () => {
     try {
       await axios.post(
-        'http://localhost:3000/userblacklist',
+        // 'http://localhost:3000/userblacklist',
+        `${configService.get<string>('IP_ADDRESS')}:3000/userblacklist`,
         { blacklist: userData.intraid },
         { withCredentials: true }
       );
@@ -98,7 +103,8 @@ const ProfilePage: React.FC<Props> = ({ onShowNavigation }) => {
   const onUnblockUser = async () => {
     try {
       await axios.delete(
-        `http://localhost:3000/userblacklist/${userData.intraid}`,
+        // `http://localhost:3000/userblacklist/${userData.intraid}`,
+        `${configService.get<string>('IP_ADDRESS')}:3000/userblacklist/${userData.intraid}`,
         { withCredentials: true }
       );
 
@@ -133,7 +139,8 @@ const ProfilePage: React.FC<Props> = ({ onShowNavigation }) => {
 
   const toggleOtp = async () => {
     try {
-      await axios.post('http://localhost:3000/user/otp', {
+      // await axios.post('http://localhost:3000/user/otp', {
+      await axios.post(`${configService.get<string>('IP_ADDRESS')}:3000/user/otp`, {
         otp: !userData.isotp,
       }, { withCredentials: true });
       setUserData({ ...userData, isotp: !userData.isotp });
@@ -150,7 +157,8 @@ const ProfilePage: React.FC<Props> = ({ onShowNavigation }) => {
   const onAddFriend = async () => {
     try {
       const response = await axios.post(
-        'http://localhost:3000/friendlist',
+        // 'http://localhost:3000/friendlist',
+        `${configService.get<string>('IP_ADDRESS')}:3000/friendlist`,
         { friend: userData.intraid },
         { withCredentials: true }
       );
@@ -164,7 +172,8 @@ const ProfilePage: React.FC<Props> = ({ onShowNavigation }) => {
   const onRemoveFriend = async () => {
     try {
       await axios.delete(
-        `http://localhost:3000/friendlist/${userData.intraid}`,
+        // `http://localhost:3000/friendlist/${userData.intraid}`,
+        `${configService.get<string>('IP_ADDRESS')}:3000/friendlist/${userData.intraid}`,
         { withCredentials: true }
       );
 

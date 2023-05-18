@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import './LoginPage.css';
+import { ConfigService } from '@nestjs/config';
 
 interface Props {
   onHideNavigation: () => void;
@@ -10,10 +11,11 @@ const LoginPage: React.FC<Props> = ({ onHideNavigation }) => {
     onHideNavigation(); // 페이지 로드시 네비게이션 숨기기
 
   }, [onHideNavigation]);
-
+  const configService = new ConfigService();
   const handleLoginButtonClick = () => {
     // 로그인 처리
-    window.location.replace('http://localhost:3000/auth/login');
+    // window.location.replace('http://localhost:3000/auth/login');
+    window.location.replace(`${configService.get<string>('IP_ADDRESS')}:3000/auth/login`);
   };
 
   return (

@@ -1,6 +1,7 @@
 import React, { useRef } from 'react';
 import Modal from 'react-modal';
 import axios from 'axios';
+import { ConfigService } from '@nestjs/config';
 
 interface ProfilePictureModalProps {
   isOpen: boolean;
@@ -14,7 +15,7 @@ const ProfilePictureModal: React.FC<ProfilePictureModalProps> = ({
   onUpload,
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
-
+  const configService = new ConfigService();
   const handleSubmit = async () => {
     if (fileInputRef.current?.files) {
       const file = fileInputRef.current.files[0];
@@ -22,7 +23,8 @@ const ProfilePictureModal: React.FC<ProfilePictureModalProps> = ({
       try {
         const formData = new FormData();
         formData.append('file', file);
-        const response = await axios.post('http://localhost:3000/uploads', formData, {
+        // const response = await axios.post('http://localhost:3000/uploads', formData, {
+        const response = await axios.post(`${configService.get<string>('IP_ADDRESS')}:3000/uploads`, formData, {
           withCredentials: true,
           headers: {
             'Content-Type': 'multipart/form-data',
