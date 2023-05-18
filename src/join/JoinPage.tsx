@@ -29,7 +29,8 @@ const JoinPage: React.FC<Props> = ({ onHideNavigation }) => {
     const fetchUserData = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:3000/user${nickname ? `/${nickname}` : ''}`, { withCredentials: true }
+          // `http://localhost:3000/user${nickname ? `/${nickname}` : ''}`, { withCredentials: true }
+          `${process.env.REACT_APP_IP_ADDRESS}:3000/user${nickname ? `/${nickname}` : ''}`, { withCredentials: true }
         );
         setUserData(response.data);
       } catch (error) {
@@ -45,6 +46,7 @@ const JoinPage: React.FC<Props> = ({ onHideNavigation }) => {
   const [isAnonymous, setIsAnonymous] = useState(false);
   const [isEmpty, setIsEmpty] = useState(false);
   const navigate = useNavigate();
+  
 
   const isAnonymousNickname = (nickname: string) => {
     return nickname.startsWith('anon_');
@@ -65,7 +67,8 @@ const JoinPage: React.FC<Props> = ({ onHideNavigation }) => {
   const handleJoinButtonClick = async () => {
     if (!isAnonymous && !isEmpty) {
       try {
-        const response = await axios.post('http://localhost:3000/user/join', { nickname: nickname }, { withCredentials: true });
+        // const response = await axios.post('http://localhost:3000/user/join', { nickname: nickname }, { withCredentials: true });
+        const response = await axios.post(`${process.env.REACT_APP_IP_ADDRESS}:3000/user/join`, { nickname: nickname }, { withCredentials: true });
         if (response.status >= 200 && response.status < 300) {
           navigate('/');
         }        

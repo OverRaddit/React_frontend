@@ -44,11 +44,12 @@ const NicknameChangeModal: React.FC<NicknameChangeModalProps> = ({
       setIsAnonymous(false);
     }
   };
-
+  
   const handleSubmit = async () => {
     if (!isAnonymous && nickname !== '') {
       try {
-        const response = await axios.post('http://localhost:3000/user/join', { nickname: nickname }, { withCredentials: true });
+        // const response = await axios.post('http://localhost:3000/user/join', { nickname: nickname }, { withCredentials: true });
+        const response = await axios.post(`${process.env.REACT_APP_IP_ADDRESS}:3000/user/join`, { nickname: nickname }, { withCredentials: true });
         if (response.status >= 200 && response.status < 300) {
           onRequestClose();
           // Call the onNicknameChange callback

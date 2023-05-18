@@ -75,6 +75,7 @@ export const MyContextProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const [myInvite, setMyInvite] = useState<MyInvite[]>([]);
   const [cookies, setCookie, removeCookie] = useCookies(['session_key', 'userData', 'id']);
   const navigate = useNavigate();
+  
 
   const initSocket = () => {
     //console.log('@@@initSocket in MyContext (intraId, userId): ', myData!.intraid, ',', myData!.id.toString());
@@ -82,7 +83,9 @@ export const MyContextProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     //console.log(':)cookies userdata:',cookies.userData);
     //console.log(':)cookies intraid:',cookies.userData.intraid);
     //console.log(':)cookies id:',cookies.userData.id.toString());
-    const ChatSocket = io('http://localhost:4242/chat', {
+
+    // const ChatSocket = io('http://localhost:4242/chat', {
+    const ChatSocket = io(`${process.env.REACT_APP_CHAT_SERVER}`, {
       extraHeaders: {
         Authorization: `Bearer ${cookies.session_key}`,
 				session_key: cookies.session_key,
@@ -90,8 +93,8 @@ export const MyContextProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         userId: cookies?.userData.id.toString(),
       },
     });
-
-    const GameSocket = io("http://localhost:8000", {
+    // const GameSocket = io("http://localhost:8000", {
+    const GameSocket = io(`${process.env.REACT_APP_GAME_SERVER}`, {
       extraHeaders: {
         Authorization: `Bearer ${cookies.session_key}`,
         session_key: cookies.session_key,

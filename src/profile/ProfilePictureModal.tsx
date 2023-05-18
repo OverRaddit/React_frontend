@@ -14,7 +14,7 @@ const ProfilePictureModal: React.FC<ProfilePictureModalProps> = ({
   onUpload,
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
-
+  
   const handleSubmit = async () => {
     if (fileInputRef.current?.files) {
       const file = fileInputRef.current.files[0];
@@ -22,7 +22,8 @@ const ProfilePictureModal: React.FC<ProfilePictureModalProps> = ({
       try {
         const formData = new FormData();
         formData.append('file', file);
-        const response = await axios.post('http://localhost:3000/uploads', formData, {
+        // const response = await axios.post('http://localhost:3000/uploads', formData, {
+        const response = await axios.post(`${process.env.REACT_APP_IP_ADDRESS}:3000/uploads`, formData, {
           withCredentials: true,
           headers: {
             'Content-Type': 'multipart/form-data',

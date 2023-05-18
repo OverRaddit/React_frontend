@@ -18,6 +18,7 @@ const OtpPage: React.FC<Props> = ({ onHideNavigation }) => {
   const [otp, setOtp] = useState('');
   const [isOtpIncorrect, setIsOtpIncorrect] = useState(false);
   const navigate = useNavigate();
+  
 
   const handleOtpChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setOtp(e.target.value);
@@ -25,7 +26,8 @@ const OtpPage: React.FC<Props> = ({ onHideNavigation }) => {
 
   const handleVerifyButtonClick = async () => {
     try {
-      const response = await axios.post('http://localhost:3000/otp', { otp_key: otp }, { withCredentials: true});
+      // const response = await axios.post('http://localhost:3000/otp', { otp_key: otp }, { withCredentials: true});
+      const response = await axios.post(`${process.env.REACT_APP_IP_ADDRESS}:3000/otp`, { otp_key: otp }, { withCredentials: true});
       if (response.status >= 200 && response.status < 300) {
         navigate('/');
       }      

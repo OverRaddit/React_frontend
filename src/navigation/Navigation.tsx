@@ -26,6 +26,7 @@ const Navigation: FC = () => {
   const [inviteModalOpen, setInviteModalOpen] = useState(false);
   const [invitedFriends, setInvitedFriends] = useState<{ [key: number]: boolean }>({});
   const [channelName, setChannelName] = useState<String>('');
+  
 
   const openInviteModal = (channelName:String) => {
     setChannelName(channelName);
@@ -63,15 +64,18 @@ const Navigation: FC = () => {
       try {
         if (!myData) {
           const response = await axios.get(
-            `http://localhost:3000/user`, { withCredentials: true }
+            // `http://localhost:3000/user`, { withCredentials: true }
+            `${process.env.REACT_APP_IP_ADDRESS}:3000/user`, { withCredentials: true }
           );
           setMyData(response.data);
-          const response3 = await axios.get('http://localhost:3000/userblacklist', { withCredentials: true });
+          // const response3 = await axios.get('http://localhost:3000/userblacklist', { withCredentials: true });
+          const response3 = await axios.get(`${process.env.REACT_APP_IP_ADDRESS}:3000/userblacklist`, { withCredentials: true });
           setUserBlackList(response3.data);
         }
         if (friends.length === 0) {
           const response2 = await axios.get(
-            `http://localhost:3000/friendlist`, { withCredentials: true }
+            // `http://localhost:3000/friendlist`, { withCredentials: true }
+            `${process.env.REACT_APP_IP_ADDRESS}:3000/friendlist`, { withCredentials: true }
             );
             setFriends(response2.data);
         }
