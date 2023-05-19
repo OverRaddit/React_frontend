@@ -17,7 +17,7 @@ const XPage: React.FC<Props> = () => {
 	const { myData, setMyData, friends, setFriends, channels, setChannels,
 		mySocket, mapChannels, setMapChannels, currentChannel, setCurrentChannel, } = useMyContext();
 	const [userChatRooms, setUserChatRooms] = useState<MyChannel[]>(channels);
-	
+
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [modalMessage, setModalMessage] = useState('');
 	const [selectedChannel, setSelectedChannel] = useState('');
@@ -37,7 +37,18 @@ const XPage: React.FC<Props> = () => {
 
   useEffect(() => {
 	//console.log('channels: ', channels);
-	if (channels.length === 0) return;
+	if (channels.length === 0) {
+		setCurrentChannel({
+			id: 0,
+			kind: 0,
+			name: "None",
+			owner: 'none',
+			users: [],
+			showUserList: false,
+			chatHistory: [],
+		})
+		return;
+	}
 
 	if (!currentChannel) {
 	  setCurrentChannel(channels[0]);
