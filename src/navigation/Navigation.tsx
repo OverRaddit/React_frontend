@@ -27,7 +27,7 @@ const Navigation: FC = () => {
   const [inviteModalOpen, setInviteModalOpen] = useState(false);
   const [invitedFriends, setInvitedFriends] = useState<{ [key: number]: boolean }>({});
   const [channelName, setChannelName] = useState<String>('');
-  
+  const [cookies, setCookie, removeCookie] = useCookies(['session_key', 'userData']);
 
   const openInviteModal = (channelName:String) => {
     setChannelName(channelName);
@@ -88,7 +88,6 @@ const Navigation: FC = () => {
 
   useEffect(() => {
     if (myData && myData.intraid && myData.id && !mySocket) {
-      const [cookies, setCookie, removeCookie] = useCookies(['session_key', 'userData']);
       initSocket(cookies);
     }
     if (myData && mySocket) {
