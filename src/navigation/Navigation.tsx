@@ -10,6 +10,7 @@ import ChannelSearch from './ChannelSearch';
 import FriendModal from './FriendModal';
 import ChatUserModal from './ChatUserModal';
 import InviteModal from './InviteModal';
+import { useCookies } from 'react-cookie';
 
 type ListName = 'friends' | 'channels';
 
@@ -87,7 +88,8 @@ const Navigation: FC = () => {
 
   useEffect(() => {
     if (myData && myData.intraid && myData.id && !mySocket) {
-      initSocket();
+      const [cookies, setCookie, removeCookie] = useCookies(['session_key', 'userData']);
+      initSocket(cookies);
     }
     if (myData && mySocket) {
       mySocket.chatSocket.on('owner-granted', ({ roomName, user }) => {
