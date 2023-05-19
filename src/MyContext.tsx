@@ -29,7 +29,7 @@ type MyContextProps = {
   setMySocket: (mySocket: MySocket | null) => void;
   setMyInvite: (myInvite: MyInvite[]) => void;
   removeInvite: () => void;
-  initSocket: () => void;
+  initSocket: (cookies:any) => void;
 };
 
 export interface EventResponse {
@@ -73,11 +73,10 @@ export const MyContextProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const [myData, setMyData] = useState<MyData | null>(null);
   const [mySocket, setMySocket] = useState<MySocket | null>(null);
   const [myInvite, setMyInvite] = useState<MyInvite[]>([]);
-  const [cookies, setCookie, removeCookie] = useCookies(['session_key', 'userData', 'id']);
   const navigate = useNavigate();
   
 
-  const initSocket = () => {
+  const initSocket = (cookies:any) => {
     //console.log('@@@initSocket in MyContext (intraId, userId): ', myData!.intraid, ',', myData!.id.toString());
     //console.log(':)cookies:',cookies);
     //console.log(':)cookies userdata:',cookies.userData);

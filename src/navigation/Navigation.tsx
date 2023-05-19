@@ -21,13 +21,12 @@ const Navigation: FC = () => {
   const [channelToLeave, setChannelToLeave] = useState<MyChannel | null>(null);
   const [selectedUser, setSelectedUser] = useState<any | null>(null);
   const [selectedUserChannel, setSelectedUserChannel] = useState<any | null>(null);
-  const { myData, setMyData, friends, setFriends, channels, setChannels, initSocket, mySocket, setCurrentChannel, userBlackList, setUserBlackList, setCookie } = useMyContext();
+  const { myData, setMyData, friends, setFriends, channels, setChannels, initSocket, mySocket, setCurrentChannel, userBlackList, setUserBlackList } = useMyContext();
   const [modalMessage, setModalMessage] = useState<string | null>(null);
   const navigate = useNavigate();
   const [inviteModalOpen, setInviteModalOpen] = useState(false);
   const [invitedFriends, setInvitedFriends] = useState<{ [key: number]: boolean }>({});
   const [channelName, setChannelName] = useState<String>('');
-  const [cookies] = useCookies(['session_key', 'userData']);
   
 
   const openInviteModal = (channelName:String) => {
@@ -89,10 +88,8 @@ const Navigation: FC = () => {
 
   useEffect(() => {
     if (myData && myData.intraid && myData.id && !mySocket) {
-      setCookie('session_key', cookies.session_key);
-      setCookie('userData', cookies.userData);
-      console.log(cookies.userData)
-      initSocket();
+      const [cookies, setCookie, removeCookie] = useCookies(['session_key', 'userData']);
+      initSocket(cookies);
     }
     if (myData && mySocket) {
       mySocket.chatSocket.on('owner-granted', ({ roomName, user }) => {
