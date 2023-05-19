@@ -4,7 +4,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Modal from 'react-modal';
 import { MyChannel, MyFriend, MyUser } from './interfaces/interfaces';
 import './Navigation.css';
-import { useMyContext } from '../MyContext';
+import { EventResponse, useMyContext } from '../MyContext';
 import axios from 'axios';
 import ChannelSearch from './ChannelSearch';
 import FriendModal from './FriendModal';
@@ -57,8 +57,6 @@ const Navigation: FC = () => {
       }));
     });
   };
-
-
   useEffect(() => {
     const fetchUserData = async () => {
       try {
@@ -118,6 +116,17 @@ const Navigation: FC = () => {
         );
       });
 
+      const handleMatchingComplete = (res: any) => {
+        //console.log("여긴가", res);
+        //console.log(mySocket.gameSocket);
+        mySocket.chatSocket.emit('state', { userId: myData?.id, status: 'in-game' }, (response: EventResponse) => {
+          //console.log('state: ', response);
+        })
+        navigate('/game', { state: { gameData: res } });
+      };
+    
+      mySocket.gameSocket.on('matchingcomplete', handleMatchingComplete);
+    
       mySocket.chatSocket.on('admin-granted', ({ roomName, user }) => {
         if (user.intraid === myData?.intraid) {
           setModalMessage('You have been granted admin of the ' + roomName);
@@ -271,6 +280,7 @@ const Navigation: FC = () => {
       mySocket.chatSocket.off('user-muted');
       mySocket.chatSocket.off('user-dm');
       mySocket.chatSocket.off('channel-deleted');
+      mySocket.gameSocket.off('matchingcomplete');
     };
     }
   }, [myData, initSocket, mySocket, channels, setChannels, setCurrentChannel]);

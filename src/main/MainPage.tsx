@@ -29,23 +29,23 @@ const MainPage: React.FC<Props> = ({ onShowNavigation }) => {
           })
         }
       };
-      const handleMatchingComplete = (res: any) => {
-        //console.log("여긴가", res);
-        //console.log(mySocket.gameSocket);
+      // const handleMatchingComplete = (res: any) => {
+      //   //console.log("여긴가", res);
+      //   //console.log(mySocket.gameSocket);
 
-        setIsInQueue(false);
-        mySocket.chatSocket.emit('state', { userId: myData?.id, status: 'in-game' }, (response: EventResponse) => {
-          //console.log('state: ', response);
-        })
-        navigate('/game', { state: { gameData: res } });
-      };
+      //   setIsInQueue(false);
+      //   mySocket.chatSocket.emit('state', { userId: myData?.id, status: 'in-game' }, (response: EventResponse) => {
+      //     //console.log('state: ', response);
+      //   })
+      //   navigate('/game', { state: { gameData: res } });
+      // };
 
+      // mySocket.gameSocket.on('matchingcomplete', handleMatchingComplete);
       mySocket.gameSocket.on('enqueuecomplete', handleEnqueueComplete);
-      mySocket.gameSocket.on('matchingcomplete', handleMatchingComplete);
 
       return () => {
         mySocket.gameSocket.off('enqueuecomplete');
-        mySocket.gameSocket.off('matchingcomplete');
+        // mySocket.gameSocket.off('matchingcomplete');
       };
     }
   }, [mySocket]);
