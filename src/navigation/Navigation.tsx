@@ -10,6 +10,7 @@ import ChannelSearch from './ChannelSearch';
 import FriendModal from './FriendModal';
 import ChatUserModal from './ChatUserModal';
 import InviteModal from './InviteModal';
+import { useCookies } from 'react-cookie';
 
 type ListName = 'friends' | 'channels';
 
@@ -20,12 +21,13 @@ const Navigation: FC = () => {
   const [channelToLeave, setChannelToLeave] = useState<MyChannel | null>(null);
   const [selectedUser, setSelectedUser] = useState<any | null>(null);
   const [selectedUserChannel, setSelectedUserChannel] = useState<any | null>(null);
-  const { myData, setMyData, friends, setFriends, channels, setChannels, initSocket, mySocket, setCurrentChannel, userBlackList, setUserBlackList } = useMyContext();
+  const { myData, setMyData, friends, setFriends, channels, setChannels, initSocket, mySocket, setCurrentChannel, userBlackList, setUserBlackList, setCookie } = useMyContext();
   const [modalMessage, setModalMessage] = useState<string | null>(null);
   const navigate = useNavigate();
   const [inviteModalOpen, setInviteModalOpen] = useState(false);
   const [invitedFriends, setInvitedFriends] = useState<{ [key: number]: boolean }>({});
   const [channelName, setChannelName] = useState<String>('');
+  const [cookies] = useCookies(['session_key', 'userData']);
   
 
   const openInviteModal = (channelName:String) => {
@@ -87,6 +89,9 @@ const Navigation: FC = () => {
 
   useEffect(() => {
     if (myData && myData.intraid && myData.id && !mySocket) {
+      setCookie('session_key', cookies.session_key);
+      setCookie('userData', cookies.userData);
+      console.log(cookies.userData)
       initSocket();
     }
     if (myData && mySocket) {
@@ -217,11 +222,14 @@ const Navigation: FC = () => {
         //console.log('chat:', response);
 
         // response.user가 userBlackList에 존재하는지 검색한다.
-        const blackedUser = userBlackList.find(user => user.id === response.user.id);
-        //console.log('blackedUser: ',blackedUser);
-        if (blackedUser !== undefined) {
-          //console.log('이 메시지는 무시됩니다.')
-          return ;
+        console.log("mute test user", response);
+        if (response.user) { // youjeon
+          const blackedUser = userBlackList.find(user => user.id === response.user.id);
+          //console.log('blackedUser: ',blackedUser);
+          if (blackedUser !== undefined) {
+            //console.log('이 메시지는 무시됩니다.')
+            return ;
+          }
         }
 
         // Find the index of the channel with the matching name
@@ -229,7 +237,14 @@ const Navigation: FC = () => {
 
         if (channelIndex !== -1) {
           // Create a new channel object with the updated chatHistory
-          const chatMessage = `${response.user.nickname} : ${response.message}`;
+          
+          let chatMessage;
+          if (response.user) { // youjeon
+            chatMessage = `${response.user.nickname} : ${response.message}`;
+            
+          } else {
+            chatMessage = `${response.message}`;
+          }
           const updatedChannel = {
             ...channels[channelIndex],
             chatHistory: [...channels[channelIndex].chatHistory, chatMessage]
